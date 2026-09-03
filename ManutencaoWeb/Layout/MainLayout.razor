@@ -1,0 +1,57 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
+
+<div class="page">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- Top Bar com Controles -->
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary btn-sm" @onclick="VoltarTela">
+                <i class="oi oi-arrow-left"></i> Voltar
+            </button>
+            
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-muted">ManutencaoWeb</span>
+                <button class="btn btn-sm btn-dark-mode-toggle" @onclick="ToggleTheme" title="Alternar Modo Dia/Noite">
+                    @if (_isDarkMode)
+                    {
+                        <span>☀️ Modo Dia</span>
+                    }
+                    else
+                    {
+                        <span>🌙 Modo Noite</span>
+                    }
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteúdo da Página -->
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private bool _isDarkMode = false;
+
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+        
+        // Aplica ou remove a classe 'dark-theme' diretamente no body do HTML via JS
+        await JSRuntime.InvokeVoidAsync("eval", _isDarkMode 
+            ? "document.body.classList.add('dark-theme'); document.body.classList.remove('light-theme');" 
+            : "document.body.classList.add('light-theme'); document.body.classList.remove('dark-theme');");
+    }
+
+    private async Task VoltarTela()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

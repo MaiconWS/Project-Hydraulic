@@ -1,0 +1,158 @@
+﻿@page "/"
+@inject NavigationManager Nav
+
+<PageTitle>Home - ManutencaoWeb</PageTitle>
+
+<div class="dashboard-wrapper">
+    <!-- MENU LATERAL ESQUERDO -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="oi oi-shield"></i> <span>MANUTENCAOWEB</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li class="active">
+                <a href=""><i class="oi oi-home"></i> Home</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-document"></i> Requisições</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-box"></i> Peças</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-layers"></i> Estoque</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-bar-chart"></i> Relatórios</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-cog"></i> Configurações</a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-sair" @onclick="Sair">
+                <i class="oi oi-account-logout"></i> Sair
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        <!-- BARRA SUPERIOR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle"><i class="oi oi-menu"></i></button>
+                <span class="user-greeting">Olá, <strong>ManutencaoWeb</strong></span>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-avatar">MW</div>
+            </div>
+        </header>
+
+        <!-- ÁREA DE CONTEÚDO -->
+        <div class="content-body">
+            <div class="section-title">
+                <h2>Categoria de Componentes</h2>
+                <p>Selecione a categoria do componente para continuar sua requisição.</p>
+            </div>
+
+            <!-- CARDS DE CATEGORIAS -->
+            <div class="row g-4 mb-5">
+                <!-- CARD BOMBA -->
+                <div class="col-md-4">
+                    <div class="category-card" @onclick="@(() => IrParaModelos("Bomba Hidráulica"))">
+                        <div class="card-icon">
+                            <i class="oi oi-cog"></i>
+                        </div>
+                        <h5>Bombas Hidráulicas</h5>
+                        <p>Componentes de bombas hidráulicas e acessórios.</p>
+                        <span class="card-link">Acessar categoria &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- CARD MOTOR -->
+                <div class="col-md-4">
+                    <div class="category-card" @onclick="@(() => IrParaModelos("Motor Hidráulico"))">
+                        <div class="card-icon">
+                            <i class="oi oi-reload"></i>
+                        </div>
+                        <h5>Motores Hidráulicos</h5>
+                        <p>Componentes de motores hidráulicos e acessórios.</p>
+                        <span class="card-link">Acessar categoria &rarr;</span>
+                    </div>
+                </div>
+
+                <!-- CARD CILINDROS -->
+                <div class="col-md-4">
+                    <div class="category-card" @onclick="@(() => IrParaModelos("cilindros"))">
+                        <div class="card-icon">
+                            <i class="oi oi-transfer"></i>
+                        </div>
+                        <h5>Cilindros Hidráulicos</h5>
+                        <p>Componentes de cilindros hidráulicos e acessórios.</p>
+                        <span class="card-link">Acessar categoria &rarr;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO DE ACESSO RÁPIDO -->
+            <div class="quick-access-section">
+                <h5 class="mb-3">Acesso rápido</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="quick-card">
+                            <i class="oi oi-file text-success"></i>
+                            <div>
+                                <strong>Nova requisição</strong>
+                                <small>Criar nova requisição</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quick-card">
+                            <i class="oi oi-magnifying-glass text-success"></i>
+                            <div>
+                                <strong>Buscar peças</strong>
+                                <small>Pesquise por código ou nome</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quick-card">
+                            <i class="oi oi-box text-success"></i>
+                            <div>
+                                <strong>Ver estoque</strong>
+                                <small>Consulte a disponibilidade</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="quick-card">
+                            <i class="oi oi-clock text-success"></i>
+                            <div>
+                                <strong>Minhas requisições</strong>
+                                <small>Acompanhe o status</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+</div>
+
+@code {
+    private void IrParaModelos(string categoria)
+    {
+        Nav.NavigateTo($"/modelos/{Uri.EscapeDataString(categoria)}");
+    }
+
+    private void Sair()
+    {
+        Nav.NavigateTo("/");
+    }
+}   
