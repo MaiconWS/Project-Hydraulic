@@ -3,47 +3,105 @@
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 
-<div class="app-header">
-    <h3>Modelos - @CategoriaDecodificada</h3>
-</div>
+<PageTitle>Modelos - @CategoriaDecodificada</PageTitle>
 
-<div class="container mt-4">
-    @if (isLoading)
-    {
-        <div class="text-center mt-5">
-            <div class="spinner-border text-success" role="status"></div>
-            <p class="mt-2">Carregando componentes...</p>
+<div class="dashboard-wrapper">
+    <!-- MENU LATERAL ESQUERDO -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="oi oi-shield"></i> <span>MANUTENCAOWEB</span>
         </div>
-    }
-    else if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            <strong>Erro ao carregar:</strong> @errorMessage
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href=""><i class="oi oi-home"></i> Home</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-document"></i> Requisições</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-box"></i> Peças</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-layers"></i> Estoque</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-bar-chart"></i> Relatórios</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-cog"></i> Configurações</a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <button class="btn-sair" @onclick="Sair">
+                <i class="oi oi-account-logout"></i> Sair
+            </button>
         </div>
-    }
-    else if (componentes == null || !componentes.Any())
-    {
-        <div class="alert alert-warning text-center" role="alert">
-            Nenhum componente encontrado para a categoria: <strong>@CategoriaDecodificada</strong>
-        </div>
-    }
-    else
-    {
-        <div class="list-group">
-            @foreach (var item in componentes)
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- ÁREA DE CONTEÚDO -->
+        <div class="content-body">
+            <button class="btn btn-light mb-3 border" @onclick="Voltar">
+                &lt; Voltar
+            </button>
+
+            <div class="section-title mb-3">
+                <h2>Modelos</h2>
+                <p>Selecione o modelo do componente para continuar.</p>
+            </div>
+
+            <!-- BARRA DE PESQUISA -->
+            <div class="mb-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="oi oi-magnifying-glass"></i></span>
+                    <input type="text" class="form-control border-start-0" placeholder="Pesquisar modelo ou SAP..." @bind="termoBusca" @bind:event="oninput" />
+                </div>
+            </div>
+
+            <!-- CARD DE CATEGORIA SELECIONADA -->
+            <div class="card border-0 shadow-sm p-3 mb-4 bg-light">
+                <small class="text-muted">Categoria selecionada</small>
+                <h5 class="mb-0 text-success fw-bold">@CategoriaDecodificada</h5>
+            </div>
+
+            @if (isLoading)
             {
-                <button class="list-group-item list-group-item-action d-flex align-items-center mb-2"
-                        @onclick="@(() => IrParaChecklist(item.SapComp!, item.Modelo!))">
-                    <div class="avatar-crr">CRR</div>
-                    <div class="ms-3 flex-grow-1 text-start">
-                        <h6 class="mb-0">@item.Modelo</h6>
-                        <small class="text-muted">SAP: @item.SapComp</small>
-                    </div>
-                    <i class="oi oi-chevron-right text-muted"></i>
-                </button>
+                <div class="text-center mt-5">
+                    <div class="spinner-border text-success" role="status"></div>
+                </div>
+            }
+            else if (ComponentesFiltrados == null || !ComponentesFiltrados.Any())
+            {
+                <div class="alert alert-warning text-center" role="alert">
+                    Nenhum componente encontrado.
+                </div>
+            }
+            else
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var item in ComponentesFiltrados)
+                    {
+                        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-crr">CRR</div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold">@item.Modelo</h6>
+                                    <small class="text-muted">SAP: @item.SapComp</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-success px-4" @onclick="@(() => IrParaChecklist(item.SapComp!, item.Modelo!))">
+                                Acessar &gt;
+                            </button>
+                        </div>
+                    }
+                </div>
             }
         </div>
-    }
+    </main>
 </div>
 
 @code {
@@ -51,17 +109,19 @@
     
     private string CategoriaDecodificada => Uri.UnescapeDataString(Categoria ?? "");
     private List<ComponenteModel> componentes = new();
+    private string termoBusca = "";
     private bool isLoading = true;
-    private string? errorMessage;
+
+    private IEnumerable<ComponenteModel> ComponentesFiltrados => string.IsNullOrWhiteSpace(termoBusca) 
+        ? componentes 
+        : componentes.Where(c => (c.Modelo?.Contains(termoBusca, StringComparison.OrdinalIgnoreCase) ?? false) || 
+                                 (c.SapComp?.Contains(termoBusca, StringComparison.OrdinalIgnoreCase) ?? false));
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             isLoading = true;
-            errorMessage = null;
-
-            // 1. Busca o ID do sistema que corresponde à categoria selecionada
             var sistemaResponse = await Supabase.From<SistemaModel>()
                 .Filter("categoria", Postgrest.Constants.Operator.ILike, CategoriaDecodificada.Trim())
                 .Get();
@@ -70,27 +130,22 @@
 
             if (sistema != null)
             {
-                // 2. Busca os componentes vinculados a esse sistema
                 var componentesResponse = await Supabase.From<ComponenteModel>()
                     .Filter("sistema_id", Postgrest.Constants.Operator.Equals, sistema.Id)
                     .Get();
 
                 componentes = componentesResponse.Models;
             }
-            else
-            {
-                componentes = new();
-            }
         }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
+        catch { }
         finally
         {
             isLoading = false;
         }
     }
+
+    private void Voltar() => Nav.NavigateTo("/");
+    private void Sair() => Nav.NavigateTo("/");
 
     private void IrParaChecklist(string sap, string modelo)
     {

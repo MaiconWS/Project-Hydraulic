@@ -4,82 +4,171 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
-<div class="app-header">
-    <h3>CheckList - @NomeModelo</h3>
-</div>
+<PageTitle>Checklist - @NomeModelo</PageTitle>
 
-<div class="container mt-4">
-    <div class="mb-3">
-        <label>Digite a O.S</label>
-        <input class="form-control border-dark" @bind="osNumero" placeholder="Número da Ordem de Serviço" />
-    </div>
+<div class="dashboard-wrapper">
+    <!-- MENU LATERAL ESQUERDO -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="oi oi-shield"></i> <span>MANUTENCAOWEB</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href=""><i class="oi oi-home"></i> Home</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-document"></i> Requisições</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-box"></i> Peças</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-layers"></i> Estoque</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-bar-chart"></i> Relatórios</a>
+            </li>
+            <li>
+                <a href="#"><i class="oi oi-cog"></i> Configurações</a>
+            </li>
+        </ul>
 
-    <div class="table-responsive">
-        <table class="table table-bordered align-middle table-sm">
-            <thead class="bg-custom text-white text-center">
-                <tr>
-                    <th>SAP</th>
-                    <th>Descrição</th>
-                    <th>Valor (R$)</th>
-                    <th>Qtd</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (isLoading)
-                {
-                    <tr><td colspan="4" class="text-center">Carregando peças...</td></tr>
-                }
-                else if (pecas != null && pecas.Any())
-                {
-                    @foreach (var peca in pecas)
-                    {
-                        <tr>
-                            <td class="text-center" style="font-size: 12px;">@peca.SapPeca</td>
-                            <td style="font-size: 12px;">@peca.Descricao</td>
-                            <td class="text-center" style="font-size: 12px;">@peca.Valor.ToString("F2")</td>
-                            <td class="text-center" style="min-width: 100px;">
-                                <button class="btn btn-sm btn-light p-1" @onclick="() => Diminuir(peca.SapPeca!)">-</button>
-                                <span class="mx-2 fw-bold">@(quantidades.ContainsKey(peca.SapPeca!) ? quantidades[peca.SapPeca!] : 0)</span>
-                                <button class="btn btn-sm btn-light p-1" @onclick="() => Aumentar(peca.SapPeca!)">+</button>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr><td colspan="4" class="text-center">Nenhuma peça encontrada.</td></tr>
-                }
-            </tbody>
-        </table>
-    </div>
+        <div class="sidebar-footer">
+            <button class="btn-sair" @onclick="Sair">
+                <i class="oi oi-account-logout"></i> Sair
+            </button>
+        </div>
+    </nav>
 
-    <div class="text-center mt-4 mb-5">
-        <button class="btn btn-enviar" @onclick="EnviarDados" disabled="@isEnviando">
-            @(isEnviando ? "Enviando..." : "Enviar")
-        </button>
-    </div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- ÁREA DE CONTEÚDO -->
+        <div class="content-body">
+            <button class="btn btn-light mb-3 border" @onclick="Voltar">
+                &lt; Voltar
+            </button>
+
+            <div class="section-title mb-4">
+                <h2>Checklist</h2>
+                <p>@NomeModelo</p>
+            </div>
+
+            <!-- CAMPO DE ORDEM DE SERVIÇO -->
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <label class="fw-bold mb-2">Informe a Ordem de Serviço</label>
+                <input class="form-control" @bind="osNumero" placeholder="Digite o número da Ordem de Serviço" />
+            </div>
+
+            <!-- INFORMAÇÕES DO MODELO -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-3 bg-light">
+                        <small class="text-muted">Modelo</small>
+                        <h6 class="mb-0 fw-bold">@NomeModelo</h6>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-3 bg-light">
+                        <small class="text-muted">Total de itens</small>
+                        <h6 class="mb-0 fw-bold">@pecas.Count componentes</h6>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABELA DE PEÇAS -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-success text-white">
+                            <tr>
+                                <th class="ps-4">SAP</th>
+                                <th>Componente</th>
+                                <th>Valor (R$)</th>
+                                <th class="text-center pe-4">Quantidade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoading)
+                            {
+                                <tr><td colspan="4" class="text-center py-4">Carregando peças...</td></tr>
+                            }
+                            else if (pecas != null && pecas.Any())
+                            {
+                                @foreach (var peca in pecas)
+                                {
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-secondary">@peca.SapPeca</td>
+                                        <td>@peca.Descricao</td>
+                                        <td>R$ @peca.Valor.ToString("F2")</td>
+                                        <td class="text-center pe-4">
+                                            <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2" @onclick="() => Diminuir(peca.SapPeca!)">-</button>
+                                                <span class="mx-3 fw-bold">@(quantidades.ContainsKey(peca.SapPeca!) ? quantidades[peca.SapPeca!] : 0)</span>
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2" @onclick="() => Aumentar(peca.SapPeca!)">+</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center py-4">Nenhuma peça encontrada.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- RODAPÉ DE RESUMO E ENVIO -->
+            <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-5">
+                <div>
+                    <small class="text-muted d-block">Resumo da seleção</small>
+                    <strong>@TotalItensSelecionados itens selecionados</strong>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Total estimado</small>
+                    <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
+                </div>
+                <button class="btn btn-success px-4 py-2 fw-bold" @onclick="EnviarDados" disabled="@isEnviando">
+                    @(isEnviando ? "Enviando..." : "Enviar requisição")
+                </button>
+            </div>
+        </div>
+    </main>
 </div>
 
 @code {
-    [Parameter] public string ?SapComp { get; set; }
-    [Parameter] public string ?NomeModelo { get; set; }
+    [Parameter] public string? SapComp { get; set; }
+    [Parameter] public string? NomeModelo { get; set; }
 
-    private string ?osNumero = "";
+    private string? osNumero = "";
     private List<PecaModel> pecas = new();
     private Dictionary<string, int> quantidades = new();
     
     private bool isLoading = true;
     private bool isEnviando = false;
 
+    private int TotalItensSelecionados => quantidades.Values.Sum();
+    private double ValorTotalEstimado => pecas.Sum(p => (quantidades.ContainsKey(p.SapPeca!) ? quantidades[p.SapPeca!] : 0) * p.Valor);
+
     protected override async Task OnInitializedAsync()
     {
-        var response = await Supabase.From<PecaModel>()
-            .Filter("sap_comp", Postgrest.Constants.Operator.Equals, SapComp)
-            .Get();
+        try
+        {
+            var response = await Supabase.From<PecaModel>()
+                .Filter("sap_comp", Postgrest.Constants.Operator.Equals, SapComp)
+                .Get();
 
-        pecas = response.Models;
-        foreach (var p in pecas) quantidades[p.SapPeca!] = 0; // Inicia tudo com 0
-        isLoading = false;
+            pecas = response.Models;
+            foreach (var p in pecas) quantidades[p.SapPeca!] = 0;
+        }
+        catch { }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void Aumentar(string sap) => quantidades[sap]++;
@@ -89,9 +178,11 @@
         if (quantidades[sap] > 0) quantidades[sap]--;
     }
 
+    private void Voltar() => Nav.NavigateTo($"/modelos/{Uri.EscapeDataString("Bomba Hidráulica")}"); // Ajuste simples de retorno ou use history.back via JS
+    private void Sair() => Nav.NavigateTo("/");
+
     private async Task EnviarDados()
     {
-        // Mapeia somente as peças que o mecânico aumentou a quantidade (> 0)
         var itensParaEnviar = pecas
             .Where(p => quantidades.ContainsKey(p.SapPeca!) && quantidades[p.SapPeca!] > 0)
             .Select(p => new ItemJson
@@ -110,21 +201,20 @@
 
         isEnviando = true;
 
-    try
-    {
-        var solicitacao = new SolicitacaoModel
+        try
         {
-            OsNumero = osNumero.Trim(),
-            ModeloSolicitado = NomeModelo,
-            ItensJson = itensParaEnviar, // O C# vai serializar esta lista corretamente para o JSONB
-            DataEnvio = DateTime.UtcNow
-        };
+            var solicitacao = new SolicitacaoModel
+            {
+                OsNumero = osNumero.Trim(),
+                ModeloSolicitado = NomeModelo,
+                ItensJson = itensParaEnviar,
+                DataEnvio = DateTime.UtcNow
+            };
 
-        await Supabase.From<SolicitacaoModel>().Insert(solicitacao);
-        
-        await JS.InvokeVoidAsync("alert", "Solicitação enviada com sucesso!");
-        Nav.NavigateTo("/"); 
-    }
+            await Supabase.From<SolicitacaoModel>().Insert(solicitacao);
+            await JS.InvokeVoidAsync("alert", "Requisição enviada com sucesso!");
+            Nav.NavigateTo("/"); 
+        }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"Erro ao enviar: {ex.Message}");
