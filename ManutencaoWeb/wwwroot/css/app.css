@@ -30,7 +30,6 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
 
     z-index: 100;
 }
@@ -45,13 +44,16 @@
     font-size: 16px;
     font-weight: bold;
 
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    box-sizing: border-box;
 }
 
 .sidebar-menu {
     list-style: none;
     padding: 15px 0;
     margin: 0;
+
     flex-grow: 1;
 }
 
@@ -62,6 +64,7 @@
 .sidebar-menu li a {
     display: flex;
     align-items: center;
+
     gap: 12px;
 
     padding: 14px 20px;
@@ -71,7 +74,9 @@
 
     font-size: 15px;
 
-    transition: all 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .sidebar-menu li.active a,
@@ -85,14 +90,16 @@
 .sidebar-footer {
     padding: 20px;
 
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    box-sizing: border-box;
 }
 
 .btn-sair {
     width: 100%;
 
     background: transparent;
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(255, 255, 255, 0.25);
 
     border-radius: 8px;
 
@@ -102,15 +109,21 @@
 
     display: flex;
     align-items: center;
+
     gap: 10px;
 
     cursor: pointer;
+
     font-size: 14px;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .btn-sair:hover {
     color: white;
-    background-color: rgba(255,255,255,0.08);
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 
@@ -119,13 +132,6 @@
    ========================================= */
 
 .main-content {
-    /*
-       IMPORTANTE:
-       NÃO colocar margin-left aqui.
-       A sidebar é fixed, então o espaço dela
-       é criado pelo padding-left.
-    */
-
     width: 100%;
     min-height: 100vh;
 
@@ -145,9 +151,9 @@
 .top-bar {
     height: 70px;
 
-    background-color: var(--bg-card);
+    background-color: var(--bg-card, #ffffff);
 
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
 
     display: flex;
     align-items: center;
@@ -163,6 +169,7 @@
     border: none;
 
     font-size: 18px;
+
     cursor: pointer;
 
     color: #555;
@@ -170,7 +177,8 @@
 
 .user-greeting {
     margin-left: 15px;
-    color: var(--text-color);
+
+    color: var(--text-color, #333);
 }
 
 .user-avatar {
@@ -188,6 +196,8 @@
 
     font-weight: bold;
     font-size: 13px;
+
+    flex-shrink: 0;
 }
 
 
@@ -219,6 +229,7 @@
 
     color: #2c3e35;
 
+    margin-top: 0;
     margin-bottom: 8px;
 }
 
@@ -226,6 +237,7 @@
     color: #666;
     font-size: 15px;
 
+    margin-top: 0;
     margin-bottom: 25px;
 }
 
@@ -244,7 +256,10 @@
 
     cursor: pointer;
 
-    transition: all 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
 
     height: 100%;
 
@@ -258,7 +273,7 @@
 .category-card:hover {
     transform: translateY(-4px);
 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 
     border-color: #5D7663;
 }
@@ -280,6 +295,8 @@
     font-size: 22px;
 
     margin-bottom: 15px;
+
+    flex-shrink: 0;
 }
 
 .category-card h5 {
@@ -288,6 +305,7 @@
 
     color: #2c3e35;
 
+    margin-top: 0;
     margin-bottom: 10px;
 }
 
@@ -296,6 +314,7 @@
 
     font-size: 13px;
 
+    margin-top: 0;
     margin-bottom: 20px;
 }
 
@@ -324,22 +343,28 @@
 
     gap: 15px;
 
-    transition: all 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 
     height: 100%;
+
     box-sizing: border-box;
 }
 
 .quick-card:hover {
     transform: translateY(-2px);
 
-    box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
 
     border-color: #5D7663;
 }
 
 .quick-card i {
     font-size: 20px;
+
+    flex-shrink: 0;
 }
 
 .quick-card strong {
@@ -375,11 +400,13 @@
     border-top: 1px solid #e0e0e0;
 
     background-color: white;
+
+    box-sizing: border-box;
 }
 
 
 /* =========================================
-   RESPONSIVO
+   TABLETS / NOTEBOOKS PEQUENOS
    ========================================= */
 
 @media (max-width: 900px) {
@@ -396,26 +423,163 @@
     .content-body {
         padding: 25px;
     }
+
+    .top-bar {
+        padding: 0 20px;
+    }
 }
 
-@media (max-width: 700px) {
 
+/* =========================================
+   TABLETS / CELULARES
+   ========================================= */
+
+@media (max-width: 768px) {
+
+    /* Sidebar compacta */
     .sidebar {
         width: 70px;
         min-width: 70px;
     }
 
-    .sidebar-brand span,
-    .sidebar-menu li a:not(i),
-    .sidebar-footer .btn-sair {
-        font-size: 0;
-    }
-
+    /* Conteúdo acompanha a sidebar */
     .main-content {
         padding-left: 70px;
     }
 
+    /* Logo */
+    .sidebar-brand {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .sidebar-brand span {
+        display: none;
+    }
+
+    /* Menu */
+    .sidebar-menu li a {
+        justify-content: center;
+
+        padding: 15px 0;
+
+        gap: 0;
+    }
+
+    .sidebar-menu li a span {
+        display: none;
+    }
+
+    .sidebar-menu li.active a {
+        border-left: 0;
+        border-right: 4px solid #a3c1ad;
+    }
+
+    /* Rodapé da sidebar */
+    .sidebar-footer {
+        padding: 15px 5px;
+    }
+
+    .btn-sair {
+        justify-content: center;
+
+        padding: 12px 0;
+
+        gap: 0;
+    }
+
+    .btn-sair span {
+        display: none;
+    }
+
+    /* Conteúdo */
     .content-body {
         padding: 20px;
+    }
+
+    /* Títulos */
+    .section-title h2 {
+        font-size: 24px;
+    }
+
+    .section-title p {
+        font-size: 14px;
+    }
+
+    /* Cards */
+    .category-card {
+        margin-bottom: 15px;
+    }
+
+    .quick-card {
+        margin-bottom: 15px;
+    }
+
+    /* Tabelas */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+
+/* =========================================
+   CELULARES PEQUENOS
+   ========================================= */
+
+@media (max-width: 480px) {
+
+    .top-bar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .user-greeting {
+        margin-left: 8px;
+        font-size: 13px;
+    }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+
+        font-size: 12px;
+    }
+
+    .content-body {
+        padding: 15px;
+    }
+
+    .section-title h2 {
+        font-size: 21px;
+    }
+
+    .section-title p {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .category-card {
+        padding: 20px;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+
+        font-size: 20px;
+    }
+
+    .category-card h5 {
+        font-size: 16px;
+    }
+
+    .category-card p {
+        font-size: 12px;
+    }
+
+    .quick-card {
+        padding: 15px;
     }
 }
