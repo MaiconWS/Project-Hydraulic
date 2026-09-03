@@ -1,0 +1,11 @@
+[build]
+  command = "dotnet publish ManutencaoWeb/ManutencaoWeb.csproj -c Release -o output"
+  publish = "output/wwwroot"
+
+[build.environment]
+  DOTNET_VERSION = "8.0"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
