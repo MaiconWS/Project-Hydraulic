@@ -38,6 +38,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kZWxvcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/dev/ProjetoHidraulic/Project-Hydraulic/ManutencaoWeb/Pages/Requisicoes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVxdWlzaWNvZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/dev/ProjetoHidraulic/Project-Hydraulic/ManutencaoWeb/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

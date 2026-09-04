@@ -7,30 +7,41 @@
 <PageTitle>Checklist - @NomeModelo</PageTitle>
 
 <div class="dashboard-wrapper">
+
     <!-- MENU LATERAL ESQUERDO -->
     <nav class="sidebar">
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide"><span> CRR</span></i>
         </div>
-        
+
         <ul class="sidebar-menu">
             <li>
                 <a href=""><i class="oi oi-home"></i> Home</a>
             </li>
             <li>
-                <a href="#"><i class="oi oi-document"></i> Requisições</a>
+                <a href="/requisicoes">
+                    <i class="oi oi-document"></i> Requisições
+                </a>
             </li>
             <li>
-                <a href="#"><i class="oi oi-box"></i> Peças</a>
+                <a href="#">
+                    <i class="oi oi-box"></i> Peças
+                </a>
             </li>
             <li>
-                <a href="#"><i class="oi oi-layers"></i> Estoque</a>
+                <a href="#">
+                    <i class="oi oi-layers"></i> Estoque
+                </a>
             </li>
             <li>
-                <a href="#"><i class="oi oi-bar-chart"></i> Relatórios</a>
+                <a href="#">
+                    <i class="oi oi-bar-chart"></i> Relatórios
+                </a>
             </li>
             <li>
-                <a href="#"><i class="oi oi-cog"></i> Configurações</a>
+                <a href="#">
+                    <i class="oi oi-cog"></i> Configurações
+                </a>
             </li>
         </ul>
 
@@ -41,183 +52,399 @@
         </div>
     </nav>
 
+
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="main-content">
 
-        <!-- ÁREA DE CONTEÚDO -->
         <div class="content-body">
+
+            <!-- BOTÃO VOLTAR -->
             <button class="btn btn-light mb-3 border" @onclick="Voltar">
                 <i class="bi bi-arrow-left"></i>
             </button>
 
+
+            <!-- TÍTULO -->
             <div class="section-title mb-4">
                 <h2>Checklist</h2>
                 <p>@NomeModelo</p>
             </div>
 
+
             <!-- CAMPO DE ORDEM DE SERVIÇO -->
             <div class="card border-0 shadow-sm p-4 mb-4">
-                <label class="fw-bold mb-2">Informe a Ordem de Serviço</label>
-                <input class="form-control" @bind="osNumero" placeholder="Digite o número da Ordem de Serviço" />
+                <label class="fw-bold mb-2">
+                    Informe a Ordem de Serviço
+                </label>
+
+                <input class="form-control"
+                       @bind="osNumero"
+                       placeholder="Digite o número da Ordem de Serviço" />
             </div>
+
 
             <!-- INFORMAÇÕES DO MODELO -->
             <div class="row g-3 mb-4">
+
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm p-3 bg-light">
-                        <small class="text-muted">Modelo</small>
-                        <h6 class="mb-0 fw-bold">@NomeModelo</h6>
+                        <small class="text-muted">
+                            Modelo
+                        </small>
+
+                        <h6 class="mb-0 fw-bold">
+                            @NomeModelo
+                        </h6>
                     </div>
                 </div>
+
+
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm p-3 bg-light">
-                        <small class="text-muted">Total de itens</small>
-                        <h6 class="mb-0 fw-bold">@pecas.Count componentes</h6>
+                        <small class="text-muted">
+                            Total de itens
+                        </small>
+
+                        <h6 class="mb-0 fw-bold">
+                            @pecas.Count componentes
+                        </h6>
                     </div>
                 </div>
+
             </div>
+
 
             <!-- TABELA DE PEÇAS -->
             <div class="card border-0 shadow-sm mb-4">
+
                 <div class="table-responsive">
+
                     <table class="table align-middle mb-0">
+
                         <thead class="bg-success text-white">
+
                             <tr>
                                 <th class="ps-4">SAP</th>
                                 <th>Componente</th>
                                 <th>Valor (R$)</th>
-                                <th class="text-center pe-4">Quantidade</th>
+                                <th class="text-center pe-4">
+                                    Quantidade
+                                </th>
                             </tr>
+
                         </thead>
+
+
                         <tbody>
+
                             @if (isLoading)
                             {
-                                <tr><td colspan="4" class="text-center py-4">Carregando peças...</td></tr>
+                                <tr>
+                                    <td colspan="4"
+                                        class="text-center py-4">
+                                        Carregando peças...
+                                    </td>
+                                </tr>
                             }
                             else if (pecas != null && pecas.Any())
                             {
                                 @foreach (var peca in pecas)
                                 {
                                     <tr>
-                                        <td class="ps-4 fw-bold text-secondary">@peca.SapPeca</td>
-                                        <td>@peca.Descricao</td>
-                                        <td>R$ @peca.Valor.ToString("F2")</td>
-                                        <td class="text-center pe-4">
-                                            <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2" @onclick="() => Diminuir(peca.SapPeca!)">-</button>
-                                                <span class="mx-3 fw-bold">@(quantidades.ContainsKey(peca.SapPeca!) ? quantidades[peca.SapPeca!] : 0)</span>
-                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2" @onclick="() => Aumentar(peca.SapPeca!)">+</button>
-                                            </div>
+
+                                        <td class="ps-4 fw-bold text-secondary">
+                                            @peca.SapPeca
                                         </td>
+
+                                        <td>
+                                            @peca.Descricao
+                                        </td>
+
+                                        <td>
+                                            R$ @peca.Valor.ToString("F2")
+                                        </td>
+
+                                        <td class="text-center pe-4">
+
+                                            <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2"
+                                                        @onclick="() => Diminuir(peca.SapPeca!)">
+                                                    -
+                                                </button>
+
+                                                <span class="mx-3 fw-bold">
+                                                    @(quantidades.ContainsKey(peca.SapPeca!)
+                                                        ? quantidades[peca.SapPeca!]
+                                                        : 0)
+                                                </span>
+
+                                                <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2"
+                                                        @onclick="() => Aumentar(peca.SapPeca!)">
+                                                    +
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
                                     </tr>
                                 }
                             }
                             else
                             {
-                                <tr><td colspan="4" class="text-center py-4">Nenhuma peça encontrada.</td></tr>
+                                <tr>
+                                    <td colspan="4"
+                                        class="text-center py-4">
+                                        Nenhuma peça encontrada.
+                                    </td>
+                                </tr>
                             }
+
                         </tbody>
+
                     </table>
+
                 </div>
+
             </div>
 
-            <!-- RODAPÉ DE RESUMO E ENVIO -->
+
+            <!-- RODAPÉ -->
             <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-5">
+
                 <div>
-                    <small class="text-muted d-block">Resumo da seleção</small>
-                    <strong>@TotalItensSelecionados itens selecionados</strong>
+                    <small class="text-muted d-block">
+                        Resumo da seleção
+                    </small>
+
+                    <strong>
+                        @TotalItensSelecionados itens selecionados
+                    </strong>
                 </div>
+
+
                 <div>
-                    <small class="text-muted d-block">Total estimado</small>
-                    <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
+                    <small class="text-muted d-block">
+                        Total estimado
+                    </small>
+
+                    <h4 class="text-success fw-bold mb-0">
+                        R$ @ValorTotalEstimado.ToString("F2")
+                    </h4>
                 </div>
-                <button class="btn btn-success px-4 py-2 fw-bold" @onclick="EnviarDados" disabled="@isEnviando">
-                    @(isEnviando ? "Enviando..." : "Enviar requisição")
+
+
+                <button class="btn btn-success px-4 py-2 fw-bold"
+                        @onclick="EnviarDados"
+                        disabled="@isEnviando">
+
+                    @(isEnviando
+                        ? "Enviando..."
+                        : "Enviar requisição")
+
                 </button>
+
             </div>
+
         </div>
+
     </main>
+
 </div>
 
+
 @code {
-    [Parameter] public string? SapComp { get; set; }
-    [Parameter] public string? NomeModelo { get; set; }
+
+    [Parameter]
+    public string? SapComp { get; set; }
+
+    [Parameter]
+    public string? NomeModelo { get; set; }
+
 
     private string? osNumero = "";
+
     private List<PecaModel> pecas = new();
+
     private Dictionary<string, int> quantidades = new();
-    
+
+
     private bool isLoading = true;
+
     private bool isEnviando = false;
 
-    private int TotalItensSelecionados => quantidades.Values.Sum();
-    private double ValorTotalEstimado => pecas.Sum(p => (quantidades.ContainsKey(p.SapPeca!) ? quantidades[p.SapPeca!] : 0) * p.Valor);
+
+    private int TotalItensSelecionados =>
+        quantidades.Values.Sum();
+
+
+    private double ValorTotalEstimado =>
+        pecas.Sum(p =>
+            (quantidades.ContainsKey(p.SapPeca!)
+                ? quantidades[p.SapPeca!]
+                : 0)
+            * p.Valor);
+
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var response = await Supabase.From<PecaModel>()
-                .Filter("sap_comp", Postgrest.Constants.Operator.Equals, SapComp)
+            var response = await Supabase
+                .From<PecaModel>()
+                .Filter(
+                    "sap_comp",
+                    Postgrest.Constants.Operator.Equals,
+                    SapComp)
                 .Get();
 
+
             pecas = response.Models;
-            foreach (var p in pecas) quantidades[p.SapPeca!] = 0;
+
+
+            foreach (var p in pecas)
+            {
+                if (!string.IsNullOrEmpty(p.SapPeca))
+                {
+                    quantidades[p.SapPeca] = 0;
+                }
+            }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao carregar peças: {ex.Message}");
+        }
         finally
         {
             isLoading = false;
         }
     }
 
-    private void Aumentar(string sap) => quantidades[sap]++;
-    
-    private void Diminuir(string sap)
+
+    private void Aumentar(string sap)
     {
-        if (quantidades[sap] > 0) quantidades[sap]--;
+        if (quantidades.ContainsKey(sap))
+        {
+            quantidades[sap]++;
+        }
     }
 
-    private void Voltar() => Nav.NavigateTo($"/modelos/{Uri.EscapeDataString("Bomba Hidráulica")}"); // Ajuste simples de retorno ou use history.back via JS
-    private void Sair() => Nav.NavigateTo("/");
+
+    private void Diminuir(string sap)
+    {
+        if (quantidades.ContainsKey(sap) &&
+            quantidades[sap] > 0)
+        {
+            quantidades[sap]--;
+        }
+    }
+
+
+    private void Voltar()
+    {
+        Nav.NavigateTo(
+            $"/modelos/{Uri.EscapeDataString("Bomba Hidráulica")}");
+    }
+
+
+    private void Sair()
+    {
+        Nav.NavigateTo("/");
+    }
+
 
     private async Task EnviarDados()
     {
+        /*
+         * Cria os itens da requisição.
+         *
+         * IMPORTANTE:
+         * Cada peça possui seu próprio estado Entregue.
+         *
+         * Toda nova requisição começa com:
+         *
+         * Entregue = false
+         */
         var itensParaEnviar = pecas
-            .Where(p => quantidades.ContainsKey(p.SapPeca!) && quantidades[p.SapPeca!] > 0)
-            .Select(p => new ItemJson
+            .Where(p =>
+                !string.IsNullOrEmpty(p.SapPeca) &&
+                quantidades.ContainsKey(p.SapPeca) &&
+                quantidades[p.SapPeca] > 0)
+            .Select(p => new ItemRequisicaoModel
             {
                 Sap = p.SapPeca!,
                 Descricao = p.Descricao!,
                 Quantidade = quantidades[p.SapPeca!],
-                Valor = p.Valor
-            }).ToList();
+                Valor = p.Valor,
 
-        if (string.IsNullOrWhiteSpace(osNumero) || !itensParaEnviar.Any())
+                // Cada peça começa como NÃO entregue
+                Entregue = false
+
+            })
+            .ToList();
+
+
+        // Validação
+        if (string.IsNullOrWhiteSpace(osNumero) ||
+            !itensParaEnviar.Any())
         {
-            await JS.InvokeVoidAsync("alert", "Por favor, preencha a O.S e adicione ao menos uma quantidade.");
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Por favor, preencha a O.S e adicione ao menos uma quantidade.");
+
             return;
         }
 
+
         isEnviando = true;
+
 
         try
         {
-            var solicitacao = new SolicitacaoModel
+            var solicitacao = new SolicitacaoCompletaModel
             {
                 OsNumero = osNumero.Trim(),
+
                 ModeloSolicitado = NomeModelo,
+
+                /*
+                 * Aqui estamos salvando a lista inteira.
+                 *
+                 * Cada objeto possui:
+                 *
+                 * Sap
+                 * Descricao
+                 * Quantidade
+                 * Valor
+                 * Entregue
+                 */
                 ItensJson = itensParaEnviar,
+
                 DataEnvio = DateTime.UtcNow
             };
 
-            await Supabase.From<SolicitacaoModel>().Insert(solicitacao);
-            await JS.InvokeVoidAsync("alert", "Requisição enviada com sucesso!");
-            Nav.NavigateTo("/"); 
+
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Insert(solicitacao);
+
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Requisição enviada com sucesso!");
+
+
+            Nav.NavigateTo("/");
+
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"Erro ao enviar: {ex.Message}");
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao enviar: {ex.Message}");
         }
         finally
         {

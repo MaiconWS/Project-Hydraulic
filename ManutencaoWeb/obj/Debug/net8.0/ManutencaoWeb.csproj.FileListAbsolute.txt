@@ -1109,3 +1109,4 @@ C:\dev\ProjetoHidraulic\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\Manuten
 C:\dev\ProjetoHidraulic\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\refint\ManutencaoWeb.dll
 C:\dev\ProjetoHidraulic\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ManutencaoWeb.pdb
 C:\dev\ProjetoHidraulic\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ref\ManutencaoWeb.dll
+C:\dev\ProjetoHidraulic\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ManutencaoWeb.sourcelink.json

@@ -1,0 +1,343 @@
+@page "/requisicoes"
+@using ManutencaoWeb.Models
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Requisições - ManutencaoWeb</PageTitle>
+
+<div class="dashboard-wrapper">
+    <!-- =========================================
+         SIDEBAR
+         ========================================= -->
+
+    <nav class="sidebar">
+
+        <div class="sidebar-brand">
+            <i class="bi bi-gear-wide"><span> CRR</span></i>
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li class="active">
+                <a href="/">
+                    <i class="bi bi-house-door"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/requisicoes">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Requisições</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Peças</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-archive"></i>
+                    <span>Estoque</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Relatórios</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="bi bi-gear"></i>
+                    <span>Configurações</span>
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer">
+
+            <button class="btn-sair" @onclick="Sair">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sair</span>
+            </button>
+
+        </div>
+
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <span class="user-greeting">Olá, <strong>Administrador</strong></span>
+            </div>
+            <div class="top-bar-right">
+                <div class="user-avatar">A</div>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="section-title mb-4">
+                <h2>Controle de Requisições</h2>
+                <p>Acompanhe e atualize a entrega dos componentes solicitados por Ordem de Serviço.</p>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-success" role="status"></div>
+                </div>
+            }
+            else if (solicitacoes == null || !solicitacoes.Any())
+            {
+                <div class="alert alert-info">Nenhuma requisição pendente encontrada no banco de dados.</div>
+            }
+            else
+            {
+                <!-- SELETOR DE O.S. -->
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <label class="fw-bold mb-2">Ordem de Serviço</label>
+                            <select class="form-select" @onchange="SelecionarRequisicao">
+                                <option value="">Selecione uma O.S...</option>
+                                @foreach (var s in solicitacoes)
+                                {
+                                    <option value="@s.Id">O.S.: @s.OsNumero - @s.ModeloSolicitado</option>
+                                }
+                            </select>
+                        </div>
+                        @if (requisicaoSelecionada != null)
+                        {
+                            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                <small class="text-muted d-block">Progresso da seleção</small>
+                                <div class="d-flex align-items-center justify-content-md-end gap-3 mt-1">
+                                    <div class="progress flex-grow-1" style="max-width: 250px; height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: @PorcentagemConcluida%"></div>
+                                    </div>
+                                    <span class="fw-bold">@ItensEntregues de @TotalItens itens selecionados</span>
+                                    <div class="badge-percentage">@PorcentagemConcluida%</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @if (requisicaoSelecionada != null)
+                {
+                    <!-- CARD DE DETALHES -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
+                                <small class="text-muted">Modelo</small>
+                                <h6 class="mb-0 fw-bold">@requisicaoSelecionada.ModeloSolicitado</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
+                                <small class="text-muted">Total de itens</small>
+                                <h6 class="mb-0 fw-bold">@TotalItens componentes</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE ITENS COM CHECK -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="bg-success text-white">
+                                    <tr>
+                                        <th class="ps-4">SAP</th>
+                                        <th>Componente</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Quantidade</th>
+                                        <th class="text-center pe-4">Entregues</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in itensAtuais)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-secondary">@item.Sap</td>
+                                            <td>@item.Descricao</td>
+                                            <td>R$ @item.Valor.ToString("F2")</td>
+                                            <td>
+                                                <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+                                                    <span>@item.Quantidade</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center pe-4">
+                                                <button class="btn @(item.Entregue ? "btn-outline-success" : "btn-outline-danger") btn-sm px-3" 
+                                                        @onclick="() => AlternarEntrega(item)">
+                                                    @(item.Entregue ? "✓" : "✕")
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- RODAPÉ DE RESUMO -->
+                    <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-5">
+                        <div>
+                            <small class="text-muted d-block">Resumo da seleção</small>
+                            <strong>@(TotalItens - ItensEntregues) Itens faltantes de @TotalItens componentes</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Total estimado</small>
+                            <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
+                        </div>
+                        <button class="btn btn-success px-4 py-2 fw-bold" @onclick="LiberarProducao">
+                            Liberar Produção
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    private List<SolicitacaoCompletaModel> solicitacoes = new();
+    private SolicitacaoCompletaModel? requisicaoSelecionada;
+    private List<ItemRequisicaoModel> itensAtuais = new();
+    private bool isLoading = true;
+
+    private int TotalItens => itensAtuais.Sum(i => i.Quantidade);
+    private int ItensEntregues => itensAtuais.Where(i => i.Entregue).Sum(i => i.Quantidade);
+    private int PorcentagemConcluida => TotalItens > 0 ? (int)((double)ItensEntregues / TotalItens * 100) : 0;
+    private double ValorTotalEstimado => itensAtuais.Sum(i => i.Quantidade * i.Valor);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarRequisicoes();
+    }
+
+    private async Task CarregarRequisicoes()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Supabase.From<SolicitacaoCompletaModel>()
+                .Filter("status", Postgrest.Constants.Operator.Equals, "Pendente")
+                .Get();
+                
+            solicitacoes = response.Models;
+            requisicaoSelecionada = null;
+            itensAtuais = new();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao carregar: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LiberarProducao()
+    {
+        if (requisicaoSelecionada == null) return;
+
+        try
+        {
+            requisicaoSelecionada.Status = "Liberado";
+            await Supabase.From<SolicitacaoCompletaModel>().Where(s => s.Id == requisicaoSelecionada.Id).Update(requisicaoSelecionada);
+
+            await JS.InvokeVoidAsync("alert", "Produção liberada com sucesso! A O.S. foi removida desta tela.");
+            await CarregarRequisicoes();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao liberar: {ex.Message}");
+        }
+    }
+
+    private void SelecionarRequisicao(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int id))
+        {
+            requisicaoSelecionada = solicitacoes.FirstOrDefault(s => s.Id == id);
+            if (requisicaoSelecionada != null && requisicaoSelecionada.ItensJson != null)
+            {
+                itensAtuais = requisicaoSelecionada.ItensJson;
+            }
+            else
+            {
+                itensAtuais = new();
+            }
+        }
+        else
+        {
+            requisicaoSelecionada = null;
+            itensAtuais = new();
+        }
+    }
+
+    private async Task AlternarEntrega(ItemRequisicaoModel item)
+    {
+        if (requisicaoSelecionada == null)
+            return;
+
+        bool estadoAnterior = item.Entregue;
+
+        try
+        {
+            // Altera somente esta peça
+            item.Entregue = !item.Entregue;
+
+            /*
+            * Cria uma nova lista contendo o estado atual
+            * de CADA peça.
+            */
+            var novosItens = itensAtuais
+                .Select(i => new ItemRequisicaoModel
+                {
+                    Sap = i.Sap,
+                    Descricao = i.Descricao,
+                    Quantidade = i.Quantidade,
+                    Valor = i.Valor,
+                    Entregue = i.Entregue
+                })
+                .ToList();
+
+            // Atualiza a lista da requisição
+            requisicaoSelecionada.ItensJson = novosItens;
+
+            // Atualiza somente o JSON dos itens
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Set(s => s.ItensJson, novosItens)
+                .Update();
+
+            // Atualiza a lista exibida
+            itensAtuais = novosItens;
+        }
+        catch (Exception ex)
+        {
+            // Se o banco rejeitar, volta ao estado anterior
+            item.Entregue = estadoAnterior;
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao salvar alteração: {ex.Message}");
+        }
+
+        StateHasChanged();
+    }
+
+    private void Sair() => Nav.NavigateTo("/");
+}
