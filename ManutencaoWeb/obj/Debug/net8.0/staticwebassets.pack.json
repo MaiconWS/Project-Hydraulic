@@ -1,55 +1,55 @@
 {
   "Files": [
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
       "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\j3xsmmlxq5.gz",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\j3xsmmlxq5.gz",
       "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ManutencaoWeb.styles.css",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ManutencaoWeb.styles.css",
       "PackagePath": "staticwebassets\\ManutencaoWeb.styles.css"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\app.css",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\app.css",
       "PackagePath": "staticwebassets\\css\\app.css"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\css\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\css\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\favicon.png",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\icon-192.png",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\icon-192.png",
       "PackagePath": "staticwebassets\\icon-192.png"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\bomba.jpg",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\bomba.jpg",
       "PackagePath": "staticwebassets\\images\\bomba.jpg"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\cilindro.jpg",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\cilindro.jpg",
       "PackagePath": "staticwebassets\\images\\cilindro.jpg"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\motor.jpg",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\images\\motor.jpg",
       "PackagePath": "staticwebassets\\images\\motor.jpg"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\index.html",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\index.html",
       "PackagePath": "staticwebassets\\index.html"
     },
     {
-      "Id": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\sample-data\\weather.json",
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\sample-data\\weather.json",
       "PackagePath": "staticwebassets\\sample-data\\weather.json"
     },
     {

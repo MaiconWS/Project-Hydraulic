@@ -1204,3 +1204,217 @@ textarea {
     font-size: 13px;
     color: #333;
 }
+/* =========================================================
+   CORREÇÃO DEFINITIVA DO LAYOUT
+   ========================================================= */
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 901px) {
+
+    .dashboard-wrapper {
+        display: block;
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-x: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 260px;
+        min-width: 260px;
+
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+
+        height: 100vh;
+        height: 100dvh;
+
+        z-index: 1000;
+    }
+
+    /* CONTEÚDO */
+    .main-content {
+        width: calc(100% - 260px) !important;
+
+        margin-left: 260px;
+
+        padding-left: 0 !important;
+
+        min-width: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+
+        overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR */
+    .top-bar {
+        width: 100%;
+        padding: 0 30px;
+    }
+
+    /* ÁREA DE CONTEÚDO */
+    .content-body {
+        width: 100%;
+        max-width: 1400px;
+
+        margin: 0 auto;
+
+        padding: 35px 40px;
+
+        box-sizing: border-box;
+    }
+
+    /* CORREÇÃO DO BOOTSTRAP ROW */
+    .content-body .row {
+        width: 100%;
+
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .content-body .row > [class*="col-"] {
+        min-width: 0;
+    }
+}
+
+
+/* =========================================================
+   NOTEBOOK / TABLET
+   ========================================================= */
+
+@media (min-width: 769px) and (max-width: 900px) {
+
+    .dashboard-wrapper {
+        display: block;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 220px !important;
+        min-width: 220px !important;
+
+        position: fixed;
+
+        left: 0;
+        top: 0;
+        bottom: 0;
+
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    /* CONTEÚDO */
+    .main-content {
+        width: calc(100% - 220px) !important;
+
+        margin-left: 220px;
+
+        padding-left: 0 !important;
+
+        min-width: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    .content-body {
+        width: 100%;
+        max-width: none;
+
+        margin: 0;
+
+        padding: 25px;
+
+        box-sizing: border-box;
+    }
+
+    .content-body .row {
+        width: 100%;
+
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+
+/* =========================================================
+   CELULAR
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .dashboard-wrapper {
+        display: block;
+
+        width: 100%;
+
+        min-height: 100vh;
+        min-height: 100dvh;
+
+        overflow-x: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 260px !important;
+        min-width: 260px !important;
+    }
+
+    /* CONTEÚDO */
+    .main-content {
+        width: 100% !important;
+
+        max-width: none;
+
+        margin-left: 0 !important;
+
+        padding-left: 0 !important;
+
+        min-width: 0;
+    }
+
+    .top-bar {
+        width: 100%;
+    }
+
+    .content-body {
+        width: 100%;
+
+        max-width: none;
+
+        margin: 0;
+
+        box-sizing: border-box;
+    }
+}
+
+
+/* =========================================================
+   PROTEÇÃO CONTRA ESTOURO HORIZONTAL
+   ========================================================= */
+
+.content-body,
+.content-body .row,
+.content-body [class*="col-"] {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.category-card,
+.quick-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}

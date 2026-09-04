@@ -9,132 +9,105 @@
 <div class="dashboard-wrapper">
 
     <!-- =========================================
-         SIDEBAR
+         SIDEBAR (INTACTO)
          ========================================= -->
-
     <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
-
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide">
                 <span> CRR</span>
             </i>
         </div>
-
         <ul class="sidebar-menu">
-
             <li>
                 <a href="/">
                     <i class="bi bi-house-door"></i>
                     <span>Home</span>
                 </a>
             </li>
-
             <li class="active">
                 <a href="/requisicoes">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Requisições</span>
                 </a>
             </li>
-
-            <li>
+            <!--<li>
                 <a href="#">
                     <i class="bi bi-box-seam"></i>
                     <span>Peças</span>
                 </a>
             </li>
-
             <li>
                 <a href="#">
                     <i class="bi bi-archive"></i>
                     <span>Estoque</span>
                 </a>
             </li>
-
             <li>
                 <a href="#">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
-
             <li>
                 <a href="#">
                     <i class="bi bi-gear"></i>
                     <span>Configurações</span>
                 </a>
-            </li>
-
+            </li>-->
         </ul>
-
         <div class="sidebar-footer">
             <button class="btn-sair" @onclick="Sair">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sair</span>
             </button>
         </div>
-
     </nav>
 
 
     <!-- =========================================
          CONTEÚDO PRINCIPAL
          ========================================= -->
-
     <main class="main-content">
 
         <!-- TOP BAR -->
-
         <header class="top-bar">
-
             <div class="top-bar-left d-flex align-items-center">
-
-                <!-- Botão do menu mobile -->
-                <button class="menu-toggle d-md-none me-2"
-                        @onclick="ToggleMenu">
-
+                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
                     <i class="bi bi-list"></i>
-
                 </button>
-
                 <span class="user-greeting">
                     Olá, <strong>Colaborador</strong>
                 </span>
-
             </div>
-
             <div class="top-bar-right">
-
                 <div class="user-avatar">
                     A
                 </div>
-
             </div>
-
         </header>
-
 
         <!-- =========================================
              CORPO
              ========================================= -->
-
         <div class="content-body">
 
-            <div class="section-title mb-4">
-
-                <h2>Controle de Requisições</h2>
-
-                <p>
-                    Acompanhe e atualize a entrega dos componentes
-                    solicitados por Ordem de Serviço.
-                </p>
-
+            <!-- Título com Botão de Voltar baseado na Imagem -->
+            <div class="d-flex align-items-start mb-4 gap-3">
+                <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center" 
+                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;" 
+                        @onclick="Sair">
+                    <i class="bi bi-arrow-left text-dark"></i>
+                </button>
+                <div class="section-title mb-0">
+                    <h2 class="mb-1" style="color: #2c3e50; font-weight: 700;">Controle de Requisições</h2>
+                    <p class="text-muted mb-0">
+                        Acompanhe e atualize a entrega dos componentes solicitados por Ordem de Serviço.
+                    </p>
+                </div>
             </div>
 
-
-            <!-- =========================================
-                 CARREGAMENTO
-                 ========================================= -->
-@if (isLoading)
+            <!-- CARREGAMENTO -->
+            @if (isLoading)
             {
                 <div class="text-center py-5">
                     <div class="spinner-border text-success" role="status"></div>
@@ -142,304 +115,188 @@
             }
             else if (solicitacoes == null || !solicitacoes.Any())
             {
-                <!-- =========================================
-                     NENHUMA REQUISIÇÃO
-                     ========================================= -->
                 <div class="alert alert-info">
                     Nenhuma requisição pendente encontrada no banco de dados.
                 </div>
             }
             else
             {
-                <!-- =========================================
-                     REQUISIÇÕES
-                     ========================================= -->
-
                 <!-- =====================================
-                     SELETOR DE O.S.
+                     ÁREA DE BUSCA (Estilo da Foto)
                      ===================================== -->
-
                 <div class="card border-0 shadow-sm p-4 mb-4">
-
-                    <div class="row align-items-center">
-
-                        <div class="col-md-6">
-
-                            <label class="fw-bold mb-2">
-                                Ordem de Serviço
-                            </label>
-
-                            <select class="form-select"
-                                    @onchange="SelecionarRequisicao">
-
-                                <option value="">
-                                    Selecione uma O.S...
-                                </option>
-
-                                @foreach (var s in solicitacoes)
-                                {
-                                    <option value="@s.Id">
-                                        O.S.: @s.OsNumero - @s.ModeloSolicitado
-                                    </option>
-                                }
-
-                            </select>
-
-                        </div>
-
-
-                        @if (requisicaoSelecionada != null)
-                        {
-                            <div class="col-md-6 text-md-end mt-3 mt-md-0">
-
-                                <small class="text-muted d-block">
-                                    Progresso da seleção
-                                </small>
-
-                                <div class="d-flex align-items-center justify-content-md-end gap-3 mt-1">
-
-                                    <div class="progress flex-grow-1"
-                                         style="max-width: 250px; height: 10px;">
-
-                                        <div class="progress-bar bg-success"
-                                             role="progressbar"
-                                             style="width: @PorcentagemConcluida%">
-                                        </div>
-
-                                    </div>
-
-                                    <span class="fw-bold">
-                                        @ItensEntregues de @TotalItens itens selecionados
-                                    </span>
-
-                                    <div class="badge-percentage">
-                                        @PorcentagemConcluida%
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        }
-
-                    </div>
-
+                    <label class="fw-bold mb-2">Informe a Ordem de Serviço</label>
+                    <input type="text" class="form-control" 
+                           placeholder="Busque por O.S ou Modelo de componente" 
+                           @bind="termoBusca" @bind:event="oninput" />
                 </div>
 
+                <!-- =====================================
+                     BOXES VAZIOS (Placeholders da Foto)
+                     ===================================== -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded" style="height: 70px; background-color: #f8f9fa;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded" style="height: 70px; background-color: #f8f9fa;"></div>
+                    </div>
+                </div>
 
                 <!-- =====================================
-                     DETALHES DA REQUISIÇÃO
+                     TABELA MASTER DE O.S. (Estilo da Foto)
                      ===================================== -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 table-hover">
+                            <thead class="bg-success text-white">
+                                <tr>
+                                    <th class="ps-4 py-3">O.S</th>
+                                    <th class="py-3">Componente</th>
+                                    <th class="py-3" style="width: 150px;">%</th>
+                                    <th class="pe-4 py-3 text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var s in SolicitacoesFiltradas)
+                                {
+                                    int pct = CalcularPorcentagem(s);
+                                    bool isSelected = requisicaoSelecionada?.Id == s.Id;
 
+                                    <tr style="cursor: pointer; background-color: @(isSelected ? "#f1f8f5" : "transparent");" 
+                                        @onclick="() => SelecionarRequisicao(s.Id)">
+                                        
+                                        <td class="ps-4 text-muted">O.S.: @s.OsNumero</td>
+                                        <td class="fw-bold text-secondary">@s.ModeloSolicitado</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span style="min-width: 40px;">@pct%</span>
+                                                <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                                                    <div class="progress-bar bg-success" style="width: @pct%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="pe-4 text-end">
+                                            <button class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")">
+                                                @(isSelected ? "Editando..." : "Ver Itens")
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- =====================================
+                     DETALHES DA REQUISIÇÃO SELECIONADA
+                     ===================================== -->
                 @if (requisicaoSelecionada != null)
                 {
+                    <div class="mt-5 p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #198754;">
+                        <h4 class="mb-4">Itens da <strong>O.S.: @requisicaoSelecionada.OsNumero</strong></h4>
 
-                    <!-- CARDS DE DETALHES -->
-
-                    <div class="row g-3 mb-4">
-
-                        <div class="col-md-8">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    Modelo
-                                </small>
-
-                                <h6 class="mb-0 fw-bold">
-                                    @requisicaoSelecionada.ModeloSolicitado
-                                </h6>
-
+                        <!-- CARDS DE DETALHES -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                                    <small class="text-muted">Modelo</small>
+                                    <h6 class="mb-0 fw-bold">@requisicaoSelecionada.ModeloSolicitado</h6>
+                                </div>
                             </div>
-
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                                    <small class="text-muted">Progresso</small>
+                                    <h6 class="mb-0 fw-bold">@ItensEntregues de @TotalItens itens (@PorcentagemConcluida%)</h6>
+                                </div>
+                            </div>
                         </div>
 
-
-                        <div class="col-md-4">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    Total de itens
-                                </small>
-
-                                <h6 class="mb-0 fw-bold">
-                                    @TotalItens componentes
-                                </h6>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =====================================
-                         TABELA DE ITENS
-                         ===================================== -->
-
-                    <div class="card border-0 shadow-sm mb-4">
-
-                        <div class="table-responsive">
-
-                            <table class="table align-middle mb-0">
-
-                                <thead class="bg-success text-white">
-
-                                    <tr>
-
-                                        <th class="ps-4">
-                                            SAP
-                                        </th>
-
-                                        <th>
-                                            Componente
-                                        </th>
-
-                                        <th>
-                                            Valor (R$)
-                                        </th>
-
-                                        <th>
-                                            Quantidade
-                                        </th>
-
-                                        <th class="text-center pe-4">
-                                            Entregues
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody>
-
-                                    @foreach (var item in itensAtuais)
-                                    {
+                        <!-- TABELA DE ITENS (Sua original) -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead class="bg-secondary text-white">
                                         <tr>
-
-                                            <td class="ps-4 fw-bold text-secondary">
-                                                @item.Sap
-                                            </td>
-
-                                            <td>
-                                                @item.Descricao
-                                            </td>
-
-                                            <td>
-                                                R$ @item.Valor.ToString("F2")
-                                            </td>
-
-                                            <td>
-
-                                                <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
-
-                                                    <span>
-                                                        @item.Quantidade
-                                                    </span>
-
-                                                </div>
-
-                                            </td>
-
-                                            <td class="text-center pe-4">
-
-                                                <button class="btn @(item.Entregue ? "btn-outline-success" : "btn-outline-danger") btn-sm px-3"
-                                                        @onclick="() => AlternarEntrega(item)">
-
-                                                    @(item.Entregue ? "✓" : "✕")
-
-                                                </button>
-
-                                            </td>
-
+                                            <th class="ps-4">SAP</th>
+                                            <th>Componente</th>
+                                            <th>Valor (R$)</th>
+                                            <th>Quantidade</th>
+                                            <th class="text-center pe-4">Entregues</th>
                                         </tr>
-                                    }
-
-                                </tbody>
-
-                            </table>
-
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in itensAtuais)
+                                        {
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-secondary">@item.Sap</td>
+                                                <td>@item.Descricao</td>
+                                                <td>R$ @item.Valor.ToString("F2")</td>
+                                                <td>
+                                                    <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+                                                        <span>@item.Quantidade</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <button class="btn @(item.Entregue ? "btn-outline-success" : "btn-outline-danger") btn-sm px-3"
+                                                            @onclick="() => AlternarEntrega(item)">
+                                                        @(item.Entregue ? "✓" : "✕")
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
+                        <!-- RESUMO E LIBERAÇÃO -->
+                        <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-2">
+                            <div>
+                                <small class="text-muted d-block">Resumo da seleção</small>
+                                <strong>@(TotalItens - ItensEntregues) Itens faltantes de @TotalItens componentes</strong>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Total estimado</small>
+                                <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
+                            </div>
+                            <button class="btn btn-success px-4 py-2 fw-bold" @onclick="LiberarProducao">
+                                Liberar Produção
+                            </button>
+                        </div>
                     </div>
-
-
-                    <!-- =====================================
-                         RESUMO
-                         ===================================== -->
-
-                    <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-5">
-
-                        <div>
-
-                            <small class="text-muted d-block">
-                                Resumo da seleção
-                            </small>
-
-                            <strong>
-                                @(TotalItens - ItensEntregues)
-                                Itens faltantes de
-                                @TotalItens componentes
-                            </strong>
-
-                        </div>
-
-
-                        <div>
-
-                            <small class="text-muted d-block">
-                                Total estimado
-                            </small>
-
-                            <h4 class="text-success fw-bold mb-0">
-                                R$ @ValorTotalEstimado.ToString("F2")
-                            </h4>
-
-                        </div>
-
-
-                        <button class="btn btn-success px-4 py-2 fw-bold"
-                                @onclick="LiberarProducao">
-
-                            Liberar Produção
-
-                        </button>
-
-                    </div>
-
                 }
-
             }
-
         </div>
-
     </main>
-
 </div>
-
 
 <!-- =============================================
      CÓDIGO C#
      ============================================= -->
 @code {
-    // ==========================================
-    // Variáveis do Menu Mobile
-    // ==========================================
+    // Menu Mobile
     private bool isMenuOpen = false;
     private void ToggleMenu() => isMenuOpen = !isMenuOpen;
 
-    // ==========================================
-    // Variáveis de estado da página
-    // ==========================================
+    // Estado da página
     private List<SolicitacaoCompletaModel> solicitacoes = new();
     private SolicitacaoCompletaModel? requisicaoSelecionada;
     private List<ItemRequisicaoModel> itensAtuais = new();
     private bool isLoading = true;
 
-    // ==========================================
-    // Propriedades Calculadas
-    // ==========================================
+    // Busca
+    private string termoBusca = "";
+    
+    // Lista Filtrada para a Tabela Master
+    private IEnumerable<SolicitacaoCompletaModel> SolicitacoesFiltradas =>
+        string.IsNullOrWhiteSpace(termoBusca)
+            ? solicitacoes
+            : solicitacoes.Where(s =>
+                (s.OsNumero != null && s.OsNumero.Contains(termoBusca, StringComparison.OrdinalIgnoreCase)) ||
+                (s.ModeloSolicitado != null && s.ModeloSolicitado.Contains(termoBusca, StringComparison.OrdinalIgnoreCase)));
+
+    // Propriedades Calculadas para os itens selecionados
     private int TotalItens => itensAtuais.Sum(i => i.Quantidade);
     private int ItensEntregues => itensAtuais.Where(i => i.Entregue).Sum(i => i.Quantidade);
     private int PorcentagemConcluida => TotalItens > 0 ? (int)((double)ItensEntregues / TotalItens * 100) : 0;
@@ -476,6 +333,78 @@
         }
     }
 
+    // Calcula a % diretamente para a tabela geral de O.S.
+    private int CalcularPorcentagem(SolicitacaoCompletaModel solicitacao)
+    {
+        if (solicitacao.ItensJson == null || !solicitacao.ItensJson.Any()) return 0;
+        
+        int total = solicitacao.ItensJson.Sum(i => i.Quantidade);
+        int entregues = solicitacao.ItensJson.Where(i => i.Entregue).Sum(i => i.Quantidade);
+        
+        return total > 0 ? (int)((double)entregues / total * 100) : 0;
+    }
+
+    // Adaptado para receber ID pelo clique na linha/botão
+    private void SelecionarRequisicao(int id)
+    {
+        // Se clicar na O.S. que já está aberta, fecha ela
+        if (requisicaoSelecionada?.Id == id)
+        {
+            requisicaoSelecionada = null;
+            itensAtuais = new();
+            return;
+        }
+
+        requisicaoSelecionada = solicitacoes.FirstOrDefault(s => s.Id == id);
+        
+        if (requisicaoSelecionada != null && requisicaoSelecionada.ItensJson != null)
+        {
+            itensAtuais = requisicaoSelecionada.ItensJson;
+        }
+        else
+        {
+            itensAtuais = new();
+        }
+    }
+
+    private async Task AlternarEntrega(ItemRequisicaoModel item)
+    {
+        if (requisicaoSelecionada == null) return;
+
+        bool estadoAnterior = item.Entregue;
+
+        try
+        {
+            item.Entregue = !item.Entregue;
+
+            var novosItens = itensAtuais.Select(i => new ItemRequisicaoModel
+            {
+                Sap = i.Sap,
+                Descricao = i.Descricao,
+                Quantidade = i.Quantidade,
+                Valor = i.Valor,
+                Entregue = i.Entregue
+            }).ToList();
+
+            requisicaoSelecionada.ItensJson = novosItens;
+
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Set(s => s.ItensJson, novosItens)
+                .Update();
+
+            itensAtuais = novosItens;
+        }
+        catch (Exception ex)
+        {
+            item.Entregue = estadoAnterior;
+            await JS.InvokeVoidAsync("alert", $"Erro ao salvar alteração: {ex.Message}");
+        }
+
+        StateHasChanged();
+    }
+
     private async Task LiberarProducao()
     {
         if (requisicaoSelecionada == null) return;
@@ -483,89 +412,18 @@
         try
         {
             requisicaoSelecionada.Status = "Liberado";
-            await Supabase.From<SolicitacaoCompletaModel>().Where(s => s.Id == requisicaoSelecionada.Id).Update(requisicaoSelecionada);
+            await Supabase.From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Update(requisicaoSelecionada);
 
             await JS.InvokeVoidAsync("alert", "Produção liberada com sucesso! A O.S. foi removida desta tela.");
             await CarregarRequisicoes();
+            termoBusca = ""; // Limpa a busca após concluir
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"Erro ao liberar: {ex.Message}");
         }
-    }
-
-    private void SelecionarRequisicao(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out int id))
-        {
-            requisicaoSelecionada = solicitacoes.FirstOrDefault(s => s.Id == id);
-            if (requisicaoSelecionada != null && requisicaoSelecionada.ItensJson != null)
-            {
-                itensAtuais = requisicaoSelecionada.ItensJson;
-            }
-            else
-            {
-                itensAtuais = new();
-            }
-        }
-        else
-        {
-            requisicaoSelecionada = null;
-            itensAtuais = new();
-        }
-    }
-
-    private async Task AlternarEntrega(ItemRequisicaoModel item)
-    {
-        if (requisicaoSelecionada == null)
-            return;
-
-        bool estadoAnterior = item.Entregue;
-
-        try
-        {
-            // Altera somente esta peça
-            item.Entregue = !item.Entregue;
-
-            /*
-            * Cria uma nova lista contendo o estado atual
-            * de CADA peça.
-            */
-            var novosItens = itensAtuais
-                .Select(i => new ItemRequisicaoModel
-                {
-                    Sap = i.Sap,
-                    Descricao = i.Descricao,
-                    Quantidade = i.Quantidade,
-                    Valor = i.Valor,
-                    Entregue = i.Entregue
-                })
-                .ToList();
-
-            // Atualiza a lista da requisição
-            requisicaoSelecionada.ItensJson = novosItens;
-
-            // Atualiza somente o JSON dos itens
-            await Supabase
-                .From<SolicitacaoCompletaModel>()
-                .Where(s => s.Id == requisicaoSelecionada.Id)
-                .Set(s => s.ItensJson, novosItens)
-                .Update();
-
-            // Atualiza a lista exibida
-            itensAtuais = novosItens;
-        }
-        catch (Exception ex)
-        {
-            // Se o banco rejeitar, volta ao estado anterior
-            item.Entregue = estadoAnterior;
-
-            await JS.InvokeVoidAsync(
-                "alert",
-                $"Erro ao salvar alteração: {ex.Message}");
-        }
-
-        StateHasChanged();
     }
 
     private void Sair() => Nav.NavigateTo("/");

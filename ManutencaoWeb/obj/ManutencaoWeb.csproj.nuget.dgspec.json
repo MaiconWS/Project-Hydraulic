@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj": {}
+    "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj": {}
   },
   "projects": {
-    "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj": {
+    "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
+        "projectUniqueName": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
         "projectName": "ManutencaoWeb",
-        "projectPath": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
+        "projectPath": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
         "packagesPath": "C:\\Users\\maico\\.nuget\\packages\\",
-        "outputPath": "C:\\dev\\ProjetoHidraulic\\Project-Hydraulic\\ManutencaoWeb\\obj\\",
+        "outputPath": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\maico\\AppData\\Roaming\\NuGet\\NuGet.Config"
