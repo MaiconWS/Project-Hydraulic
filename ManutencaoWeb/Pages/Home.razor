@@ -9,7 +9,7 @@
          SIDEBAR
          ========================================= -->
 
-    <nav class="sidebar">
+    <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
 
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide"><span> CRR</span></i>
@@ -86,9 +86,9 @@
 
         <header class="top-bar">
 
-            <div class="top-left">
+            <div class="top-left d-flex align-items-center">
 
-                <button class="menu-toggle">
+                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
                     <i class="bi bi-list"></i>
                 </button>
 
@@ -380,6 +380,9 @@
 
 
 @code {
+    // Variáveis e método para controlar a abertura do menu mobile
+    private bool isMenuOpen = false;
+    private void ToggleMenu() => isMenuOpen = !isMenuOpen;
 
     private void IrParaModelos(string categoria)
     {
@@ -392,5 +395,4 @@
     {
         Nav.NavigateTo("/");
     }
-
 }
