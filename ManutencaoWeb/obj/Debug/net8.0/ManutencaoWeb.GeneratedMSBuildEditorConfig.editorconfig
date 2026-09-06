@@ -26,6 +26,10 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Admin.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Checklist.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2hlY2tsaXN0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -34,8 +38,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Modelos.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kZWxvcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Relatorios.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVsYXRvcmlvcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Requisicoes.razor]

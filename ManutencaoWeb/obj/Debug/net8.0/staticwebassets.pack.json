@@ -49,6 +49,10 @@
       "PackagePath": "staticwebassets\\index.html"
     },
     {
+      "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\js\\relatorios.js",
+      "PackagePath": "staticwebassets\\js\\relatorios.js"
+    },
+    {
       "Id": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\sample-data\\weather.json",
       "PackagePath": "staticwebassets\\sample-data\\weather.json"
     },

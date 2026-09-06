@@ -2222,3 +2222,8 @@ C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ManutencaoWeb.dll
 C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\refint\ManutencaoWeb.dll
 C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ManutencaoWeb.pdb
 C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\ref\ManutencaoWeb.dll
+C:\dev\Project-Hydraulic\ManutencaoWeb\bin\Debug\net8.0\wwwroot\_framework\BCrypt-Net-Next.wasm
+C:\dev\Project-Hydraulic\ManutencaoWeb\bin\Debug\net8.0\wwwroot\_framework\BCrypt-Net-Next.wasm.gz
+C:\dev\Project-Hydraulic\ManutencaoWeb\bin\Debug\net8.0\BCrypt-Net-Next.dll
+C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\webcil\BCrypt-Net-Next.wasm
+C:\dev\Project-Hydraulic\ManutencaoWeb\obj\Debug\net8.0\compressed\zlkoehg9n9.gz

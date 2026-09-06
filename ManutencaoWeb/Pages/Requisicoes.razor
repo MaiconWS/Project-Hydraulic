@@ -3,6 +3,8 @@
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
 
 <PageTitle>Requisições - ManutencaoWeb</PageTitle>
 
@@ -18,44 +20,43 @@
             </i>
         </div>
         <ul class="sidebar-menu">
-            <li>
+            <li class="active">
                 <a href="/">
                     <i class="bi bi-house-door"></i>
                     <span>Home</span>
                 </a>
             </li>
-            <li class="active">
+
+            <li>
                 <a href="/requisicoes">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Requisições</span>
                 </a>
             </li>
-            <!--<li>
-                <a href="#">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Peças</span>
-                </a>
-            </li>
             <li>
-                <a href="#">
-                    <i class="bi bi-archive"></i>
-                    <span>Estoque</span>
-                </a>
-            </li>
-            <li>
-                <a href="#">
+                <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <i class="bi bi-gear"></i>
-                    <span>Configurações</span>
-                </a>
-            </li>-->
+            @if (Sessao.IsAdmin)
+            {
+                <li>
+                    <a href="/admin">
+                        <i class="bi bi-plus-square"></i>
+                        <span>Cadastros Base</span>
+                    </a>
+                </li>
+            }
         </ul>
+
         <div class="sidebar-footer">
+                        <div class="d-flex align-items-center gap-2 mb-3 px-2">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong><br/>
+                </div>
+            </div>
             <button class="btn-sair" @onclick="Sair">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sair</span>
@@ -76,13 +77,11 @@
                     <i class="bi bi-list"></i>
                 </button>
                 <span class="user-greeting">
-                    Olá, <strong>Colaborador</strong>
+                    Olá, <strong>@Sessao.NomeUsuario!</strong><br/>
                 </span>
             </div>
             <div class="top-bar-right">
-                <div class="user-avatar">
-                    A
-                </div>
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
             </div>
         </header>
 
@@ -379,7 +378,7 @@
             await Supabase
                 .From<SolicitacaoCompletaModel>()
                 .Where(s => s.Id == requisicaoSelecionada.Id)
-                .Set(s => s.ItensJson, novosItens)
+                .Set(s => s.ItensJson!, novosItens)
                 .Update();
 
             itensAtuais = novosItens;

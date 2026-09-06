@@ -3,6 +3,8 @@
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
 
 <PageTitle>Checklist - @NomeModelo</PageTitle>
 
@@ -28,26 +30,21 @@
                     <span>Requisições</span>
                 </a>
             </li>
-            <!--<li>
-                <a href="#">
-                    <i class="oi oi-box"></i> Peças
+            <li>
+                <a href="/relatorios">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Relatórios</span>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <i class="oi oi-layers"></i> Estoque
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="oi oi-bar-chart"></i> Relatórios
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <i class="oi oi-cog"></i> Configurações
-                </a>
-            </li>-->
+            @if (Sessao.IsAdmin)
+            {
+                <li>
+                    <a href="/admin">
+                        <i class="bi bi-plus-square"></i>
+                        <span>Cadastros Base</span>
+                    </a>
+                </li>
+            }
         </ul>
 
         <div class="sidebar-footer">

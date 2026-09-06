@@ -1,0 +1,297 @@
+@page "/admin"
+@using ManutencaoWeb.Models
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Administração - ManutencaoWeb</PageTitle>
+
+<div class="dashboard-wrapper">
+    <!-- MENU LATERAL -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-gear-wide"><span> CRR</span></i>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li><a href="/"><i class="bi bi-house-door"></i> <span>Home</span></a></li>
+            
+            @if (Sessao.IsAdmin)
+            {
+                <li class="active"><a href="/admin"><i class="bi bi-plus-square"></i> <span>Cadastros Base</span></a></li>
+
+            }
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2 mb-3 px-2">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong><br/>
+                </div>
+            </div>
+            <button class="btn-sair" @onclick="Sair">
+                <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-left d-flex align-items-center">
+                <span class="user-greeting">Painel Administrativo</span>
+            </div>
+            <div class="top-right">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="section-title mb-4">
+                <h2>Gestão de Cadastros</h2>
+                <p>Cadastre novos componentes, peças de reposição e usuários do sistema.</p>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    <!-- FORMULÁRIO 1: NOVO COMPONENTE (MODELO) -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                            <h5 class="mb-3"><i class="bi bi-gear text-success me-2"></i> Novo Componente</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Categoria (Sistema)</label>
+                                <select class="form-select" @bind="novoComponente.SistemaId">
+                                    <option value="0">Selecione uma categoria...</option>
+                                    @foreach(var sis in sistemas)
+                                    {
+                                        <option value="@sis.Id">@sis.Categoria</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Código SAP (Componente)</label>
+                                <input type="text" class="form-control" @bind="novoComponente.SapComp" placeholder="Ex: 8140000" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Modelo / Nome</label>
+                                <input type="text" class="form-control" @bind="novoComponente.Modelo" placeholder="Ex: BOMBA HIDRÁULICA PRIMÁRIA" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">URL da Imagem</label>
+                                <input type="text" class="form-control" @bind="novoComponente.ImagemUrl" placeholder="Link da imagem (opcional)" />
+                            </div>
+
+                            <button class="btn btn-success mt-auto py-2 fw-bold" @onclick="CadastrarComponente">
+                                Cadastrar Componente
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FORMULÁRIO 2: NOVA PEÇA -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                            <h5 class="mb-3"><i class="bi bi-tools text-success me-2"></i> Nova Peça</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Vincular ao Componente (Modelo)</label>
+                                <select class="form-select" @bind="novaPeca.SapComp">
+                                    <option value="">Selecione um componente...</option>
+                                    @foreach(var comp in componentesCadastrados)
+                                    {
+                                        <option value="@comp.SapComp">@comp.SapComp - @comp.Modelo</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Código SAP (Peça)</label>
+                                <input type="text" class="form-control" @bind="novaPeca.SapPeca" placeholder="Ex: 6000913" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Descrição da Peça</label>
+                                <input type="text" class="form-control" @bind="novaPeca.Descricao" placeholder="Ex: ANEL DE VEDAÇÃO 3/4" />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Valor Unitário (R$)</label>
+                                <input type="number" step="0.01" class="form-control" @bind="novaPeca.Valor" placeholder="Ex: 15.50" />
+                            </div>
+
+                            <button class="btn btn-success mt-auto py-2 fw-bold" @onclick="CadastrarPeca">
+                                Cadastrar Peça
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FORMULÁRIO 3: NOVO USUÁRIO / MECÂNICO -->
+                    <div class="col-md-12">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h5 class="mb-3"><i class="bi bi-people text-success me-2"></i> Cadastrar Novo Usuário / Mecânico</h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Nome Completo</label>
+                                    <input type="text" class="form-control" @bind="novoUsuario.Nome" placeholder="Ex: João da Silva" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">E-mail Corporativo</label>
+                                    <input type="email" class="form-control" @bind="novoUsuario.Email" placeholder="joao@crr.com" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Senha Provisória</label>
+                                    <input type="password" class="form-control" @bind="senhaProvisoria" placeholder="Senha" />
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold">Perfil de Acesso</label>
+                                    <select class="form-select" @bind="novoUsuario.Perfil">
+                                        <option value="Mecanico">Mecânico</option>
+                                        <option value="Admin">Administrador</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-end">
+                                <button class="btn btn-success px-4 py-2 fw-bold" @onclick="CadastrarUsuario">
+                                    Cadastrar Usuário com Senha Segura
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    private bool isLoading = true;
+    
+    private ComponenteModel novoComponente = new();
+    private PecaModel novaPeca = new();
+    private UsuarioModel novoUsuario = new() { Perfil = "Mecanico" };
+    private string senhaProvisoria = string.Empty;
+
+    private List<SistemaModel> sistemas = new();
+    private List<ComponenteModel> componentesCadastrados = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Sessao.EstaLogado || !Sessao.IsAdmin)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        await CarregarDadosBase();
+    }
+
+    private async Task CarregarDadosBase()
+    {
+        try
+        {
+            isLoading = true;
+            var resSistemas = await Supabase.From<SistemaModel>().Get();
+            sistemas = resSistemas.Models;
+
+            var resComponentes = await Supabase.From<ComponenteModel>().Get();
+            componentesCadastrados = resComponentes.Models;
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao carregar dados: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task CadastrarComponente()
+    {
+        if (novoComponente.SistemaId == 0 || string.IsNullOrWhiteSpace(novoComponente.SapComp) || string.IsNullOrWhiteSpace(novoComponente.Modelo))
+        {
+            await JS.InvokeVoidAsync("alert", "Preencha todos os campos obrigatórios do componente.");
+            return;
+        }
+
+        try
+        {
+            await Supabase.From<ComponenteModel>().Insert(novoComponente);
+            await JS.InvokeVoidAsync("alert", "Componente cadastrado com sucesso!");
+            novoComponente = new();
+            await CarregarDadosBase(); 
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao salvar componente: {ex.Message}");
+        }
+    }
+
+    private async Task CadastrarPeca()
+    {
+        if (string.IsNullOrWhiteSpace(novaPeca.SapComp) || string.IsNullOrWhiteSpace(novaPeca.SapPeca) || string.IsNullOrWhiteSpace(novaPeca.Descricao))
+        {
+            await JS.InvokeVoidAsync("alert", "Preencha todos os campos obrigatórios da peça.");
+            return;
+        }
+
+        try
+        {
+            await Supabase.From<PecaModel>().Insert(novaPeca);
+            await JS.InvokeVoidAsync("alert", "Peça cadastrada com sucesso!");
+            var compAtual = novaPeca.SapComp;
+            novaPeca = new PecaModel { SapComp = compAtual };
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao salvar peça: {ex.Message}");
+        }
+    }
+
+    private async Task CadastrarUsuario()
+    {
+        if (string.IsNullOrWhiteSpace(novoUsuario.Nome) || string.IsNullOrWhiteSpace(novoUsuario.Email) || string.IsNullOrWhiteSpace(senhaProvisoria))
+        {
+            await JS.InvokeVoidAsync("alert", "Preencha todos os campos do usuário (Nome, E-mail e Senha).");
+            return;
+        }
+
+        try
+        {
+            // CRIPTOGRAFIA COM BCRYPT: Converte a senha digitada em um hash seguro
+            novoUsuario.Senha = BCrypt.Net.BCrypt.HashPassword(senhaProvisoria);
+
+            // Envia para a tabela usuarios do Supabase
+            await Supabase.From<UsuarioModel>().Insert(novoUsuario);
+
+            await JS.InvokeVoidAsync("alert", "Usuário cadastrado com sucesso com senha criptografada!");
+            
+            // Limpa o formulário
+            novoUsuario = new() { Perfil = "Mecanico" };
+            senhaProvisoria = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao cadastrar usuário: {ex.Message}");
+        }
+    }
+
+    private void Sair()
+    {
+        Sessao.Logout();
+        Nav.NavigateTo("/login");
+    }
+}

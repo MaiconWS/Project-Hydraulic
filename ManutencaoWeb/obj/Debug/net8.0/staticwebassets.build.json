@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "s6XDK1oreH2n8iEBFcNbjvUw/pV6AK9kXWAQ4mIWQDo=",
+  "Hash": "Amrl36YbC02QPBY7FeJi41z9xlfQF4iw05BZwfTdjSY=",
   "Source": "ManutencaoWeb",
   "BasePath": "/",
   "Mode": "Root",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\BCrypt-Net-Next.wasm",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/BCrypt-Net-Next.wasm",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "WasmResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\webcil\\BCrypt-Net-Next.wasm"
+    },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.boot.json",
       "SourceId": "ManutencaoWeb",
@@ -8339,6 +8358,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Net.Http.Json.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\zlkoehg9n9.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/BCrypt-Net-Next.wasm.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\BCrypt-Net-Next.wasm",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\BCrypt-Net-Next.wasm"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\zpl1p86ecw.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -8584,6 +8622,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\js\\relatorios.js",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "js/relatorios.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\relatorios.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\wwwroot\\sample-data\\weather.json",

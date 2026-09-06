@@ -11,6 +11,8 @@ namespace ManutencaoWeb.Models
         [Column("sap_comp")] public string? SapComp { get; set; }
         [Column("modelo")] public string? Modelo { get; set; }
         [Column("imagem_url")] public string? ImagemUrl { get; set; }
+
+        [Column("sistema_id")] public int SistemaId { get; set; }
         
         [Reference(typeof(SistemaModel), ReferenceAttribute.JoinType.Inner)]
         public SistemaModel? Sistema { get; set; }
@@ -57,4 +59,15 @@ namespace ManutencaoWeb.Models
         [JsonPropertyName("valor")] public double Valor { get; set; }
         [JsonPropertyName("entregue")] public bool Entregue { get; set; }
     }
+
+    [Table("usuarios")]
+    public class UsuarioModel : BaseModel
+    {
+        [PrimaryKey("id")] public int Id { get; set; }
+        [Column("nome")] public string? Nome { get; set; }
+        [Column("email")] public string? Email { get; set; }
+        [Column("senha")] public string? Senha { get; set; }
+        [Column("perfil")] public string? Perfil { get; set; }
+    }
+
 }

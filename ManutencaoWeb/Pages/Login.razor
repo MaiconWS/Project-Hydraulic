@@ -1,0 +1,113 @@
+@page "/login"
+@using ManutencaoWeb.Models
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Login - ManutencaoWeb</PageTitle>
+
+<div class="login-container">
+    <div class="login-card shadow-lg">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color: #2c3e35;">MANUTENÇÃO <span class="text-success">WEB</span></h2>
+            <p class="text-muted">Faça login para acessar o sistema</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">E-mail</label>
+            <input type="email" class="form-control py-2" @bind="email" placeholder="Digite seu e-mail" />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Senha</label>
+            <input type="password" class="form-control py-2" @bind="senha" placeholder="Digite sua senha" />
+        </div>
+
+        <button class="btn btn-success w-100 py-3 fw-bold mb-3" @onclick="FazerLogin" disabled="@isLoading">
+            @if(isLoading) 
+            { 
+                <span class="spinner-border spinner-border-sm me-2"></span> 
+            }
+            Entrar
+        </button>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string senha = "";
+    private bool isLoading = false;
+
+    private async Task FazerLogin()
+    {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
+        {
+            await JS.InvokeVoidAsync("alert", "Preencha e-mail e senha.");
+            return;
+        }
+
+        try
+        {
+            isLoading = true;
+
+            // 1. Busca o usuário no Supabase apenas pelo E-MAIL
+            var response = await Supabase.From<UsuarioModel>()
+                .Filter("email", Postgrest.Constants.Operator.Equals, email.Trim())
+                .Get();
+
+            var usuario = response.Models.FirstOrDefault();
+
+            bool senhaValida = false;
+
+            if (usuario != null && !string.IsNullOrEmpty(usuario.Senha))
+            {
+                // 2. Valida a senha usando o BCrypt contra o hash salvo no banco
+                senhaValida = BCrypt.Net.BCrypt.Verify(senha, usuario.Senha);
+            }
+
+            if (usuario != null && senhaValida)
+            {
+                // Login bem-sucedido! Salva na sessão e redireciona
+                Sessao.Login(usuario.Nome ?? "Usuário", usuario.Email ?? email, usuario.Perfil ?? "Mecanico");
+                Nav.NavigateTo("/");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "E-mail ou senha incorretos.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao conectar: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
+
+<style>
+    .login-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-color: #f4f6f5;
+        width: 100vw;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+    }
+    .login-card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 450px;
+        border-top: 5px solid #5D7663;
+    }
+</style>

@@ -1,5 +1,7 @@
 ﻿@page "/"
 @inject NavigationManager Nav
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
 
 <PageTitle>Home - ManutencaoWeb</PageTitle>
 
@@ -14,9 +16,7 @@
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide"><span> CRR</span></i>
         </div>
-
         <ul class="sidebar-menu">
-
             <li class="active">
                 <a href="/">
                     <i class="bi bi-house-door"></i>
@@ -30,55 +30,44 @@
                     <span>Requisições</span>
                 </a>
             </li>
-
-            <!--<li>
-                <a href="#">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Peças</span>
-                </a>
-            </li>
-
             <li>
-                <a href="#">
-                    <i class="bi bi-archive"></i>
-                    <span>Estoque</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
+                <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
-
-            <li>
-                <a href="#">
-                    <i class="bi bi-gear"></i>
-                    <span>Configurações</span>
-                </a>
-            </li>-->
-
+            @if (Sessao.IsAdmin)
+            {
+                <li>
+                    <a href="/admin">
+                        <i class="bi bi-plus-square"></i>
+                        <span>Cadastros Base</span>
+                    </a>
+                </li>
+            }
         </ul>
 
         <div class="sidebar-footer">
-
+            <div class="d-flex align-items-center gap-2 mb-3 px-2">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong><br/>
+                </div>
+            </div>
+            
             <button class="btn-sair" @onclick="Sair">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sair</span>
             </button>
-
         </div>
 
     </nav>
-
 
     <!-- =========================================
          CONTEÚDO PRINCIPAL
          ========================================= -->
 
     <main class="main-content">
-
 
         <!-- =====================================
              TOP BAR
@@ -87,33 +76,22 @@
         <header class="top-bar">
 
             <div class="top-left d-flex align-items-center">
-
                 <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
                     <i class="bi bi-list"></i>
                 </button>
 
                 <span class="user-greeting">
-                    Olá, <strong>Colaborador!</strong>
+                    Olá, <strong>@Sessao.NomeUsuario!</strong>
                 </span>
-
             </div>
 
-
             <div class="top-right">
-
-                <div class="dark-mode">
-                    <!--<i class="bi bi-moon"></i> -->
-                    <!-- <span>Modo noite</span> -->
-                </div>
-
                 <div class="user-avatar">
-                    <i class="bi bi-person"></i>
+                    @(Sessao.Iniciais)
                 </div>
-
             </div>
 
         </header>
-
 
         <!-- =====================================
              CORPO
@@ -121,18 +99,10 @@
 
         <div class="content-body">
 
-            <div class="section-title">
-
-                <h2>
-                    Categoria de Componentes
-                </h2>
-
-                <p>
-                    Selecione uma categoria para continuar sua requisição.
-                </p>
-
+            <div class="section-title mb-4">
+                <h2>Categoria de Componentes</h2>
+                <p>Selecione uma categoria para continuar sua requisição.</p>
             </div>
-
 
             <!-- =================================
                  CATEGORIAS
@@ -140,259 +110,69 @@
 
             <div class="row g-4 mb-5">
 
-
                 <!-- BOMBA -->
-
                 <div class="col-md-4">
-
-                    <div class="category-card"
-                         @onclick="@(() => IrParaModelos("Bomba Hidráulica"))">
-
+                    <div class="category-card" @onclick="@(() => IrParaModelos("Bomba Hidráulica"))">
                         <div class="card-icon">
-
                             <i class="bi bi-gear-wide"></i>
-
                         </div>
-
-                        <h5>
-                            Bombas Hidráulicas
-                        </h5>
-
-                        <p>
-                            Componentes de bombas hidráulicas
-                            e acessórios.
-                        </p>
-
-                        <span class="card-link">
-                            Acessar categoria
-                            <i class="bi bi-arrow-right"></i>
-                        </span>
-
+                        <h5>Bombas Hidráulicas</h5>
+                        <p>Componentes de bombas hidráulicas e acessórios.</p>
+                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
                     </div>
-
                 </div>
-
 
                 <!-- MOTOR -->
-
                 <div class="col-md-4">
-
-                    <div class="category-card"
-                         @onclick="@(() => IrParaModelos("Motor Hidráulico"))">
-
+                    <div class="category-card" @onclick="@(() => IrParaModelos("Motor Hidráulico"))">
                         <div class="card-icon">
-
                             <i class="bi bi-gear-wide"></i>
-
                         </div>
-
-                        <h5>
-                            Motores Hidráulicos
-                        </h5>
-
-                        <p>
-                            Componentes de motores hidráulicos
-                            e acessórios.
-                        </p>
-
-                        <span class="card-link">
-                            Acessar categoria
-                            <i class="bi bi-arrow-right"></i>
-                        </span>
-
+                        <h5>Motores Hidráulicos</h5>
+                        <p>Componentes de motores hidráulicos e acessórios.</p>
+                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
                     </div>
-
                 </div>
 
-
                 <!-- CILINDRO -->
-
                 <div class="col-md-4">
-
-                    <div class="category-card"
-                         @onclick="@(() => IrParaModelos("cilindros"))">
-
+                    <div class="category-card" @onclick="@(() => IrParaModelos("cilindros"))">
                         <div class="card-icon">
-
                             <i class="bi bi-gear-wide"></i>
-
                         </div>
-
-                        <h5>
-                            Cilindros Hidráulicos
-                        </h5>
-
-                        <p>
-                            Componentes de cilindros hidráulicos
-                            e acessórios.
-                        </p>
-
-                        <span class="card-link">
-                            Acessar categoria
-                            <i class="bi bi-arrow-right"></i>
-                        </span>
-
+                        <h5>Cilindros Hidráulicos</h5>
+                        <p>Componentes de cilindros hidráulicos e acessórios.</p>
+                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
                     </div>
-
                 </div>
 
             </div>
-
-            
-            <!--=================================
-                 ACESSO RÁPIDO
-                 ================================= -->
-
-            <!--<<div class="quick-access-section">
-
-                <h5 class="quick-title">
-                    Acesso rápido
-                </h5>
-
-
-                <div class="row g-3">
-
-
-                    -- NOVA REQUISIÇÃO --
-
-                    <div class="col-md-3">
-
-                        <div class="quick-card">
-
-                            <div class="quick-icon">
-
-                                <i class="bi bi-clipboard-plus"></i>
-
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Nova requisição
-                                </strong>
-
-                                <small>
-                                    Criar nova requisição
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    -- BUSCAR PEÇAS --
-
-                    <div class="col-md-3">
-
-                        <div class="quick-card">
-
-                            <div class="quick-icon">
-
-                                <i class="bi bi-search"></i>
-
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Buscar peças
-                                </strong>
-
-                                <small>
-                                    Pesquise por código ou nome
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    -- ESTOQUE --
-
-                    <div class="col-md-3">
-
-                        <div class="quick-card">
-
-                            <div class="quick-icon">
-
-                                <i class="bi bi-boxes"></i>
-
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Ver estoque
-                                </strong>
-
-                                <small>
-                                    Consulte a disponibilidade
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    -- REQUISIÇÕES --
-
-                    <div class="col-md-3">
-
-                        <div class="quick-card">
-
-                            <div class="quick-icon">
-
-                                <i class="bi bi-clock-history"></i>
-
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Minhas requisições
-                                </strong>
-
-                                <small>
-                                    Acompanhe o status
-                                </small>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div> 
-
-            </div> -->
-
         </div>
-
     </main>
-
 </div>
 
-
 @code {
-    // Variáveis e método para controlar a abertura do menu mobile
     private bool isMenuOpen = false;
+    
+    // Proteção de rota: Verifica se o usuário está logado ao carregar a página
+    protected override void OnInitialized()
+    {
+        if (!Sessao.EstaLogado)
+        {
+            Nav.NavigateTo("/login");
+        }
+    }
+
     private void ToggleMenu() => isMenuOpen = !isMenuOpen;
 
     private void IrParaModelos(string categoria)
     {
-        Nav.NavigateTo(
-            $"/modelos/{Uri.EscapeDataString(categoria)}"
-        );
+        Nav.NavigateTo($"/modelos/{Uri.EscapeDataString(categoria)}");
     }
 
     private void Sair()
     {
-        Nav.NavigateTo("/");
+        Sessao.Logout();
+        Nav.NavigateTo("/login");
     }
 }
