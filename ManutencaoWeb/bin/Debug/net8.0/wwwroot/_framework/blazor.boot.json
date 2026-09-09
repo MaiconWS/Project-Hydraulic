@@ -1,15 +1,15 @@
 {
   "mainAssemblyName": "ManutencaoWeb",
   "resources": {
-    "hash": "sha256-cMeWocAS0zV5sjB/DP94wJzZYrS5/CFjyRnB+Z0bPnY=",
+    "hash": "sha256-k6G+Swbwghy4H7oVBw3E2nJXfPlrrgiljoKMBNeJERU=",
     "jsModuleNative": {
-      "dotnet.native.8.0.30.frof127l6l.js": "sha256-dexsp+9ih2C28zVhNnPXUbkz2QCq7lHpkyDcmaLl7NQ="
+      "dotnet.native.8.0.31.yq74bzv28w.js": "sha256-9NoXeVUo4WNrEqrjAp/y3Yc8NmDcymQkzMGOIbIpGio="
     },
     "jsModuleRuntime": {
-      "dotnet.runtime.8.0.30.stgg5twa9j.js": "sha256-Iz92tEdLDz6hULg8toBVTeVi4QRnFEbFBy3lo3dbmEw="
+      "dotnet.runtime.8.0.31.pisfcv5tze.js": "sha256-qzVt86q0GKgDNek5+WFBz2hU8jGxI86YJeZmNGXj/qM="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-u1TlK1IA8S0kJgWTC6wzigrzwKe2XeA6BKUgMGM2UBQ="
+      "dotnet.native.wasm": "sha256-f6b8OMzPxZicfBuJQC7pY0XrqnffvHX76rqLeGpL7oI="
     },
     "icu": {
       "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -225,10 +225,10 @@
       "mscorlib.wasm": "sha256-pP80UGziulDYhvVdeUaGEq9FlrHQDQmnCqVvx1FJZis=",
       "netstandard.wasm": "sha256-ARMsMyhWuSDjvzisfZbnEptnxh8Vh7VpHPhuT6iazy0=",
       "System.Private.CoreLib.wasm": "sha256-+28m4yuZsdz9ij1sJHvNH896fSI8gXgrQ9bhGO76Qqo=",
-      "ManutencaoWeb.wasm": "sha256-sqIpYqrbKNMticYQjUOC/SyFZp6i9r50uxEyceOMI3E="
+      "ManutencaoWeb.wasm": "sha256-q9Ac0hmD4vxgFHHmonjYyR5DJRq4zDKxifSDKMjYtDQ="
     },
     "pdb": {
-      "ManutencaoWeb.pdb": "sha256-94nSkW1tOpmof62ZuL73yTjLCJIQcQRB+o7G4KmCJaI="
+      "ManutencaoWeb.pdb": "sha256-+7Di5t2nZgnS5qqFMACB83Fs7TmZU2cO3Y9pv8QV2qs="
     }
   },
   "cacheBootResources": true,

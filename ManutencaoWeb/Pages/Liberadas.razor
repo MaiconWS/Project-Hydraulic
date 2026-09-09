@@ -1,0 +1,289 @@
+@page "/liberados"
+@using ManutencaoWeb.Models
+@using ManutencaoWeb.Services
+@inject SessaoService Sessao
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Itens para Montagem - ManutencaoWeb</PageTitle>
+
+<div class="dashboard-wrapper">
+    <!-- =========================================
+         MENU LATERAL
+         ========================================= -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <i class="bi bi-gear-wide"><span> CRR</span></i>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/">
+                    <i class="bi bi-house-door"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/requisicoes">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Requisições</span>
+                </a>
+            </li>
+            <li>
+                <a href="/relatorios">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Relatórios</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/liberados">
+                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
+                </a>
+            </li>
+            @if (Sessao.IsAdmin)
+            {
+                <li>
+                    <a href="/admin">
+                        <i class="bi bi-plus-square"></i>
+                        <span>Cadastros Base</span>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2 mb-3 px-2">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong><br/>
+                </div>
+            </div>
+            <button class="btn-sair" @onclick="Sair">
+                <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- =========================================
+         CONTEÚDO PRINCIPAL
+         ========================================= -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-left d-flex align-items-center">
+                <span class="user-greeting">Olá, <strong>@Sessao.NomeUsuario!</strong></span>
+            </div>
+            <div class="top-right">
+                <div class="user-avatar">@(Sessao.Iniciais)</div>
+            </div>
+        </header>
+
+        <div class="content-body" style="background-color: #f8f9fa; min-height: calc(100vh - 70px); padding: 30px;">
+            
+            <!-- TÍTULO -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="bg-success text-white rounded p-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="bi bi-wrench fs-4"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-1" style="color: #1a1a1a;">Itens para Montagem</h3>
+                    <p class="text-muted mb-0 small">Lista dos componentes que já tiveram todas as peças verificadas e estão aguardando a montagem.</p>
+                </div>
+            </div>
+
+            @if (isLoading)
+            {
+                <div class="text-center py-5"><div class="spinner-border text-success"></div></div>
+            }
+            else
+            {
+                <!-- =========================================
+                     CARDS DE RESUMO
+                     ========================================= -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center bg-white">
+                            <i class="bi bi-box-seam text-success fs-3 me-3"></i>
+                            <div>
+                                <small class="text-muted fw-semibold">Total de Itens</small>
+                                <h4 class="fw-bold mb-0">@totalItens</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center bg-white">
+                            <i class="bi bi-check-circle text-success fs-3 me-3"></i>
+                            <div>
+                                <small class="text-muted fw-semibold">Peças Verificadas</small>
+                                <h4 class="fw-bold mb-0">@pecasVerificadas</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center bg-white">
+                            <i class="bi bi-wrench-adjustable text-success fs-3 me-3"></i>
+                            <div>
+                                <small class="text-muted fw-semibold">Aguardando Montagem</small>
+                                <h4 class="fw-bold mb-0">@totalItens</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center bg-white">
+                            <i class="bi bi-calendar3 text-success fs-3 me-3"></i>
+                            <div>
+                                <small class="text-muted fw-semibold">Última Atualização</small>
+                                <h4 class="fw-bold mb-0 fs-6 mt-1">@DateTime.Now.ToString("dd/MM/yyyy")</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =========================================
+                     TABELA DE LIBERADOS
+                     ========================================= -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                        <i class="bi bi-funnel text-muted"></i>
+                        <h6 class="mb-0 fw-bold text-muted">Filtros e Listagem</h6>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 border-top-0">
+                            <thead class="table-light text-muted small">
+                                <tr>
+                                    <th class="ps-4 fw-semibold border-0 py-3">O.S.</th>
+                                    <th class="fw-semibold border-0 py-3">Componente / Modelo</th>
+                                    <th class="fw-semibold border-0 py-3 text-center">Itens Qtd.</th>
+                                    <th class="fw-semibold border-0 py-3">Data de Liberação</th>
+                                    <th class="fw-semibold border-0 py-3">Status</th>
+                                    <th class="fw-semibold border-0 py-3 text-end pe-4">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!listaLiberados.Any())
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5 text-muted">Nenhum componente aguardando montagem no momento.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var os in listaLiberados)
+                                    {
+                                        var qtdItens = os.ItensJson?.Sum(i => i.Quantidade) ?? 0;
+                                        
+                                        <tr>
+                                            <td class="ps-4 text-dark fw-bold">@os.OsNumero</td>
+                                            <td class="text-dark">@os.ModeloSolicitado</td>
+                                            <td class="text-center fw-semibold text-secondary">@qtdItens</td>
+                                            <td class="text-secondary">@os.DataEnvio.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                <span class="badge rounded-pill bg-warning text-dark px-3 py-2 border border-warning" style="background-color: #fff8dd !important; color: #d99a00 !important;">
+                                                    <i class="bi bi-clock-history me-1"></i> Aguardando montagem
+                                                </span>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <button class="btn btn-success btn-sm px-3 py-2 fw-bold" style="background-color: #2e664b; border: none; border-radius: 6px;" @onclick="() => MarcarComoPronto(os)">
+                                                    <i class="bi bi-check2-circle me-1"></i> Pronto / Concluído
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if (listaLiberados.Any())
+                    {
+                        <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Mostrando 1 a @listaLiberados.Count de @listaLiberados.Count registros</small>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    private bool isLoading = true;
+    private List<SolicitacaoCompletaModel> listaLiberados = new();
+
+    // Contadores para os Cards
+    private int totalItens => listaLiberados.Count;
+    private int pecasVerificadas => listaLiberados.Sum(s => s.ItensJson?.Sum(i => i.Quantidade) ?? 0);
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Sessao.EstaLogado)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        await CarregarDados();
+    }
+
+    private async Task CarregarDados()
+    {
+        try
+        {
+            isLoading = true;
+            
+            // Busca diretamente do Supabase todas as ordens com status "Liberado"
+            var response = await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Filter("status", Postgrest.Constants.Operator.Equals, "Liberado")
+                .Get();
+
+            var dados = response.Models ?? new List<SolicitacaoCompletaModel>();
+
+            listaLiberados = dados
+                .OrderByDescending(s => s.DataEnvio)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao carregar dados: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task MarcarComoPronto(SolicitacaoCompletaModel solicitacao)
+    {
+        bool confirmacao = await JS.InvokeAsync<bool>("confirm", $"Deseja confirmar a conclusão da montagem da O.S. {solicitacao.OsNumero}?");
+        if (!confirmacao) return;
+
+        try
+        {
+            // Atualiza o status para "Montagem Concluída" enviando o modelo completo
+            solicitacao.Status = "Montagem Concluída";
+
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == solicitacao.Id)
+                .Update(solicitacao);
+
+            await JS.InvokeVoidAsync("alert", "Montagem concluída com sucesso!");
+            
+            // Recarrega a tela para remover o item da listagem
+            await CarregarDados();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao atualizar status: {ex.Message}");
+        }
+    }
+
+    private void Sair()
+    {
+        Sessao.Logout();
+        Nav.NavigateTo("/login");
+    }
+}

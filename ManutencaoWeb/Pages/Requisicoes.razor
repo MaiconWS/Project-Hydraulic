@@ -20,14 +20,14 @@
             </i>
         </div>
         <ul class="sidebar-menu">
-            <li class="active">
+            <li>
                 <a href="/">
                     <i class="bi bi-house-door"></i>
                     <span>Home</span>
                 </a>
             </li>
 
-            <li>
+            <li class="active">
                 <a href="/requisicoes">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Requisições</span>
@@ -37,6 +37,12 @@
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
+                </a>
+            </li>
+            <li>
+                <a href="/liberados">
+                    <i class="bi bi-check-all"></i>
+                    <span>Concluídas</span>
                 </a>
             </li>
             @if (Sessao.IsAdmin)
@@ -247,6 +253,9 @@
                                 <small class="text-muted d-block">Total estimado</small>
                                 <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
                             </div>
+                            <button class="btn btn-outline-danger px-3 py-2 fw-bold" @onclick="CondenarProducao">
+                                Condenar
+                            </button>
                             <button class="btn btn-success px-4 py-2 fw-bold" @onclick="LiberarProducao">
                                 Liberar Produção
                             </button>
@@ -362,29 +371,19 @@
 
         try
         {
+            // 1. Altera o estado diretamente. Como os itens estão referenciados 
+            // na memória, isso já atualiza o requisicaoSelecionada.ItensJson.
             item.Entregue = !item.Entregue;
 
-            var novosItens = itensAtuais.Select(i => new ItemRequisicaoModel
-            {
-                Sap = i.Sap,
-                Descricao = i.Descricao,
-                Quantidade = i.Quantidade,
-                Valor = i.Valor,
-                Entregue = i.Entregue
-            }).ToList();
-
-            requisicaoSelecionada.ItensJson = novosItens;
-
+            // 2. Usamos UPSERT. Ele ignora o rastreador de alterações e 
+            // força a substituição de toda a linha no banco pelo objeto atual.
             await Supabase
                 .From<SolicitacaoCompletaModel>()
-                .Where(s => s.Id == requisicaoSelecionada.Id)
-                .Set(s => s.ItensJson!, novosItens)
-                .Update();
-
-            itensAtuais = novosItens;
+                .Upsert(requisicaoSelecionada);
         }
         catch (Exception ex)
         {
+            // Reverte visualmente em caso de erro
             item.Entregue = estadoAnterior;
             await JS.InvokeVoidAsync("alert", $"Erro ao salvar alteração: {ex.Message}");
         }
@@ -410,6 +409,32 @@
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"Erro ao liberar: {ex.Message}");
+        }
+    }
+
+    private async Task CondenarProducao()
+    {
+        if (requisicaoSelecionada == null) return;
+
+        // Confirmação opcional via JS para evitar cliques acidentais
+        bool confirmado = await JS.InvokeAsync<bool>("confirm", "Tem certeza que deseja marcar esta requisição como Condenada?");
+        if (!confirmado) return;
+
+        try
+        {
+            requisicaoSelecionada.Status = "Condenado";
+            
+            await Supabase.From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Update(requisicaoSelecionada);
+
+            await JS.InvokeVoidAsync("alert", "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela.");
+            await CarregarRequisicoes();
+            termoBusca = ""; // Limpa a busca após concluir
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao condenar requisição: {ex.Message}");
         }
     }
 

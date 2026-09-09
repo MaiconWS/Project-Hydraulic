@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Amrl36YbC02QPBY7FeJi41z9xlfQF4iw05BZwfTdjSY=",
+  "Hash": "noPZMda/3qx0fnuGb4JjymH8kDrnAR9fzdlHq198TSQ=",
   "Source": "ManutencaoWeb",
   "BasePath": "/",
   "Mode": "Root",
@@ -90,7 +90,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.js"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js.map",
@@ -109,15 +109,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.js.map"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.js.map"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.30.frof127l6l.js",
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.31.yq74bzv28w.js",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
       "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
       "BasePath": "/",
-      "RelativePath": "_framework/dotnet.native.8.0.30.frof127l6l.js",
+      "RelativePath": "_framework/dotnet.native.8.0.31.yq74bzv28w.js",
       "AssetKind": "Build",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -128,7 +128,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.native.js"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.native.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.wasm",
@@ -147,15 +147,15 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.native.wasm"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.native.wasm"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.30.stgg5twa9j.js",
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.31.pisfcv5tze.js",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
       "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
       "BasePath": "/",
-      "RelativePath": "_framework/dotnet.runtime.8.0.30.stgg5twa9j.js",
+      "RelativePath": "_framework/dotnet.runtime.8.0.31.pisfcv5tze.js",
       "AssetKind": "Build",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -166,7 +166,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.runtime.js"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.runtime.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.js.map",
@@ -185,7 +185,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\dotnet.runtime.js.map"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\dotnet.runtime.js.map"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_CJK.dat",
@@ -204,7 +204,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\icudt_CJK.dat"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\icudt_CJK.dat"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_EFIGS.dat",
@@ -223,7 +223,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\icudt_EFIGS.dat"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\icudt_EFIGS.dat"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_no_CJK.dat",
@@ -242,7 +242,7 @@
       "AssetTraitValue": "native",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.30\\runtimes\\browser-wasm\\native\\icudt_no_CJK.dat"
+      "OriginalItemSpec": "C:\\Users\\maico\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.31\\runtimes\\browser-wasm\\native\\icudt_no_CJK.dat"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\ManutencaoWeb.pdb",
@@ -4444,6 +4444,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Net.ServicePoint.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\2rvxyuh7nl.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/icudt_CJK.dat.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_CJK.dat",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_CJK.dat"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\2zzi52uzt7.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -4993,25 +5012,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Diagnostics.TextWriterTraceListener.wasm"
-    },
-    {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\7fc8qpp3u2.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/icudt_CJK.dat.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_CJK.dat",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_CJK.dat"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\7sceg5tv64.gz",
@@ -5603,25 +5603,6 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Linq.wasm"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\bgdvx1wy7b.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/icudt_EFIGS.dat.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_EFIGS.dat",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_EFIGS.dat"
-    },
-    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\bjw3buqp4f.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -5677,25 +5658,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Runtime.Serialization.Json.wasm"
-    },
-    {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\c8anw61rur.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/dotnet.runtime.js.map.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.js.map",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.js.map"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\clyyzqmmd2.gz",
@@ -5850,6 +5812,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Linq.Queryable.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\ebi8ozsu2w.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/icudt_EFIGS.dat.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_EFIGS.dat",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_EFIGS.dat"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\efj8bd34fw.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -5983,25 +5964,6 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Security.SecureString.wasm"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\f80n2embx1.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/dotnet.native.wasm.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.wasm",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.wasm"
-    },
-    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\fbh55z08yt.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -6076,25 +6038,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Reflection.Metadata.wasm"
-    },
-    {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\frof127l6l.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/dotnet.native.8.0.30.frof127l6l.js.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.30.frof127l6l.js",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.30.frof127l6l.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\fveyapdap7.gz",
@@ -6418,25 +6361,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Net.WebClient.wasm"
-    },
-    {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\hsxqm5s7v1.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/icudt_no_CJK.dat.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_no_CJK.dat",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_no_CJK.dat"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\hugz9q08xo.gz",
@@ -6819,6 +6743,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Microsoft.Extensions.Configuration.Abstractions.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\klgckxmt8w.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/icudt_no_CJK.dat.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_no_CJK.dat",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\icudt_no_CJK.dat"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\ksrxu6oobm.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -7199,6 +7142,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Microsoft.JSInterop.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\pisfcv5tze.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/dotnet.runtime.8.0.31.pisfcv5tze.js.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.31.pisfcv5tze.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.31.pisfcv5tze.js"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\pn1ij69xt3.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -7292,6 +7254,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Resources.ResourceManager.wasm"
+    },
+    {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\q85q7dxg45.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/dotnet.js.map.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js.map",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js.map"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\qhqfcz9b6a.gz",
@@ -7408,6 +7389,25 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Collections.Immutable.wasm"
     },
     {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\raef182vr5.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/dotnet.runtime.js.map.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.js.map",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.js.map"
+    },
+    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\rcf8idnx0q.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -7520,25 +7520,6 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Drawing.Primitives.wasm"
-    },
-    {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\stgg5twa9j.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/dotnet.runtime.8.0.30.stgg5twa9j.js.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.30.stgg5twa9j.js",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.runtime.8.0.30.stgg5twa9j.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\stq5nus0wi.gz",
@@ -8016,25 +7997,6 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Supabase.Gotrue.wasm"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\xfugoniacp.gz",
-      "SourceId": "ManutencaoWeb",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "_framework/dotnet.js.map.gz",
-      "AssetKind": "Build",
-      "AssetMode": "All",
-      "AssetRole": "Alternative",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js.map",
-      "AssetTraitName": "Content-Encoding",
-      "AssetTraitValue": "gzip",
-      "CopyToOutputDirectory": "PreserveNewest",
-      "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js.map"
-    },
-    {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\xgykipet9m.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
@@ -8225,23 +8187,23 @@
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Microsoft.VisualBasic.wasm"
     },
     {
-      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\yeqt9pzo7c.gz",
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\yiagvtbt67.gz",
       "SourceId": "ManutencaoWeb",
       "SourceType": "Computed",
       "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
       "BasePath": "/",
-      "RelativePath": "_framework/dotnet.js.gz",
+      "RelativePath": "_framework/dotnet.native.wasm.gz",
       "AssetKind": "Build",
       "AssetMode": "All",
       "AssetRole": "Alternative",
       "AssetMergeBehavior": "",
       "AssetMergeSource": "",
-      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.wasm",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
-      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js"
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.wasm"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\ynbv09y85r.gz",
@@ -8261,6 +8223,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\Microsoft.Extensions.FileSystemGlobbing.wasm"
+    },
+    {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\yq74bzv28w.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/dotnet.native.8.0.31.yq74bzv28w.js.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.31.yq74bzv28w.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.native.8.0.31.yq74bzv28w.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\ys7w3n79kb.gz",
@@ -8413,6 +8394,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\System.Diagnostics.TraceSource.wasm"
+    },
+    {
+      "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\compressed\\zzs6wif4ox.gz",
+      "SourceId": "ManutencaoWeb",
+      "SourceType": "Computed",
+      "ContentRoot": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "_framework/dotnet.js.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\bin\\Debug\\net8.0\\wwwroot\\_framework\\dotnet.js"
     },
     {
       "Identity": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\Debug\\net8.0\\scopedcss\\bundle\\ManutencaoWeb.styles.css",

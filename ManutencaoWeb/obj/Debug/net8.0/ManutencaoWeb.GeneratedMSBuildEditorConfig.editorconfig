@@ -38,6 +38,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Liberadas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTGliZXJhZGFzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/dev/Project-Hydraulic/ManutencaoWeb/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
