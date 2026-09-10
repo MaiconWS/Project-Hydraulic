@@ -48,6 +48,9 @@ namespace ManutencaoWeb.Models
         [Column("itens_json")] public List<ItemRequisicaoModel>? ItensJson { get; set; }
         [Column("data_envio")] public DateTime DataEnvio { get; set; }
         [Column("status")] public string? Status { get; set; } = "Pendente";
+
+        // Mapeamento da coluna do solicitante no banco
+        [Column("solicitante_nome")] public string? SolicitanteNome { get; set; }
     }
 
     // Estrutura dos itens salvos dentro do JSON
