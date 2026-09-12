@@ -1,23 +1,23 @@
 @page "/requisicoes"
 @using ManutencaoWeb.Models
+@using ManutencaoWeb.Services
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 @inject IJSRuntime JS
-@using ManutencaoWeb.Services
 @inject SessaoService Sessao
 
 <PageTitle>Requisições - ManutencaoWeb</PageTitle>
 
 <div class="dashboard-wrapper">
 
-    <!-- =========================================
+    <!-- =========================================================
          SIDEBAR
-         ========================================= -->
+         ========================================================= -->
     <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
 
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide">
-                <span> Manutenção WEB</span>
+                <span> CRR</span>
             </i>
         </div>
 
@@ -72,19 +72,14 @@
                 </div>
 
                 <div style="font-size: 12px; color: #cfdcd4;">
-
-                    <strong>@Sessao.NomeUsuario</strong>
-
+                    <strong>@Sessao.NomeUsuario</strong><br />
                 </div>
 
             </div>
 
             <button class="btn-sair" @onclick="Sair">
-
                 <i class="bi bi-box-arrow-right"></i>
-
                 <span>Sair</span>
-
             </button>
 
         </div>
@@ -92,9 +87,9 @@
     </nav>
 
 
-    <!-- =========================================
+    <!-- =========================================================
          CONTEÚDO PRINCIPAL
-         ========================================= -->
+         ========================================================= -->
     <main class="main-content">
 
         <!-- TOP BAR -->
@@ -110,13 +105,10 @@
                 </button>
 
                 <span class="user-greeting">
-
-                    Olá, <strong>@Sessao.NomeUsuario!</strong>
-
+                    Olá, <strong>@Sessao.NomeUsuario!</strong><br />
                 </span>
 
             </div>
-
 
             <div class="top-bar-right">
 
@@ -129,9 +121,9 @@
         </header>
 
 
-        <!-- =========================================
+        <!-- =========================================================
              CORPO
-             ========================================= -->
+             ========================================================= -->
         <div class="content-body">
 
             <!-- TÍTULO -->
@@ -144,7 +136,6 @@
                     <i class="bi bi-arrow-left text-dark"></i>
 
                 </button>
-
 
                 <div class="section-title mb-0">
 
@@ -167,33 +158,43 @@
             </div>
 
 
-            <!-- =========================================
-                 CARREGAMENTO
-                 ========================================= -->
+            <!-- =====================================================
+                 LOADING
+                 ===================================================== -->
             @if (isLoading)
             {
                 <div class="text-center py-5">
 
                     <div class="spinner-border text-success"
                          role="status">
+
+                    </div>
+
+                    <div class="mt-3 text-muted">
+                        Carregando requisições...
                     </div>
 
                 </div>
             }
+
             else if (solicitacoes == null || !solicitacoes.Any())
             {
                 <div class="alert alert-info">
 
-                    Nenhuma requisição pendente encontrada no banco de dados.
+                    <i class="bi bi-info-circle me-2"></i>
+
+                    Nenhuma requisição pendente encontrada
+                    no banco de dados.
 
                 </div>
             }
+
             else
             {
 
-                <!-- =====================================
+                <!-- =================================================
                      BUSCA
-                     ===================================== -->
+                     ================================================= -->
                 <div class="card border-0 shadow-sm p-4 mb-4">
 
                     <label class="fw-bold mb-2">
@@ -211,9 +212,9 @@
                 </div>
 
 
-                <!-- =====================================
+                <!-- =================================================
                      TABELA MASTER
-                     ===================================== -->
+                     ================================================= -->
                 <div class="card border-0 shadow-sm mb-4">
 
                     <div class="table-responsive">
@@ -233,8 +234,10 @@
                                     </th>
 
                                     <th class="py-3"
-                                        style="width: 150px;">
-                                        %
+                                        style="width: 180px;">
+
+                                        Progresso
+
                                     </th>
 
                                     <th class="pe-4 py-3 text-end">
@@ -245,7 +248,6 @@
 
                             </thead>
 
-
                             <tbody>
 
                                 @foreach (var s in SolicitacoesFiltradas)
@@ -255,7 +257,13 @@
                                     bool isSelected =
                                         requisicaoSelecionada?.Id == s.Id;
 
-                                    <tr style="cursor: pointer; background-color: @(isSelected ? "#f1f8f5" : "transparent");"
+                                    <tr style="
+                                            cursor:pointer;
+                                            background-color:@(
+                                                isSelected
+                                                    ? "#f1f8f5"
+                                                    : "transparent"
+                                            );"
                                         @onclick="() => SelecionarRequisicao(s.Id)">
 
                                         <td class="ps-4 text-muted">
@@ -264,30 +272,28 @@
 
                                         </td>
 
-
                                         <td class="fw-bold text-secondary">
 
                                             @s.ModeloSolicitado
 
                                         </td>
 
-
                                         <td>
 
                                             <div class="d-flex align-items-center gap-2">
 
-                                                <span style="min-width: 40px;">
-
+                                                <span style="min-width:45px;">
                                                     @pct%
-
                                                 </span>
 
-
                                                 <div class="progress flex-grow-1"
-                                                     style="height: 6px; background-color: #e9ecef;">
+                                                     style="
+                                                         height:6px;
+                                                         background-color:#e9ecef;
+                                                     ">
 
                                                     <div class="progress-bar bg-success"
-                                                         style="width: @pct%">
+                                                         style="width:@pct%;">
                                                     </div>
 
                                                 </div>
@@ -296,12 +302,11 @@
 
                                         </td>
 
-
                                         <td class="pe-4 text-end">
 
-                                            <button class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")"
-                                                    @onclick:stopPropagation="true"
-                                                    @onclick="() => SelecionarRequisicao(s.Id)">
+                                            <button class="btn btn-sm @(isSelected
+                                                        ? "btn-success"
+                                                        : "btn-outline-success")">
 
                                                 @(isSelected
                                                     ? "Editando..."
@@ -323,31 +328,52 @@
                 </div>
 
 
-                <!-- =====================================
-                     DETALHES
-                     ===================================== -->
+                <!-- =================================================
+                     DETALHES DA REQUISIÇÃO
+                     ================================================= -->
                 @if (requisicaoSelecionada != null)
                 {
-
                     <div class="mt-5 p-3 rounded"
-                         style="background-color: #f8f9fa; border-left: 4px solid #198754;">
+                         style="
+                             background-color:#f8f9fa;
+                             border-left:4px solid #198754;
+                         ">
 
-                        <h4 class="mb-4">
+                        <!-- CABEÇALHO -->
+                        <div class="d-flex justify-content-between
+                                    align-items-center mb-4">
 
-                            Itens da
-                            <strong>
-                                O.S.: @requisicaoSelecionada.OsNumero
-                            </strong>
+                            <h4 class="mb-0">
 
-                        </h4>
+                                Itens da
+                                <strong>
+                                    O.S.: @requisicaoSelecionada.OsNumero
+                                </strong>
+
+                            </h4>
+
+                            <!-- ADICIONAR PEÇA -->
+                            <button class="btn btn-success"
+                                    @onclick="AbrirModalAdicionarPeca">
+
+                                <i class="bi bi-plus-lg me-1"></i>
+
+                                Adicionar peça
+
+                            </button>
+
+                        </div>
 
 
-                        <!-- CARDS DE DETALHES -->
+                        <!-- =================================================
+                             CARDS
+                             ================================================= -->
                         <div class="row g-3 mb-4">
 
-                            <div class="col-md-8">
+                            <div class="col-md-6">
 
-                                <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                                <div class="card border-0 shadow-sm p-3
+                                            bg-white h-100">
 
                                     <small class="text-muted">
                                         Modelo
@@ -364,9 +390,10 @@
                             </div>
 
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
 
-                                <div class="card border-0 shadow-sm p-3 bg-white h-100">
+                                <div class="card border-0 shadow-sm p-3
+                                            bg-white h-100">
 
                                     <small class="text-muted">
                                         Progresso
@@ -375,9 +402,49 @@
                                     <h6 class="mb-0 fw-bold">
 
                                         @ItensEntregues de @TotalItens
-                                        itens (@PorcentagemConcluida%)
 
                                     </h6>
+
+                                    <small class="text-success">
+
+                                        @PorcentagemConcluida% concluído
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="col-md-3">
+
+                                <div class="card border-0 shadow-sm p-3
+                                            bg-white h-100">
+
+                                    <small class="text-muted">
+                                        Situação
+                                    </small>
+
+                                    @if (TodosItensEntregues)
+                                    {
+                                        <h6 class="mb-0 text-success fw-bold">
+
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+
+                                            Todos entregues
+
+                                        </h6>
+                                    }
+                                    else
+                                    {
+                                        <h6 class="mb-0 text-warning fw-bold">
+
+                                            <i class="bi bi-clock-fill me-1"></i>
+
+                                            Aguardando peças
+
+                                        </h6>
+                                    }
 
                                 </div>
 
@@ -386,9 +453,9 @@
                         </div>
 
 
-                        <!-- =====================================
+                        <!-- =================================================
                              TABELA DE ITENS
-                             ===================================== -->
+                             ================================================= -->
                         <div class="card border-0 shadow-sm mb-4">
 
                             <div class="table-responsive">
@@ -416,41 +483,24 @@
                                             </th>
 
                                             <th class="text-center pe-4">
-                                                Entregues
+                                                Entregue
                                             </th>
 
                                         </tr>
 
                                     </thead>
 
-
                                     <tbody>
 
-                                        @if (isCarregandoItens)
-                                        {
-                                            <tr>
-
-                                                <td colspan="5"
-                                                    class="text-center py-4">
-
-                                                    <div class="spinner-border spinner-border-sm text-success me-2"
-                                                         role="status">
-                                                    </div>
-
-                                                    Carregando itens...
-
-                                                </td>
-
-                                            </tr>
-                                        }
-                                        else if (!itensAtuais.Any())
+                                        @if (itensAtuais == null ||
+                                             !itensAtuais.Any())
                                         {
                                             <tr>
 
                                                 <td colspan="5"
                                                     class="text-center py-4 text-muted">
 
-                                                    Nenhum item encontrado
+                                                    Nenhuma peça cadastrada
                                                     para esta requisição.
 
                                                 </td>
@@ -461,11 +511,9 @@
                                         {
                                             @foreach (var item in itensAtuais)
                                             {
-                                                bool atualizando =
-                                                    itensEmAtualizacao.Contains(item.Id);
-
                                                 <tr>
 
+                                                    <!-- SAP -->
                                                     <td class="ps-4 fw-bold text-secondary">
 
                                                         @item.SapPeca
@@ -473,24 +521,34 @@
                                                     </td>
 
 
+                                                    <!-- DESCRIÇÃO -->
                                                     <td>
 
                                                         @item.Descricao
 
                                                     </td>
 
-                                                    @*
-                                                    <td>
+
+                                                    <!-- VALOR -->
+                                                    @*<td>
 
                                                         R$
-                                                         @item.Valor.ToString("F2")
+                                                        @item.Valor.ToString("F2")
 
                                                     </td>*@
 
 
+                                                    <!-- QUANTIDADE -->
                                                     <td>
 
-                                                        <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+                                                        <div class="
+                                                            d-inline-flex
+                                                            align-items-center
+                                                            border
+                                                            rounded
+                                                            bg-light
+                                                            px-2
+                                                            py-1">
 
                                                             <span>
                                                                 @item.Quantidade
@@ -501,26 +559,32 @@
                                                     </td>
 
 
+                                                    <!-- CHECK ENTREGUE -->
                                                     <td class="text-center pe-4">
 
-                                                        <button class="btn @(item.Entregue
-                                                            ? "btn-outline-success"
-                                                            : "btn-outline-danger")
-                                                            btn-sm px-3"
-                                                                disabled="@atualizando"
-                                                                @onclick="() => AlternarEntrega(item)">
+                                                        <button type="button"
+                                                                class="btn @(item.Entregue
+                                                                    ? "btn-success"
+                                                                    : "btn-outline-secondary")
+                                                                    btn-sm px-3"
+                                                                @onclick="() => AlternarEntrega(item)"
+                                                                title="@(item.Entregue
+                                                                    ? "Marcar como pendente"
+                                                                    : "Marcar como entregue")">
 
-                                                            @if (atualizando)
+                                                            @if (item.Entregue)
                                                             {
-                                                                <span class="spinner-border spinner-border-sm"
-                                                                      role="status">
+                                                                <i class="bi bi-check-lg"></i>
+                                                                <span class="ms-1">
+                                                                    Entregue
                                                                 </span>
                                                             }
                                                             else
                                                             {
-                                                                @(item.Entregue
-                                                                    ? "✓"
-                                                                    : "✕")
+                                                                <i class="bi bi-square"></i>
+                                                                <span class="ms-1">
+                                                                    Pendente
+                                                                </span>
                                                             }
 
                                                         </button>
@@ -540,66 +604,121 @@
                         </div>
 
 
-                        <!-- =====================================
-                             RESUMO E LIBERAÇÃO
-                             ===================================== -->
-                        <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-2">
+                        <!-- =================================================
+                             RESUMO E AÇÕES
+                             ================================================= -->
+                        <div class="card border-0 shadow-sm p-4
+                                    bg-white mb-2">
 
-                            <div>
+                            <div class="row align-items-center g-3">
 
-                                <small class="text-muted d-block">
-                                    Resumo da seleção
-                                </small>
+                                <!-- RESUMO -->
+                                <div class="col-md-5">
 
-                                <strong>
+                                    <small class="text-muted d-block">
 
-                                    @(TotalItens - ItensEntregues)
-                                    Itens faltantes de
-                                    @TotalItens componentes
+                                        Resumo da seleção
 
-                                </strong>
+                                    </small>
+
+                                    @if (TotalItens == 0)
+                                    {
+                                        <strong>
+                                            Nenhum item cadastrado
+                                        </strong>
+                                    }
+                                    else if (TodosItensEntregues)
+                                    {
+                                        <strong class="text-success">
+
+                                            <i class="bi bi-check-circle-fill me-1"></i>
+
+                                            Todos os @TotalItens itens
+                                            foram entregues
+
+                                        </strong>
+                                    }
+                                    else
+                                    {
+                                        <strong>
+
+                                            @(TotalItens - ItensEntregues)
+                                            itens faltantes de
+                                            @TotalItens componentes
+
+                                        </strong>
+                                    }
+
+                                </div>
+
+
+                                <!-- VALOR -->
+                                <div class="col-md-3">
+
+                                    <small class="text-muted d-block">
+
+                                        Total estimado
+
+                                    </small>
+
+                                    <h4 class="text-success fw-bold mb-0">
+
+                                        R$ -
+                                       @* @ValorTotalEstimado.ToString("F2")*@
+
+                                    </h4>
+
+                                </div>
+
+
+                                <!-- CONDENAR -->
+                                <div class="col-md-2">
+
+                                    <button type="button"
+                                            class="btn btn-outline-danger
+                                                   w-100
+                                                   py-2
+                                                   fw-bold"
+                                            @onclick="CondenarProducao">
+
+                                        <i class="bi bi-x-circle me-1"></i>
+
+                                        Condenar
+
+                                    </button>
+
+                                </div>
+
+
+                                <!-- LIBERAR -->
+                                <div class="col-md-2">
+
+                                    <button type="button"
+                                            class="btn btn-success
+                                                   w-100
+                                                   py-2
+                                                   fw-bold"
+                                            disabled="@(!TodosItensEntregues)"
+                                            @onclick="LiberarProducao"
+                                            title="@(
+                                                TodosItensEntregues
+                                                    ? "Liberar produção"
+                                                    : "É necessário entregar todos os itens"
+                                            )">
+
+                                        <i class="bi bi-check-circle me-1"></i>
+
+                                        Liberar
+
+                                    </button>
+
+                                </div>
 
                             </div>
-
-
-                            <div>
-
-                                <small class="text-muted d-block">
-                                    Total estimado
-                                </small>
-
-                                <h4 class="text-success fw-bold mb-0">
-
-                                    R$ - 
-                                    @* @ValorTotalEstimado.ToString("F2")*@
-
-                                </h4>
-
-                            </div>
-
-
-                            <button class="btn btn-outline-danger px-3 py-2 fw-bold"
-                                    @onclick="CondenarProducao">
-
-                                Condenar
-
-                            </button>
-
-
-                            <button class="btn btn-success px-4 py-2 fw-bold"
-                                    @onclick="LiberarProducao"
-                                    disabled="@(!TodosItensEntregues)">
-
-                                @(TodosItensEntregues
-                                    ? "Liberar Produção"
-                                    : "Aguardando peças")
-
-                            </button>
 
                         </div>
 
                     </div>
-
                 }
 
             }
@@ -611,6 +730,205 @@
 </div>
 
 
+<!-- =============================================================
+     MODAL - ADICIONAR PEÇA
+     ============================================================= -->
+@if (mostrarModalAdicionarPeca)
+{
+    <div class="modal fade show d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow">
+
+                <!-- CABEÇALHO -->
+                <div class="modal-header">
+
+                    <h5 class="modal-title fw-bold">
+
+                        <i class="bi bi-plus-circle me-2 text-success"></i>
+
+                        Adicionar peça
+
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="FecharModalAdicionarPeca">
+                    </button>
+
+                </div>
+
+
+                <!-- CORPO -->
+                <div class="modal-body">
+
+                    <div class="alert alert-light border">
+
+                        <small class="text-muted">
+                            O.S.
+                        </small>
+
+                        <div class="fw-bold">
+                            @requisicaoSelecionada?.OsNumero
+                        </div>
+
+                    </div>
+
+
+                    <!-- SAP -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+
+                            SAP da peça
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Digite o SAP"
+                                   @bind="sapPecaBusca" />
+
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="BuscarPeca"
+                                    disabled="@buscandoPeca">
+
+                                @if (buscandoPeca)
+                                {
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-search"></i>
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESULTADO -->
+                    @if (pecaEncontrada != null)
+                    {
+                        <div class="card border-success mb-3">
+
+                            <div class="card-body">
+
+                                <small class="text-muted">
+                                    Peça encontrada
+                                </small>
+
+                                <h6 class="fw-bold mb-1">
+
+                                    @pecaEncontrada.SapPeca
+
+                                </h6>
+
+                                <p class="mb-0 text-secondary">
+
+                                    @pecaEncontrada.Descricao
+
+                                </p>
+
+                                <div class="mt-2 text-success fw-bold">
+
+                                    R$
+                                    @pecaEncontrada.Valor.ToString("F2")
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+
+                    <!-- MENSAGEM -->
+                    @if (!string.IsNullOrWhiteSpace(mensagemModal))
+                    {
+                        <div class="alert @(
+                            mensagemModalErro
+                                ? "alert-danger"
+                                : "alert-info"
+                        )">
+
+                            @mensagemModal
+
+                        </div>
+                    }
+
+
+                    <!-- QUANTIDADE -->
+                    @if (pecaEncontrada != null)
+                    {
+                        <div class="mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                Quantidade
+
+                            </label>
+
+                            <input type="number"
+                                   class="form-control"
+                                   min="1"
+                                   @bind="quantidadeNovaPeca" />
+
+                        </div>
+                    }
+
+                </div>
+
+
+                <!-- RODAPÉ -->
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="FecharModalAdicionarPeca">
+
+                        Cancelar
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-success"
+                            disabled="@(pecaEncontrada == null || salvandoPeca)"
+                            @onclick="AdicionarPeca">
+
+                        @if (salvandoPeca)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+
+                             <span>Adicionando...</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-plus-lg me-1"></i>
+
+                            <span>Adicionar peça</span>
+                        }
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
 @code {
 
     // ============================================================
@@ -618,7 +936,6 @@
     // ============================================================
 
     private bool isMenuOpen = false;
-
 
     private void ToggleMenu()
     {
@@ -634,54 +951,15 @@
 
     private SolicitacaoCompletaModel? requisicaoSelecionada;
 
-    /*
-     * IMPORTANTE:
-     *
-     * Antes:
-     *
-     * List<ItemRequisicaoModel>
-     *
-     * Agora:
-     *
-     * List<SolicitacaoItemModel>
-     *
-     * Portanto, os itens vêm exclusivamente da tabela:
-     *
-     * solicitacao_itens
-     */
+    // NOVA ARQUITETURA:
+    // Os itens agora vêm da tabela solicitacao_itens.
     private List<SolicitacaoItemModel> itensAtuais = new();
-
 
     private bool isLoading = true;
 
-    private bool isCarregandoItens = false;
 
-
-    // ============================================================
-    // CONTROLE DOS ITENS EM ATUALIZAÇÃO
-    // ============================================================
-
-    private HashSet<long> itensEmAtualizacao = new();
-
-
-    // ============================================================
-    // PERCENTUAIS DAS O.S.
-    // ============================================================
-
-    /*
-     * Guarda os itens de cada solicitação.
-     *
-     * Chave:
-     *     ID da solicitação
-     *
-     * Valor:
-     *     Lista de itens da solicitacao_itens
-     *
-     * Dessa forma o percentual da tabela principal também é
-     * calculado exclusivamente pela nova tabela.
-     */
-    private Dictionary<int, List<SolicitacaoItemModel>>
-        itensPorSolicitacao = new();
+    private Dictionary<long, List<SolicitacaoItemModel>> itensPorSolicitacao
+        = new();
 
 
     // ============================================================
@@ -690,30 +968,26 @@
 
     private string termoBusca = "";
 
+    private IEnumerable<SolicitacaoCompletaModel> SolicitacoesFiltradas =>
+        string.IsNullOrWhiteSpace(termoBusca)
+            ? solicitacoes
+            : solicitacoes.Where(s =>
+                (s.OsNumero != null &&
+                 s.OsNumero.Contains(
+                     termoBusca,
+                     StringComparison.OrdinalIgnoreCase))
 
-    private IEnumerable<SolicitacaoCompletaModel>
-        SolicitacoesFiltradas =>
-            string.IsNullOrWhiteSpace(termoBusca)
+                ||
 
-                ? solicitacoes
-
-                : solicitacoes.Where(s =>
-                    (s.OsNumero != null &&
-                     s.OsNumero.Contains(
-                         termoBusca,
-                         StringComparison.OrdinalIgnoreCase))
-
-                    ||
-
-                    (s.ModeloSolicitado != null &&
-                     s.ModeloSolicitado.Contains(
-                         termoBusca,
-                         StringComparison.OrdinalIgnoreCase))
-                );
+                (s.ModeloSolicitado != null &&
+                 s.ModeloSolicitado.Contains(
+                     termoBusca,
+                     StringComparison.OrdinalIgnoreCase))
+            );
 
 
     // ============================================================
-    // PROPRIEDADES DA REQUISIÇÃO SELECIONADA
+    // PROPRIEDADES DOS ITENS
     // ============================================================
 
     private int TotalItens =>
@@ -732,14 +1006,38 @@
             : 0;
 
 
-    private double ValorTotalEstimado =>
-        itensAtuais.Sum(i =>
-            i.Quantidade * i.Valor);
-
-
     private bool TodosItensEntregues =>
-        itensAtuais.Any() &&
-        itensAtuais.All(i => i.Entregue);
+        TotalItens > 0 &&
+        ItensEntregues == TotalItens;
+
+
+    // ============================================================
+    // VALOR TOTAL
+    // ============================================================
+
+    private double ValorTotalEstimado =>
+        itensAtuais.Sum(i => i.Quantidade * i.Valor);
+
+
+    // ============================================================
+    // MODAL ADICIONAR PEÇA
+    // ============================================================
+
+    private bool mostrarModalAdicionarPeca = false;
+
+    private string sapPecaBusca = "";
+
+    private int quantidadeNovaPeca = 1;
+
+    private bool buscandoPeca = false;
+
+    private bool salvandoPeca = false;
+
+    private PecaModel? pecaEncontrada;
+
+    private string mensagemModal = "";
+
+    private bool mensagemModalErro = false;
 
 
     // ============================================================
@@ -762,18 +1060,9 @@
         {
             isLoading = true;
 
-
-            /*
-             * ======================================================
-             * 1. BUSCA AS O.S.
-             * ======================================================
-             *
-             * Aqui buscamos somente os dados da tabela:
-             *
-             * solicitacoes
-             *
-             * NÃO buscamos itens_json.
-             */
+            // ========================================================
+            // 1. CARREGA AS O.S. PENDENTES
+            // ========================================================
 
             var response =
                 await Supabase
@@ -781,61 +1070,51 @@
                     .Filter(
                         "status",
                         Postgrest.Constants.Operator.Equals,
-                        "Pendente")
+                        "Pendente"
+                    )
                     .Get();
-
 
             solicitacoes = response.Models;
 
 
-            /*
-             * Limpa estados anteriores.
-             */
+            // ========================================================
+            // 2. CARREGA TODOS OS ITENS DA NOVA TABELA
+            // ========================================================
+
+            var itensResponse =
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Get();
+
+
+            // ========================================================
+            // 3. AGRUPA OS ITENS PELO ID DA SOLICITAÇÃO
+            // ========================================================
+
+            itensPorSolicitacao =
+                itensResponse.Models
+                    .GroupBy(i => i.SolicitacaoId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.ToList()
+                    );
+
+
+            // ========================================================
+            // 4. LIMPA A SELEÇÃO ATUAL
+            // ========================================================
 
             requisicaoSelecionada = null;
 
-            itensAtuais = new();
-
-            itensPorSolicitacao.Clear();
-
-
-            /*
-             * ======================================================
-             * 2. BUSCA OS ITENS DA NOVA TABELA
-             * ======================================================
-             *
-             * Esta é a única fonte de dados das peças.
-             *
-             * Não usamos:
-             *
-             * solicitacoes.itens_json
-             */
-
-            if (solicitacoes.Any())
-            {
-                var itensResponse =
-                    await Supabase
-                        .From<SolicitacaoItemModel>()
-                        .Get();
-
-
-                /*
-                 * Agrupa os itens por solicitacao_id.
-                 */
-
-                itensPorSolicitacao =
-                    itensResponse.Models
-                        .GroupBy(i => i.SolicitacaoId)
-                        .ToDictionary(
-                            g => g.Key,
-                            g => g.ToList());
-            }
+            itensAtuais =
+                new List<SolicitacaoItemModel>();
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync(
                 "alert",
-                $"Erro ao carregar requisições: {ex.Message}");
+                $"Erro ao carregar requisições: {ex.Message}"
+            );
         }
         finally
         {
@@ -845,16 +1124,15 @@
 
 
     // ============================================================
-    // CALCULAR PORCENTAGEM
+    // CALCULAR PERCENTUAL
     // ============================================================
 
     private int CalcularPorcentagem(
         SolicitacaoCompletaModel solicitacao)
     {
-        /*
-         * Busca exclusivamente na lista originada da
-         * tabela solicitacao_itens.
-         */
+        // ========================================================
+        // Procura os itens dessa O.S.
+        // ========================================================
 
         if (!itensPorSolicitacao.TryGetValue(
                 solicitacao.Id,
@@ -864,21 +1142,27 @@
         }
 
 
-        if (itens == null || !itens.Any())
-        {
-            return 0;
-        }
-
+        // ========================================================
+        // Quantidade total
+        // ========================================================
 
         int total =
             itens.Sum(i => i.Quantidade);
 
+
+        // ========================================================
+        // Quantidade entregue
+        // ========================================================
 
         int entregues =
             itens
                 .Where(i => i.Entregue)
                 .Sum(i => i.Quantidade);
 
+
+        // ========================================================
+        // Percentual
+        // ========================================================
 
         return total > 0
             ? (int)((double)entregues / total * 100)
@@ -890,210 +1174,410 @@
     // SELECIONAR REQUISIÇÃO
     // ============================================================
 
-    private async Task SelecionarRequisicao(int id)
+    private void SelecionarRequisicao(long id)
     {
-        /*
-         * Se clicar novamente na O.S. já aberta,
-         * fecha os detalhes.
-         */
+        // ========================================================
+        // Se clicar novamente na mesma O.S., fecha os detalhes
+        // ========================================================
 
         if (requisicaoSelecionada?.Id == id)
         {
             requisicaoSelecionada = null;
 
-            itensAtuais = new();
+            itensAtuais =
+                new List<SolicitacaoItemModel>();
 
             return;
         }
 
 
-        /*
-         * Localiza a O.S. na tabela solicitacoes.
-         */
+        // ========================================================
+        // Localiza a solicitação
+        // ========================================================
 
         requisicaoSelecionada =
-            solicitacoes.FirstOrDefault(
-                s => s.Id == id);
+            solicitacoes.FirstOrDefault(s => s.Id == id);
 
 
         if (requisicaoSelecionada == null)
         {
-            itensAtuais = new();
+            itensAtuais =
+                new List<SolicitacaoItemModel>();
 
             return;
         }
 
 
-        /*
-         * Carrega os itens diretamente da nova tabela.
-         */
+        // ========================================================
+        // Pega os itens já carregados em memória
+        // ========================================================
 
-        await CarregarItensDaSolicitacao(id);
-    }
-
-
-    // ============================================================
-    // CARREGAR ITENS DE UMA SOLICITAÇÃO
-    // ============================================================
-
-    private async Task CarregarItensDaSolicitacao(
-        int solicitacaoId)
-    {
-        try
+        if (itensPorSolicitacao.TryGetValue(
+                id,
+                out var itens))
         {
-            isCarregandoItens = true;
-
-
-            /*
-             * IMPORTANTE:
-             *
-             * Nenhuma leitura de itens_json.
-             *
-             * A consulta é diretamente:
-             *
-             * solicitacao_itens
-             */
-
-            var response =
-                await Supabase
-                    .From<SolicitacaoItemModel>()
-                    .Filter(
-                        "solicitacao_id",
-                        Postgrest.Constants.Operator.Equals,
-                        solicitacaoId.ToString())
-                    .Get();
-
-
+            itensAtuais = itens;
+        }
+        else
+        {
             itensAtuais =
-                response.Models
-                    .OrderBy(i => i.Id)
-                    .ToList();
-
-
-            /*
-             * Atualiza também o cache utilizado pela tabela
-             * principal.
-             */
-
-            itensPorSolicitacao[solicitacaoId] =
-                itensAtuais.ToList();
-        }
-        catch (Exception ex)
-        {
-            itensAtuais = new();
-
-            await JS.InvokeVoidAsync(
-                "alert",
-                $"Erro ao carregar itens: {ex.Message}");
-        }
-        finally
-        {
-            isCarregandoItens = false;
+                new List<SolicitacaoItemModel>();
         }
     }
 
 
     // ============================================================
-    // ALTERAR ENTREGA DE UMA PEÇA
+    // ALTERNAR ENTRE ENTREGUE / PENDENTE
     // ============================================================
 
     private async Task AlternarEntrega(
         SolicitacaoItemModel item)
     {
-        if (requisicaoSelecionada == null)
-        {
-            return;
-        }
-
-
-        /*
-         * Evita dois cliques simultâneos no mesmo item.
-         */
-
-        if (itensEmAtualizacao.Contains(item.Id))
-        {
-            return;
-        }
-
-
-        bool estadoAnterior = item.Entregue;
-
-        bool novoEstado = !estadoAnterior;
-
+        bool estadoAnterior =
+            item.Entregue;
 
         try
         {
-            itensEmAtualizacao.Add(item.Id);
+            // ========================================================
+            // ALTERA O CHECK
+            // ========================================================
+
+            item.Entregue =
+                !estadoAnterior;
 
 
-            /*
-             * Atualização LOCAL
-             *
-             * Faz a tela responder imediatamente.
-             */
-
-            item.Entregue = novoEstado;
-
-
-            /*
-             * ======================================================
-             * ATUALIZA SOMENTE A PEÇA
-             * ======================================================
-             *
-             * Não existe mais:
-             *
-             * Upsert(solicitacao)
-             *
-             * Não existe mais:
-             *
-             * itens_json
-             *
-             * Não regravamos a O.S. inteira.
-             *
-             * Somente:
-             *
-             * solicitacao_itens.entregue
-             *
-             * daquele ID.
-             */
+            // ========================================================
+            // SALVA SOMENTE ESTE ITEM
+            // ========================================================
 
             await Supabase
                 .From<SolicitacaoItemModel>()
                 .Where(i => i.Id == item.Id)
-                .Set(i => i.Entregue, novoEstado)
-                .Update();
+                .Update(item);
 
 
-            /*
-             * Atualiza o cache da O.S.
-             */
+            // ========================================================
+            // ATUALIZA O DICIONÁRIO EM MEMÓRIA
+            // ========================================================
 
-            if (requisicaoSelecionada != null)
+            if (itensPorSolicitacao.TryGetValue(
+                    item.SolicitacaoId,
+                    out var lista))
             {
-                itensPorSolicitacao[
-                    requisicaoSelecionada.Id] =
-                    itensAtuais.ToList();
+                var itemMemoria =
+                    lista.FirstOrDefault(i => i.Id == item.Id);
+
+                if (itemMemoria != null)
+                {
+                    itemMemoria.Entregue =
+                        item.Entregue;
+                }
+            }
+
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // ========================================================
+            // SE DER ERRO, REVERTE
+            // ========================================================
+
+            item.Entregue =
+                estadoAnterior;
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao salvar alteração da entrega: {ex.Message}"
+            );
+        }
+    }
+
+
+    // ============================================================
+    // ABRIR MODAL
+    // ============================================================
+
+    private void AbrirModalAdicionarPeca()
+    {
+        sapPecaBusca = "";
+
+        quantidadeNovaPeca = 1;
+
+        pecaEncontrada = null;
+
+        mensagemModal = "";
+
+        mensagemModalErro = false;
+
+        mostrarModalAdicionarPeca = true;
+    }
+
+
+    // ============================================================
+    // FECHAR MODAL
+    // ============================================================
+
+    private void FecharModalAdicionarPeca()
+    {
+        mostrarModalAdicionarPeca = false;
+
+        sapPecaBusca = "";
+
+        quantidadeNovaPeca = 1;
+
+        pecaEncontrada = null;
+
+        mensagemModal = "";
+
+        mensagemModalErro = false;
+    }
+
+
+    // ============================================================
+    // BUSCAR PEÇA
+    // ============================================================
+
+    private async Task BuscarPeca()
+    {
+        mensagemModal = "";
+
+        mensagemModalErro = false;
+
+        pecaEncontrada = null;
+
+
+        if (string.IsNullOrWhiteSpace(sapPecaBusca))
+        {
+            mensagemModal =
+                "Informe o SAP da peça.";
+
+            mensagemModalErro = true;
+
+            return;
+        }
+
+
+        try
+        {
+            buscandoPeca = true;
+
+
+            // ----------------------------------------------------
+            // Busca exata na tabela pecas
+            // ----------------------------------------------------
+
+            var response =
+                await Supabase
+                    .From<PecaModel>()
+                    .Filter(
+                        "sap_peca",
+                        Postgrest.Constants.Operator.Equals,
+                        sapPecaBusca.Trim()
+                    )
+                    .Get();
+
+
+            pecaEncontrada =
+                response.Models.FirstOrDefault();
+
+
+            if (pecaEncontrada == null)
+            {
+                mensagemModal =
+                    "Nenhuma peça encontrada com este SAP.";
+
+                mensagemModalErro = true;
             }
         }
         catch (Exception ex)
         {
-            /*
-             * Se o banco falhar,
-             * desfaz a alteração visual.
-             */
+            mensagemModal =
+                $"Erro ao buscar peça: {ex.Message}";
 
-            item.Entregue = estadoAnterior;
-
-
-            await JS.InvokeVoidAsync(
-                "alert",
-                $"Erro ao salvar alteração: {ex.Message}");
+            mensagemModalErro = true;
         }
         finally
         {
-            itensEmAtualizacao.Remove(item.Id);
+            buscandoPeca = false;
+        }
+    }
+
+
+    // ============================================================
+    // ADICIONAR PEÇA
+    // ============================================================
+
+    private async Task AdicionarPeca()
+    {
+        mensagemModal = "";
+
+        mensagemModalErro = false;
+
+
+        if (requisicaoSelecionada == null)
+        {
+            mensagemModal =
+                "Nenhuma requisição selecionada.";
+
+            mensagemModalErro = true;
+
+            return;
+        }
+
+
+        if (pecaEncontrada == null)
+        {
+            mensagemModal =
+                "Busque uma peça antes de adicionar.";
+
+            mensagemModalErro = true;
+
+            return;
+        }
+
+
+        if (quantidadeNovaPeca <= 0)
+        {
+            mensagemModal =
+                "Informe uma quantidade válida.";
+
+            mensagemModalErro = true;
+
+            return;
+        }
+
+
+        // --------------------------------------------------------
+        // Verificação visual de duplicidade
+        // --------------------------------------------------------
+
+        bool jaExiste =
+            itensAtuais.Any(i =>
+                string.Equals(
+                    i.SapPeca?.Trim(),
+                    pecaEncontrada.SapPeca?.Trim(),
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+
+
+        if (jaExiste)
+        {
+            mensagemModal =
+                "Esta peça já está cadastrada nesta O.S.";
+
+            mensagemModalErro = true;
+
+            return;
+        }
+
+
+        try
+        {
+            salvandoPeca = true;
+
+
+            // ----------------------------------------------------
+            // Cria uma nova linha na tabela solicitacao_itens
+            // ----------------------------------------------------
+
+            var novoItem =
+                new SolicitacaoItemModel
+                {
+                    SolicitacaoId =
+                        requisicaoSelecionada.Id,
+
+                    SapPeca =
+                        pecaEncontrada.SapPeca,
+
+                    Descricao =
+                        pecaEncontrada.Descricao,
+
+                    Quantidade =
+                        quantidadeNovaPeca,
+
+                    Valor =
+                        pecaEncontrada.Valor,
+
+                    // Peça nova começa como NÃO ENTREGUE
+                    Entregue = false
+                };
+
+
+            // ----------------------------------------------------
+            // INSERT
+            // ----------------------------------------------------
+
+            var response =
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Insert(novoItem);
+
+
+            // ----------------------------------------------------
+            // Pega o objeto criado pelo banco
+            // ----------------------------------------------------
+
+            var itemInserido =
+                response.Models.FirstOrDefault();
+
+
+            if (itemInserido != null)
+            {
+                itensAtuais.Add(itemInserido);
+            }
+            else
+            {
+                // ------------------------------------------------
+                // Fallback caso a resposta não retorne o registro
+                // ------------------------------------------------
+
+                var itensResponse =
+                    await Supabase
+                        .From<SolicitacaoItemModel>()
+                        .Filter(
+                            "solicitacao_id",
+                            Postgrest.Constants.Operator.Equals,
+                            requisicaoSelecionada.Id.ToString()
+                        )
+                        .Get();
+
+                itensAtuais =
+                    itensResponse.Models;
+            }
+
+
+            mensagemModal =
+                "Peça adicionada com sucesso.";
+
+
+            mensagemModalErro = false;
+
+
+            // ----------------------------------------------------
+            // Limpa campos para uma nova inclusão
+            // ----------------------------------------------------
+
+            sapPecaBusca = "";
+
+            quantidadeNovaPeca = 1;
+
+            pecaEncontrada = null;
+
 
             StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            mensagemModal =
+                $"Erro ao adicionar peça: {ex.Message}";
+
+            mensagemModalErro = true;
+        }
+        finally
+        {
+            salvandoPeca = false;
         }
     }
 
@@ -1105,20 +1589,20 @@
     private async Task LiberarProducao()
     {
         if (requisicaoSelecionada == null)
-        {
             return;
-        }
 
 
-        /*
-         * Não permite liberar enquanto existir peça pendente.
-         */
+        // --------------------------------------------------------
+        // Segurança adicional:
+        // não permite liberar enquanto existir item pendente
+        // --------------------------------------------------------
 
         if (!TodosItensEntregues)
         {
             await JS.InvokeVoidAsync(
                 "alert",
-                "Não é possível liberar a produção enquanto houver peças pendentes.");
+                "Não é possível liberar a produção. Existem peças pendentes."
+            );
 
             return;
         }
@@ -1126,96 +1610,91 @@
 
         try
         {
-            /*
-             * Atualiza SOMENTE o status da solicitação.
-             */
+            // ----------------------------------------------------
+            // Atualiza somente o status da solicitação
+            // ----------------------------------------------------
+
+            requisicaoSelecionada.Status =
+                "Liberado";
+
 
             await Supabase
                 .From<SolicitacaoCompletaModel>()
                 .Where(s =>
                     s.Id == requisicaoSelecionada.Id)
-                .Set(s => s.Status!, "Liberado")
-                .Update();
+                .Update(requisicaoSelecionada);
 
 
             await JS.InvokeVoidAsync(
                 "alert",
-                "Produção liberada com sucesso! A O.S. foi removida desta tela.");
+                "Produção liberada com sucesso! A O.S. foi removida desta tela."
+            );
 
-
-            /*
-             * Recarrega a lista.
-             */
-
-            termoBusca = "";
 
             await CarregarRequisicoes();
+
+            termoBusca = "";
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync(
                 "alert",
-                $"Erro ao liberar: {ex.Message}");
+                $"Erro ao liberar produção: {ex.Message}"
+            );
         }
     }
 
 
     // ============================================================
-    // CONDENAR PRODUÇÃO
+    // CONDENAR
     // ============================================================
 
     private async Task CondenarProducao()
     {
         if (requisicaoSelecionada == null)
-        {
             return;
-        }
 
 
         bool confirmado =
             await JS.InvokeAsync<bool>(
                 "confirm",
-                "Tem certeza que deseja marcar esta requisição como Condenada?");
+                "Tem certeza que deseja marcar esta requisição como Condenada?"
+            );
 
 
         if (!confirmado)
-        {
             return;
-        }
 
 
         try
         {
-            /*
-             * Atualiza somente o status da O.S.
-             */
+            requisicaoSelecionada.Status =
+                "Condenado";
+
 
             await Supabase
                 .From<SolicitacaoCompletaModel>()
                 .Where(s =>
                     s.Id == requisicaoSelecionada.Id)
-                .Set(s => s.Status!, "Condenado")
-                .Update();
+                .Update(requisicaoSelecionada);
 
 
             await JS.InvokeVoidAsync(
                 "alert",
-                "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela.");
+                "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela."
+            );
 
-
-            /*
-             * Recarrega a lista.
-             */
-
-            termoBusca = "";
 
             await CarregarRequisicoes();
+
+            termoBusca = "";
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync(
                 "alert",
-                $"Erro ao condenar requisição: {ex.Message}");
+                $"Erro ao condenar requisição: {ex.Message}"
+            );
         }
     }
 
@@ -1228,4 +1707,5 @@
     {
         Nav.NavigateTo("/");
     }
+
 }

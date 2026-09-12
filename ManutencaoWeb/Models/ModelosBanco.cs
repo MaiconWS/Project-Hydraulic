@@ -72,7 +72,7 @@ namespace ManutencaoWeb.Models
     public class SolicitacaoCompletaModel : BaseModel
     {
         [PrimaryKey("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("os_numero")]
         public string? OsNumero { get; set; }
@@ -80,8 +80,14 @@ namespace ManutencaoWeb.Models
         [Column("modelo_solicitado")]
         public string? ModeloSolicitado { get; set; }
 
-        // Mantido para compatibilidade com o sistema atual.
-        // O controle de entrega agora é feito em solicitacao_itens.
+        // ========================================================
+        // LEGADO
+        //
+        // O campo continua no modelo porque ainda existe no banco.
+        // A nova Requisicoes.razor NÃO utiliza esse campo para
+        // controlar entrega das peças.
+        // ========================================================
+
         [Column("itens_json")]
         public List<ItemRequisicaoModel>? ItensJson { get; set; }
 
@@ -97,11 +103,10 @@ namespace ManutencaoWeb.Models
 
 
     // ============================================================
-    // ITENS ANTIGOS DO JSON
-    // ============================================================
-    // Mantido porque outras páginas do sistema podem utilizar
-    // esse modelo enquanto a migração para solicitacao_itens
-    // não for concluída em todo o projeto.
+    // ITEM LEGADO DO JSON
+    //
+    // Mantido porque o itens_json ainda existe no banco e pode
+    // ser utilizado por outras páginas durante a transição.
     // ============================================================
 
     public class ItemRequisicaoModel
@@ -124,13 +129,8 @@ namespace ManutencaoWeb.Models
 
 
     // ============================================================
-    // NOVO MODEL: SOLICITACAO_ITENS
-    // ============================================================
-    // Cada peça de uma solicitação possui agora sua própria linha
-    // no banco de dados.
-    //
-    // Isso permite atualizar somente uma peça quando ela for
-    // entregue, evitando regravar o itens_json inteiro.
+    // NOVA ARQUITETURA
+    // TABELA: solicitacao_itens
     // ============================================================
 
     [Table("solicitacao_itens")]
@@ -140,7 +140,7 @@ namespace ManutencaoWeb.Models
         public long Id { get; set; }
 
         [Column("solicitacao_id")]
-        public int SolicitacaoId { get; set; }
+        public long SolicitacaoId { get; set; }
 
         [Column("sap_peca")]
         public string? SapPeca { get; set; }
