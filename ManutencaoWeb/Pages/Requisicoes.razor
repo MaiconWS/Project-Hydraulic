@@ -11,15 +11,18 @@
 <div class="dashboard-wrapper">
 
     <!-- =========================================
-         SIDEBAR (INTACTO)
+         SIDEBAR
          ========================================= -->
     <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
+
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide">
-                <span> CRR</span>
+                <span> Manutenção WEB</span>
             </i>
         </div>
+
         <ul class="sidebar-menu">
+
             <li>
                 <a href="/">
                     <i class="bi bi-house-door"></i>
@@ -33,17 +36,21 @@
                     <span>Requisições</span>
                 </a>
             </li>
+
             <li>
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
+
             <li>
                 <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
+                    <i class="bi bi-wrench-adjustable"></i>
+                    <span>Liberados</span>
                 </a>
             </li>
+
             @if (Sessao.IsAdmin)
             {
                 <li>
@@ -53,20 +60,35 @@
                     </a>
                 </li>
             }
+
         </ul>
 
         <div class="sidebar-footer">
-                        <div class="d-flex align-items-center gap-2 mb-3 px-2">
-                <div class="user-avatar">@(Sessao.Iniciais)</div>
-                <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong><br/>
+
+            <div class="d-flex align-items-center gap-2 mb-3 px-2">
+
+                <div class="user-avatar">
+                    @(Sessao.Iniciais)
                 </div>
+
+                <div style="font-size: 12px; color: #cfdcd4;">
+
+                    <strong>@Sessao.NomeUsuario</strong>
+
+                </div>
+
             </div>
+
             <button class="btn-sair" @onclick="Sair">
+
                 <i class="bi bi-box-arrow-right"></i>
+
                 <span>Sair</span>
+
             </button>
+
         </div>
+
     </nav>
 
 
@@ -77,250 +99,743 @@
 
         <!-- TOP BAR -->
         <header class="top-bar">
+
             <div class="top-bar-left d-flex align-items-center">
-                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
+
+                <button class="menu-toggle d-md-none me-2"
+                        @onclick="ToggleMenu">
+
                     <i class="bi bi-list"></i>
+
                 </button>
+
                 <span class="user-greeting">
-                    Olá, <strong>@Sessao.NomeUsuario!</strong><br/>
+
+                    Olá, <strong>@Sessao.NomeUsuario!</strong>
+
                 </span>
+
             </div>
+
+
             <div class="top-bar-right">
-                <div class="user-avatar">@(Sessao.Iniciais)</div>
+
+                <div class="user-avatar">
+                    @(Sessao.Iniciais)
+                </div>
+
             </div>
+
         </header>
+
 
         <!-- =========================================
              CORPO
              ========================================= -->
         <div class="content-body">
 
-            <!-- Título com Botão de Voltar baseado na Imagem -->
+            <!-- TÍTULO -->
             <div class="d-flex align-items-start mb-4 gap-3">
-                <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center" 
-                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;" 
+
+                <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;"
                         @onclick="Sair">
+
                     <i class="bi bi-arrow-left text-dark"></i>
+
                 </button>
+
+
                 <div class="section-title mb-0">
-                    <h2 class="mb-1" style="color: #2c3e50; font-weight: 700;">Controle de Requisições</h2>
+
+                    <h2 class="mb-1"
+                        style="color: #2c3e50; font-weight: 700;">
+
+                        Controle de Requisições
+
+                    </h2>
+
                     <p class="text-muted mb-0">
-                        Acompanhe e atualize a entrega dos componentes solicitados por Ordem de Serviço.
+
+                        Acompanhe e atualize a entrega dos componentes
+                        solicitados por Ordem de Serviço.
+
                     </p>
+
                 </div>
+
             </div>
 
-            <!-- CARREGAMENTO -->
+
+            <!-- =========================================
+                 CARREGAMENTO
+                 ========================================= -->
             @if (isLoading)
             {
                 <div class="text-center py-5">
-                    <div class="spinner-border text-success" role="status"></div>
+
+                    <div class="spinner-border text-success"
+                         role="status">
+                    </div>
+
                 </div>
             }
             else if (solicitacoes == null || !solicitacoes.Any())
             {
                 <div class="alert alert-info">
+
                     Nenhuma requisição pendente encontrada no banco de dados.
+
                 </div>
             }
             else
             {
-                <!-- =====================================
-                     ÁREA DE BUSCA (Estilo da Foto)
-                     ===================================== -->
-                <div class="card border-0 shadow-sm p-4 mb-4">
-                    <label class="fw-bold mb-2">Informe a Ordem de Serviço</label>
-                    <input type="text" class="form-control" 
-                           placeholder="Busque por O.S ou Modelo de componente" 
-                           @bind="termoBusca" @bind:event="oninput" />
-                </div>
 
                 <!-- =====================================
-                     TABELA MASTER DE O.S. (Estilo da Foto)
+                     BUSCA
+                     ===================================== -->
+                <div class="card border-0 shadow-sm p-4 mb-4">
+
+                    <label class="fw-bold mb-2">
+
+                        Informe a Ordem de Serviço
+
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Busque por O.S ou Modelo de componente"
+                           @bind="termoBusca"
+                           @bind:event="oninput" />
+
+                </div>
+
+
+                <!-- =====================================
+                     TABELA MASTER
                      ===================================== -->
                 <div class="card border-0 shadow-sm mb-4">
+
                     <div class="table-responsive">
+
                         <table class="table align-middle mb-0 table-hover">
+
                             <thead class="bg-success text-white">
+
                                 <tr>
-                                    <th class="ps-4 py-3">O.S</th>
-                                    <th class="py-3">Componente</th>
-                                    <th class="py-3" style="width: 150px;">%</th>
-                                    <th class="pe-4 py-3 text-end">Ação</th>
+
+                                    <th class="ps-4 py-3">
+                                        O.S
+                                    </th>
+
+                                    <th class="py-3">
+                                        Componente
+                                    </th>
+
+                                    <th class="py-3"
+                                        style="width: 150px;">
+                                        %
+                                    </th>
+
+                                    <th class="pe-4 py-3 text-end">
+                                        Ação
+                                    </th>
+
                                 </tr>
+
                             </thead>
+
+
                             <tbody>
+
                                 @foreach (var s in SolicitacoesFiltradas)
                                 {
                                     int pct = CalcularPorcentagem(s);
-                                    bool isSelected = requisicaoSelecionada?.Id == s.Id;
 
-                                    <tr style="cursor: pointer; background-color: @(isSelected ? "#f1f8f5" : "transparent");" 
+                                    bool isSelected =
+                                        requisicaoSelecionada?.Id == s.Id;
+
+                                    <tr style="cursor: pointer; background-color: @(isSelected ? "#f1f8f5" : "transparent");"
                                         @onclick="() => SelecionarRequisicao(s.Id)">
-                                        
-                                        <td class="ps-4 text-muted">O.S.: @s.OsNumero</td>
-                                        <td class="fw-bold text-secondary">@s.ModeloSolicitado</td>
+
+                                        <td class="ps-4 text-muted">
+
+                                            O.S.: @s.OsNumero
+
+                                        </td>
+
+
+                                        <td class="fw-bold text-secondary">
+
+                                            @s.ModeloSolicitado
+
+                                        </td>
+
+
                                         <td>
+
                                             <div class="d-flex align-items-center gap-2">
-                                                <span style="min-width: 40px;">@pct%</span>
-                                                <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
-                                                    <div class="progress-bar bg-success" style="width: @pct%"></div>
+
+                                                <span style="min-width: 40px;">
+
+                                                    @pct%
+
+                                                </span>
+
+
+                                                <div class="progress flex-grow-1"
+                                                     style="height: 6px; background-color: #e9ecef;">
+
+                                                    <div class="progress-bar bg-success"
+                                                         style="width: @pct%">
+                                                    </div>
+
                                                 </div>
+
                                             </div>
+
                                         </td>
+
+
                                         <td class="pe-4 text-end">
-                                            <button class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")">
-                                                @(isSelected ? "Editando..." : "Ver Itens")
+
+                                            <button class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => SelecionarRequisicao(s.Id)">
+
+                                                @(isSelected
+                                                    ? "Editando..."
+                                                    : "Ver Itens")
+
                                             </button>
+
                                         </td>
+
                                     </tr>
                                 }
+
                             </tbody>
+
                         </table>
+
                     </div>
+
                 </div>
 
+
                 <!-- =====================================
-                     DETALHES DA REQUISIÇÃO SELECIONADA
+                     DETALHES
                      ===================================== -->
                 @if (requisicaoSelecionada != null)
                 {
-                    <div class="mt-5 p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #198754;">
-                        <h4 class="mb-4">Itens da <strong>O.S.: @requisicaoSelecionada.OsNumero</strong></h4>
+
+                    <div class="mt-5 p-3 rounded"
+                         style="background-color: #f8f9fa; border-left: 4px solid #198754;">
+
+                        <h4 class="mb-4">
+
+                            Itens da
+                            <strong>
+                                O.S.: @requisicaoSelecionada.OsNumero
+                            </strong>
+
+                        </h4>
+
 
                         <!-- CARDS DE DETALHES -->
                         <div class="row g-3 mb-4">
+
                             <div class="col-md-8">
+
                                 <div class="card border-0 shadow-sm p-3 bg-white h-100">
-                                    <small class="text-muted">Modelo</small>
-                                    <h6 class="mb-0 fw-bold">@requisicaoSelecionada.ModeloSolicitado</h6>
+
+                                    <small class="text-muted">
+                                        Modelo
+                                    </small>
+
+                                    <h6 class="mb-0 fw-bold">
+
+                                        @requisicaoSelecionada.ModeloSolicitado
+
+                                    </h6>
+
                                 </div>
+
                             </div>
+
+
                             <div class="col-md-4">
+
                                 <div class="card border-0 shadow-sm p-3 bg-white h-100">
-                                    <small class="text-muted">Progresso</small>
-                                    <h6 class="mb-0 fw-bold">@ItensEntregues de @TotalItens itens (@PorcentagemConcluida%)</h6>
+
+                                    <small class="text-muted">
+                                        Progresso
+                                    </small>
+
+                                    <h6 class="mb-0 fw-bold">
+
+                                        @ItensEntregues de @TotalItens
+                                        itens (@PorcentagemConcluida%)
+
+                                    </h6>
+
                                 </div>
+
                             </div>
+
                         </div>
 
-                        <!-- TABELA DE ITENS (Sua original) -->
+
+                        <!-- =====================================
+                             TABELA DE ITENS
+                             ===================================== -->
                         <div class="card border-0 shadow-sm mb-4">
+
                             <div class="table-responsive">
+
                                 <table class="table align-middle mb-0">
+
                                     <thead class="bg-secondary text-white">
+
                                         <tr>
-                                            <th class="ps-4">SAP</th>
-                                            <th>Componente</th>
-                                            <th>Valor (R$)</th>
-                                            <th>Quantidade</th>
-                                            <th class="text-center pe-4">Entregues</th>
+
+                                            <th class="ps-4">
+                                                SAP
+                                            </th>
+
+                                            <th>
+                                                Componente
+                                            </th>
+
+                                            @*<th>
+                                                Valor (R$)
+                                            </th>*@
+
+                                            <th>
+                                                Quantidade
+                                            </th>
+
+                                            <th class="text-center pe-4">
+                                                Entregues
+                                            </th>
+
                                         </tr>
+
                                     </thead>
+
+
                                     <tbody>
-                                        @foreach (var item in itensAtuais)
+
+                                        @if (isCarregandoItens)
                                         {
                                             <tr>
-                                                <td class="ps-4 fw-bold text-secondary">@item.Sap</td>
-                                                <td>@item.Descricao</td>
-                                                <td>R$ @item.Valor.ToString("F2")</td>
-                                                <td>
-                                                    <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
-                                                        <span>@item.Quantidade</span>
+
+                                                <td colspan="5"
+                                                    class="text-center py-4">
+
+                                                    <div class="spinner-border spinner-border-sm text-success me-2"
+                                                         role="status">
                                                     </div>
+
+                                                    Carregando itens...
+
                                                 </td>
-                                                <td class="text-center pe-4">
-                                                    <button class="btn @(item.Entregue ? "btn-outline-success" : "btn-outline-danger") btn-sm px-3"
-                                                            @onclick="() => AlternarEntrega(item)">
-                                                        @(item.Entregue ? "✓" : "✕")
-                                                    </button>
-                                                </td>
+
                                             </tr>
                                         }
+                                        else if (!itensAtuais.Any())
+                                        {
+                                            <tr>
+
+                                                <td colspan="5"
+                                                    class="text-center py-4 text-muted">
+
+                                                    Nenhum item encontrado
+                                                    para esta requisição.
+
+                                                </td>
+
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var item in itensAtuais)
+                                            {
+                                                bool atualizando =
+                                                    itensEmAtualizacao.Contains(item.Id);
+
+                                                <tr>
+
+                                                    <td class="ps-4 fw-bold text-secondary">
+
+                                                        @item.SapPeca
+
+                                                    </td>
+
+
+                                                    <td>
+
+                                                        @item.Descricao
+
+                                                    </td>
+
+                                                    @*
+                                                    <td>
+
+                                                        R$
+                                                         @item.Valor.ToString("F2")
+
+                                                    </td>*@
+
+
+                                                    <td>
+
+                                                        <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
+
+                                                            <span>
+                                                                @item.Quantidade
+                                                            </span>
+
+                                                        </div>
+
+                                                    </td>
+
+
+                                                    <td class="text-center pe-4">
+
+                                                        <button class="btn @(item.Entregue
+                                                            ? "btn-outline-success"
+                                                            : "btn-outline-danger")
+                                                            btn-sm px-3"
+                                                                disabled="@atualizando"
+                                                                @onclick="() => AlternarEntrega(item)">
+
+                                                            @if (atualizando)
+                                                            {
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                      role="status">
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                @(item.Entregue
+                                                                    ? "✓"
+                                                                    : "✕")
+                                                            }
+
+                                                        </button>
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+
                                     </tbody>
+
                                 </table>
+
                             </div>
+
                         </div>
 
-                        <!-- RESUMO E LIBERAÇÃO -->
+
+                        <!-- =====================================
+                             RESUMO E LIBERAÇÃO
+                             ===================================== -->
                         <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-2">
+
                             <div>
-                                <small class="text-muted d-block">Resumo da seleção</small>
-                                <strong>@(TotalItens - ItensEntregues) Itens faltantes de @TotalItens componentes</strong>
+
+                                <small class="text-muted d-block">
+                                    Resumo da seleção
+                                </small>
+
+                                <strong>
+
+                                    @(TotalItens - ItensEntregues)
+                                    Itens faltantes de
+                                    @TotalItens componentes
+
+                                </strong>
+
                             </div>
+
+
                             <div>
-                                <small class="text-muted d-block">Total estimado</small>
-                                <h4 class="text-success fw-bold mb-0">R$ @ValorTotalEstimado.ToString("F2")</h4>
+
+                                <small class="text-muted d-block">
+                                    Total estimado
+                                </small>
+
+                                <h4 class="text-success fw-bold mb-0">
+
+                                    R$ - 
+                                    @* @ValorTotalEstimado.ToString("F2")*@
+
+                                </h4>
+
                             </div>
-                            <button class="btn btn-outline-danger px-3 py-2 fw-bold" @onclick="CondenarProducao">
+
+
+                            <button class="btn btn-outline-danger px-3 py-2 fw-bold"
+                                    @onclick="CondenarProducao">
+
                                 Condenar
+
                             </button>
-                            <button class="btn btn-success px-4 py-2 fw-bold" @onclick="LiberarProducao">
-                                Liberar Produção
+
+
+                            <button class="btn btn-success px-4 py-2 fw-bold"
+                                    @onclick="LiberarProducao"
+                                    disabled="@(!TodosItensEntregues)">
+
+                                @(TodosItensEntregues
+                                    ? "Liberar Produção"
+                                    : "Aguardando peças")
+
                             </button>
+
                         </div>
+
                     </div>
+
                 }
+
             }
+
         </div>
+
     </main>
+
 </div>
 
-<!-- =============================================
-     CÓDIGO C#
-     ============================================= -->
-@code {
-    // Menu Mobile
-    private bool isMenuOpen = false;
-    private void ToggleMenu() => isMenuOpen = !isMenuOpen;
 
-    // Estado da página
+@code {
+
+    // ============================================================
+    // MENU MOBILE
+    // ============================================================
+
+    private bool isMenuOpen = false;
+
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+
+    // ============================================================
+    // ESTADO DA PÁGINA
+    // ============================================================
+
     private List<SolicitacaoCompletaModel> solicitacoes = new();
+
     private SolicitacaoCompletaModel? requisicaoSelecionada;
-    private List<ItemRequisicaoModel> itensAtuais = new();
+
+    /*
+     * IMPORTANTE:
+     *
+     * Antes:
+     *
+     * List<ItemRequisicaoModel>
+     *
+     * Agora:
+     *
+     * List<SolicitacaoItemModel>
+     *
+     * Portanto, os itens vêm exclusivamente da tabela:
+     *
+     * solicitacao_itens
+     */
+    private List<SolicitacaoItemModel> itensAtuais = new();
+
+
     private bool isLoading = true;
 
-    // Busca
+    private bool isCarregandoItens = false;
+
+
+    // ============================================================
+    // CONTROLE DOS ITENS EM ATUALIZAÇÃO
+    // ============================================================
+
+    private HashSet<long> itensEmAtualizacao = new();
+
+
+    // ============================================================
+    // PERCENTUAIS DAS O.S.
+    // ============================================================
+
+    /*
+     * Guarda os itens de cada solicitação.
+     *
+     * Chave:
+     *     ID da solicitação
+     *
+     * Valor:
+     *     Lista de itens da solicitacao_itens
+     *
+     * Dessa forma o percentual da tabela principal também é
+     * calculado exclusivamente pela nova tabela.
+     */
+    private Dictionary<int, List<SolicitacaoItemModel>>
+        itensPorSolicitacao = new();
+
+
+    // ============================================================
+    // BUSCA
+    // ============================================================
+
     private string termoBusca = "";
-    
-    // Lista Filtrada para a Tabela Master
-    private IEnumerable<SolicitacaoCompletaModel> SolicitacoesFiltradas =>
-        string.IsNullOrWhiteSpace(termoBusca)
-            ? solicitacoes
-            : solicitacoes.Where(s =>
-                (s.OsNumero != null && s.OsNumero.Contains(termoBusca, StringComparison.OrdinalIgnoreCase)) ||
-                (s.ModeloSolicitado != null && s.ModeloSolicitado.Contains(termoBusca, StringComparison.OrdinalIgnoreCase)));
 
-    // Propriedades Calculadas para os itens selecionados
-    private int TotalItens => itensAtuais.Sum(i => i.Quantidade);
-    private int ItensEntregues => itensAtuais.Where(i => i.Entregue).Sum(i => i.Quantidade);
-    private int PorcentagemConcluida => TotalItens > 0 ? (int)((double)ItensEntregues / TotalItens * 100) : 0;
-    private double ValorTotalEstimado => itensAtuais.Sum(i => i.Quantidade * i.Valor);
 
-    // ==========================================
-    // Métodos
-    // ==========================================
+    private IEnumerable<SolicitacaoCompletaModel>
+        SolicitacoesFiltradas =>
+            string.IsNullOrWhiteSpace(termoBusca)
+
+                ? solicitacoes
+
+                : solicitacoes.Where(s =>
+                    (s.OsNumero != null &&
+                     s.OsNumero.Contains(
+                         termoBusca,
+                         StringComparison.OrdinalIgnoreCase))
+
+                    ||
+
+                    (s.ModeloSolicitado != null &&
+                     s.ModeloSolicitado.Contains(
+                         termoBusca,
+                         StringComparison.OrdinalIgnoreCase))
+                );
+
+
+    // ============================================================
+    // PROPRIEDADES DA REQUISIÇÃO SELECIONADA
+    // ============================================================
+
+    private int TotalItens =>
+        itensAtuais.Sum(i => i.Quantidade);
+
+
+    private int ItensEntregues =>
+        itensAtuais
+            .Where(i => i.Entregue)
+            .Sum(i => i.Quantidade);
+
+
+    private int PorcentagemConcluida =>
+        TotalItens > 0
+            ? (int)((double)ItensEntregues / TotalItens * 100)
+            : 0;
+
+
+    private double ValorTotalEstimado =>
+        itensAtuais.Sum(i =>
+            i.Quantidade * i.Valor);
+
+
+    private bool TodosItensEntregues =>
+        itensAtuais.Any() &&
+        itensAtuais.All(i => i.Entregue);
+
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+
     protected override async Task OnInitializedAsync()
     {
         await CarregarRequisicoes();
     }
+
+
+    // ============================================================
+    // CARREGAR REQUISIÇÕES
+    // ============================================================
 
     private async Task CarregarRequisicoes()
     {
         try
         {
             isLoading = true;
-            var response = await Supabase.From<SolicitacaoCompletaModel>()
-                .Filter("status", Postgrest.Constants.Operator.Equals, "Pendente")
-                .Get();
-                
+
+
+            /*
+             * ======================================================
+             * 1. BUSCA AS O.S.
+             * ======================================================
+             *
+             * Aqui buscamos somente os dados da tabela:
+             *
+             * solicitacoes
+             *
+             * NÃO buscamos itens_json.
+             */
+
+            var response =
+                await Supabase
+                    .From<SolicitacaoCompletaModel>()
+                    .Filter(
+                        "status",
+                        Postgrest.Constants.Operator.Equals,
+                        "Pendente")
+                    .Get();
+
+
             solicitacoes = response.Models;
+
+
+            /*
+             * Limpa estados anteriores.
+             */
+
             requisicaoSelecionada = null;
+
             itensAtuais = new();
+
+            itensPorSolicitacao.Clear();
+
+
+            /*
+             * ======================================================
+             * 2. BUSCA OS ITENS DA NOVA TABELA
+             * ======================================================
+             *
+             * Esta é a única fonte de dados das peças.
+             *
+             * Não usamos:
+             *
+             * solicitacoes.itens_json
+             */
+
+            if (solicitacoes.Any())
+            {
+                var itensResponse =
+                    await Supabase
+                        .From<SolicitacaoItemModel>()
+                        .Get();
+
+
+                /*
+                 * Agrupa os itens por solicitacao_id.
+                 */
+
+                itensPorSolicitacao =
+                    itensResponse.Models
+                        .GroupBy(i => i.SolicitacaoId)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.ToList());
+            }
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"Erro ao carregar: {ex.Message}");
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao carregar requisições: {ex.Message}");
         }
         finally
         {
@@ -328,114 +843,389 @@
         }
     }
 
-    // Calcula a % diretamente para a tabela geral de O.S.
-    private int CalcularPorcentagem(SolicitacaoCompletaModel solicitacao)
+
+    // ============================================================
+    // CALCULAR PORCENTAGEM
+    // ============================================================
+
+    private int CalcularPorcentagem(
+        SolicitacaoCompletaModel solicitacao)
     {
-        if (solicitacao.ItensJson == null || !solicitacao.ItensJson.Any()) return 0;
-        
-        int total = solicitacao.ItensJson.Sum(i => i.Quantidade);
-        int entregues = solicitacao.ItensJson.Where(i => i.Entregue).Sum(i => i.Quantidade);
-        
-        return total > 0 ? (int)((double)entregues / total * 100) : 0;
+        /*
+         * Busca exclusivamente na lista originada da
+         * tabela solicitacao_itens.
+         */
+
+        if (!itensPorSolicitacao.TryGetValue(
+                solicitacao.Id,
+                out var itens))
+        {
+            return 0;
+        }
+
+
+        if (itens == null || !itens.Any())
+        {
+            return 0;
+        }
+
+
+        int total =
+            itens.Sum(i => i.Quantidade);
+
+
+        int entregues =
+            itens
+                .Where(i => i.Entregue)
+                .Sum(i => i.Quantidade);
+
+
+        return total > 0
+            ? (int)((double)entregues / total * 100)
+            : 0;
     }
 
-    // Adaptado para receber ID pelo clique na linha/botão
-    private void SelecionarRequisicao(int id)
+
+    // ============================================================
+    // SELECIONAR REQUISIÇÃO
+    // ============================================================
+
+    private async Task SelecionarRequisicao(int id)
     {
-        // Se clicar na O.S. que já está aberta, fecha ela
+        /*
+         * Se clicar novamente na O.S. já aberta,
+         * fecha os detalhes.
+         */
+
         if (requisicaoSelecionada?.Id == id)
         {
             requisicaoSelecionada = null;
+
             itensAtuais = new();
+
             return;
         }
 
-        requisicaoSelecionada = solicitacoes.FirstOrDefault(s => s.Id == id);
-        
-        if (requisicaoSelecionada != null && requisicaoSelecionada.ItensJson != null)
-        {
-            itensAtuais = requisicaoSelecionada.ItensJson;
-        }
-        else
+
+        /*
+         * Localiza a O.S. na tabela solicitacoes.
+         */
+
+        requisicaoSelecionada =
+            solicitacoes.FirstOrDefault(
+                s => s.Id == id);
+
+
+        if (requisicaoSelecionada == null)
         {
             itensAtuais = new();
+
+            return;
+        }
+
+
+        /*
+         * Carrega os itens diretamente da nova tabela.
+         */
+
+        await CarregarItensDaSolicitacao(id);
+    }
+
+
+    // ============================================================
+    // CARREGAR ITENS DE UMA SOLICITAÇÃO
+    // ============================================================
+
+    private async Task CarregarItensDaSolicitacao(
+        int solicitacaoId)
+    {
+        try
+        {
+            isCarregandoItens = true;
+
+
+            /*
+             * IMPORTANTE:
+             *
+             * Nenhuma leitura de itens_json.
+             *
+             * A consulta é diretamente:
+             *
+             * solicitacao_itens
+             */
+
+            var response =
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Filter(
+                        "solicitacao_id",
+                        Postgrest.Constants.Operator.Equals,
+                        solicitacaoId.ToString())
+                    .Get();
+
+
+            itensAtuais =
+                response.Models
+                    .OrderBy(i => i.Id)
+                    .ToList();
+
+
+            /*
+             * Atualiza também o cache utilizado pela tabela
+             * principal.
+             */
+
+            itensPorSolicitacao[solicitacaoId] =
+                itensAtuais.ToList();
+        }
+        catch (Exception ex)
+        {
+            itensAtuais = new();
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao carregar itens: {ex.Message}");
+        }
+        finally
+        {
+            isCarregandoItens = false;
         }
     }
 
-    private async Task AlternarEntrega(ItemRequisicaoModel item)
+
+    // ============================================================
+    // ALTERAR ENTREGA DE UMA PEÇA
+    // ============================================================
+
+    private async Task AlternarEntrega(
+        SolicitacaoItemModel item)
     {
-        if (requisicaoSelecionada == null) return;
+        if (requisicaoSelecionada == null)
+        {
+            return;
+        }
+
+
+        /*
+         * Evita dois cliques simultâneos no mesmo item.
+         */
+
+        if (itensEmAtualizacao.Contains(item.Id))
+        {
+            return;
+        }
+
 
         bool estadoAnterior = item.Entregue;
 
+        bool novoEstado = !estadoAnterior;
+
+
         try
         {
-            // 1. Altera o estado diretamente. Como os itens estão referenciados 
-            // na memória, isso já atualiza o requisicaoSelecionada.ItensJson.
-            item.Entregue = !item.Entregue;
+            itensEmAtualizacao.Add(item.Id);
 
-            // 2. Usamos UPSERT. Ele ignora o rastreador de alterações e 
-            // força a substituição de toda a linha no banco pelo objeto atual.
+
+            /*
+             * Atualização LOCAL
+             *
+             * Faz a tela responder imediatamente.
+             */
+
+            item.Entregue = novoEstado;
+
+
+            /*
+             * ======================================================
+             * ATUALIZA SOMENTE A PEÇA
+             * ======================================================
+             *
+             * Não existe mais:
+             *
+             * Upsert(solicitacao)
+             *
+             * Não existe mais:
+             *
+             * itens_json
+             *
+             * Não regravamos a O.S. inteira.
+             *
+             * Somente:
+             *
+             * solicitacao_itens.entregue
+             *
+             * daquele ID.
+             */
+
             await Supabase
-                .From<SolicitacaoCompletaModel>()
-                .Upsert(requisicaoSelecionada);
+                .From<SolicitacaoItemModel>()
+                .Where(i => i.Id == item.Id)
+                .Set(i => i.Entregue, novoEstado)
+                .Update();
+
+
+            /*
+             * Atualiza o cache da O.S.
+             */
+
+            if (requisicaoSelecionada != null)
+            {
+                itensPorSolicitacao[
+                    requisicaoSelecionada.Id] =
+                    itensAtuais.ToList();
+            }
         }
         catch (Exception ex)
         {
-            // Reverte visualmente em caso de erro
-            item.Entregue = estadoAnterior;
-            await JS.InvokeVoidAsync("alert", $"Erro ao salvar alteração: {ex.Message}");
-        }
+            /*
+             * Se o banco falhar,
+             * desfaz a alteração visual.
+             */
 
-        StateHasChanged();
+            item.Entregue = estadoAnterior;
+
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao salvar alteração: {ex.Message}");
+        }
+        finally
+        {
+            itensEmAtualizacao.Remove(item.Id);
+
+            StateHasChanged();
+        }
     }
+
+
+    // ============================================================
+    // LIBERAR PRODUÇÃO
+    // ============================================================
 
     private async Task LiberarProducao()
     {
-        if (requisicaoSelecionada == null) return;
+        if (requisicaoSelecionada == null)
+        {
+            return;
+        }
+
+
+        /*
+         * Não permite liberar enquanto existir peça pendente.
+         */
+
+        if (!TodosItensEntregues)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Não é possível liberar a produção enquanto houver peças pendentes.");
+
+            return;
+        }
+
 
         try
         {
-            requisicaoSelecionada.Status = "Liberado";
-            await Supabase.From<SolicitacaoCompletaModel>()
-                .Where(s => s.Id == requisicaoSelecionada.Id)
-                .Update(requisicaoSelecionada);
+            /*
+             * Atualiza SOMENTE o status da solicitação.
+             */
 
-            await JS.InvokeVoidAsync("alert", "Produção liberada com sucesso! A O.S. foi removida desta tela.");
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s =>
+                    s.Id == requisicaoSelecionada.Id)
+                .Set(s => s.Status!, "Liberado")
+                .Update();
+
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Produção liberada com sucesso! A O.S. foi removida desta tela.");
+
+
+            /*
+             * Recarrega a lista.
+             */
+
+            termoBusca = "";
+
             await CarregarRequisicoes();
-            termoBusca = ""; // Limpa a busca após concluir
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"Erro ao liberar: {ex.Message}");
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao liberar: {ex.Message}");
         }
     }
+
+
+    // ============================================================
+    // CONDENAR PRODUÇÃO
+    // ============================================================
 
     private async Task CondenarProducao()
     {
-        if (requisicaoSelecionada == null) return;
+        if (requisicaoSelecionada == null)
+        {
+            return;
+        }
 
-        // Confirmação opcional via JS para evitar cliques acidentais
-        bool confirmado = await JS.InvokeAsync<bool>("confirm", "Tem certeza que deseja marcar esta requisição como Condenada?");
-        if (!confirmado) return;
+
+        bool confirmado =
+            await JS.InvokeAsync<bool>(
+                "confirm",
+                "Tem certeza que deseja marcar esta requisição como Condenada?");
+
+
+        if (!confirmado)
+        {
+            return;
+        }
+
 
         try
         {
-            requisicaoSelecionada.Status = "Condenado";
-            
-            await Supabase.From<SolicitacaoCompletaModel>()
-                .Where(s => s.Id == requisicaoSelecionada.Id)
-                .Update(requisicaoSelecionada);
+            /*
+             * Atualiza somente o status da O.S.
+             */
 
-            await JS.InvokeVoidAsync("alert", "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela.");
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s =>
+                    s.Id == requisicaoSelecionada.Id)
+                .Set(s => s.Status!, "Condenado")
+                .Update();
+
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela.");
+
+
+            /*
+             * Recarrega a lista.
+             */
+
+            termoBusca = "";
+
             await CarregarRequisicoes();
-            termoBusca = ""; // Limpa a busca após concluir
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"Erro ao condenar requisição: {ex.Message}");
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao condenar requisição: {ex.Message}");
         }
     }
 
-    private void Sair() => Nav.NavigateTo("/");
+
+    // ============================================================
+    // SAIR
+    // ============================================================
+
+    private void Sair()
+    {
+        Nav.NavigateTo("/");
+    }
 }

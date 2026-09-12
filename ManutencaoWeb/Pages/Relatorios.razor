@@ -19,7 +19,7 @@
 
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide">
-                <span> CRR</span>
+                <span> Manutenção WEB</span>
             </i>
         </div>
         <ul class="sidebar-menu">
@@ -418,13 +418,14 @@
                                 <small class="text-muted">
                                     Valor Total Requisitado
                                 </small>
-
+                                <h3 class="fw-bold mt-1 mb-0 text-success">R$ -</h3>
+                                @*
                                 <h3 class="fw-bold mt-1 mb-0 text-success">
 
                                     R$
                                     @valorTotalRequisitado.ToString("N2")
 
-                                </h3>
+                                </h3>*@
 
                             </div>
 
@@ -660,11 +661,11 @@
                                                     </span>
 
                                                 </td>
-
+                                                
                                                 <td class="text-end pe-4 fw-bold">
 
-                                                    R$
-                                                    @item.ValorTotal.ToString("N2")
+                                                    R$ -
+                                                   @* @item.ValorTotal.ToString("N2")*@
 
                                                 </td>
 
@@ -695,7 +696,7 @@
 
                                     <i class="bi bi-table text-success me-2"></i>
 
-                                    Detalhamento por O.S.
+                                    Detalhamento por O.S
 
                                 </h5>
 
@@ -840,11 +841,11 @@
                                                     </span>
 
                                                 </td>
-
+                                               
                                                 <td class="text-end pe-4 fw-bold">
 
-                                                    R$
-                                                    @valorOs.ToString("N2")
+                                                    R$ -
+                                                    @* @valorOs.ToString("N2")*@
 
                                                 </td>
 

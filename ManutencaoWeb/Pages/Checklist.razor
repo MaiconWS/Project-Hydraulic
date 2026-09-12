@@ -13,7 +13,7 @@
     <!-- MENU LATERAL ESQUERDO -->
     <nav class="sidebar">
         <div class="sidebar-brand">
-            <i class="bi bi-gear-wide"><span> CRR</span></i>
+            <i class="bi bi-gear-wide"><span> Manutenção WEB</span></i>
         </div>
 
         <ul class="sidebar-menu">
@@ -30,17 +30,21 @@
                     <span>Requisições</span>
                 </a>
             </li>
+
             <li>
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
+
             <li>
                 <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
+                    <i class="bi bi-wrench-adjustable"></i>
+                    <span>Liberados</span>
                 </a>
             </li>
+
             @if (Sessao.IsAdmin)
             {
                 <li>
@@ -95,6 +99,7 @@
 
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm p-3 bg-light">
+
                         <small class="text-muted">
                             Modelo
                         </small>
@@ -102,12 +107,14 @@
                         <h6 class="mb-0 fw-bold">
                             @NomeModelo
                         </h6>
+
                     </div>
                 </div>
 
 
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm p-3 bg-light">
+
                         <small class="text-muted">
                             Total de itens
                         </small>
@@ -115,6 +122,7 @@
                         <h6 class="mb-0 fw-bold">
                             @pecas.Count componentes
                         </h6>
+
                     </div>
                 </div>
 
@@ -133,7 +141,12 @@
                             <tr>
                                 <th class="ps-4">SAP</th>
                                 <th>Componente</th>
-                                <th>Valor (R$)</th>
+                                @*
+                                <td>
+                                    R$ @peca.Valor.ToString("F2")
+                                </td>
+                                *@
+
                                 <th class="text-center pe-4">
                                     Quantidade
                                 </th>
@@ -147,10 +160,14 @@
                             @if (isLoading)
                             {
                                 <tr>
+
                                     <td colspan="4"
                                         class="text-center py-4">
+
                                         Carregando peças...
+
                                     </td>
+
                                 </tr>
                             }
                             else if (pecas != null && pecas.Any())
@@ -163,13 +180,16 @@
                                             @peca.SapPeca
                                         </td>
 
+
                                         <td>
                                             @peca.Descricao
                                         </td>
 
+                                        @*
                                         <td>
                                             R$ @peca.Valor.ToString("F2")
                                         </td>
+                                        *@
 
                                         <td class="text-center pe-4">
 
@@ -177,18 +197,26 @@
 
                                                 <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2"
                                                         @onclick="() => Diminuir(peca.SapPeca!)">
+
                                                     -
+
                                                 </button>
 
+
                                                 <span class="mx-3 fw-bold">
+
                                                     @(quantidades.ContainsKey(peca.SapPeca!)
                                                         ? quantidades[peca.SapPeca!]
                                                         : 0)
+
                                                 </span>
+
 
                                                 <button class="btn btn-sm btn-link text-dark text-decoration-none p-0 px-2"
                                                         @onclick="() => Aumentar(peca.SapPeca!)">
+
                                                     +
+
                                                 </button>
 
                                             </div>
@@ -201,10 +229,14 @@
                             else
                             {
                                 <tr>
+
                                     <td colspan="4"
                                         class="text-center py-4">
+
                                         Nenhuma peça encontrada.
+
                                     </td>
+
                                 </tr>
                             }
 
@@ -221,6 +253,7 @@
             <div class="card border-0 shadow-sm p-4 bg-white d-flex flex-row align-items-center justify-content-between mb-5">
 
                 <div>
+
                     <small class="text-muted d-block">
                         Resumo da seleção
                     </small>
@@ -228,10 +261,11 @@
                     <strong>
                         @TotalItensSelecionados itens selecionados
                     </strong>
+
                 </div>
-
-
+                @*
                 <div>
+
                     <small class="text-muted d-block">
                         Total estimado
                     </small>
@@ -239,9 +273,9 @@
                     <h4 class="text-success fw-bold mb-0">
                         R$ @ValorTotalEstimado.ToString("F2")
                     </h4>
+
                 </div>
-
-
+                *@
                 <button class="btn btn-success px-4 py-2 fw-bold"
                         @onclick="EnviarDados"
                         disabled="@isEnviando">
@@ -266,18 +300,22 @@
     [Parameter]
     public string? SapComp { get; set; }
 
+
     [Parameter]
     public string? NomeModelo { get; set; }
 
 
     private string? osNumero = "";
 
+
     private List<PecaModel> pecas = new();
+
 
     private Dictionary<string, int> quantidades = new();
 
 
     private bool isLoading = true;
+
 
     private bool isEnviando = false;
 
@@ -286,12 +324,20 @@
         quantidades.Values.Sum();
 
 
-    private double ValorTotalEstimado =>
-        pecas.Sum(p =>
-            (quantidades.ContainsKey(p.SapPeca!)
-                ? quantidades[p.SapPeca!]
-                : 0)
-            * p.Valor);
+// ============================================================
+// VALOR TOTAL ESTIMADO
+// DESATIVADO TEMPORARIAMENTE
+//
+// Mantido no código para possível utilização futura.
+//
+// private double ValorTotalEstimado =>
+//     pecas.Sum(p =>
+//         (quantidades.ContainsKey(p.SapPeca!)
+//             ? quantidades[p.SapPeca!]
+//             : 0)
+//         * p.Valor);
+//
+// ============================================================
 
 
     protected override async Task OnInitializedAsync()
@@ -366,35 +412,52 @@
     private async Task EnviarDados()
     {
         /*
-         * Cria os itens da requisição.
+         * ============================================================
+         * 1. MONTA OS ITENS SELECIONADOS
+         * ============================================================
          *
-         * IMPORTANTE:
-         * Cada peça possui seu próprio estado Entregue.
+         * Essa lista ainda é utilizada para preencher o itens_json
+         * da tabela solicitacoes.
          *
-         * Toda nova requisição começa com:
+         * Durante a migração do sistema vamos manter o itens_json
+         * para compatibilidade com as páginas antigas.
          *
-         * Entregue = false
+         * A nova tabela solicitacao_itens será a responsável pelo
+         * controle individual de cada peça.
          */
+
         var itensParaEnviar = pecas
             .Where(p =>
                 !string.IsNullOrEmpty(p.SapPeca) &&
                 quantidades.ContainsKey(p.SapPeca) &&
                 quantidades[p.SapPeca] > 0)
-            .Select(p => new ItemRequisicaoModel
-            {
-                Sap = p.SapPeca!,
-                Descricao = p.Descricao!,
-                Quantidade = quantidades[p.SapPeca!],
-                Valor = p.Valor,
+                .Select(p => new ItemRequisicaoModel
+                {
+                    Sap = p.SapPeca!,
+                    Descricao = p.Descricao!,
+                    Quantidade = quantidades[p.SapPeca!],
 
-                // Cada peça começa como NÃO entregue
-                Entregue = false
+                    // ========================================================
+                    // VALOR
+                    // DESATIVADO TEMPORARIAMENTE
+                    //
+                    // Mantido para utilização futura.
+                    //
+                    // Valor = p.Valor,
+                    //
+                    // ========================================================
 
-            })
+                    Entregue = false
+                })
             .ToList();
 
 
-        // Validação
+        /*
+         * ============================================================
+         * 2. VALIDAÇÃO
+         * ============================================================
+         */
+
         if (string.IsNullOrWhiteSpace(osNumero) ||
             !itensParaEnviar.Any())
         {
@@ -411,6 +474,20 @@
 
         try
         {
+            /*
+             * ========================================================
+             * 3. CRIA A SOLICITAÇÃO PRINCIPAL
+             * ========================================================
+             *
+             * Primeiro criamos o registro em:
+             *
+             * solicitacoes
+             *
+             * O ID gerado será utilizado pelos registros da tabela:
+             *
+             * solicitacao_itens
+             */
+
             var solicitacao = new SolicitacaoCompletaModel
             {
                 OsNumero = osNumero.Trim(),
@@ -418,26 +495,92 @@
                 ModeloSolicitado = NomeModelo,
 
                 /*
-                 * Aqui estamos salvando a lista inteira.
+                 * Mantemos o JSON durante a migração.
                  *
-                 * Cada objeto possui:
-                 *
-                 * Sap
-                 * Descricao
-                 * Quantidade
-                 * Valor
-                 * Entregue
+                 * Futuramente ele poderá ser removido quando
+                 * todas as páginas estiverem utilizando
+                 * solicitacao_itens.
                  */
                 ItensJson = itensParaEnviar,
 
-                DataEnvio = DateTime.UtcNow
+                DataEnvio = DateTime.UtcNow,
+
+                Status = "Pendente"
             };
 
 
-            await Supabase
+            /*
+             * Insere e recebe a resposta contendo o registro criado.
+             */
+
+            var respostaSolicitacao = await Supabase
                 .From<SolicitacaoCompletaModel>()
                 .Insert(solicitacao);
 
+
+            /*
+             * ========================================================
+             * 4. RECUPERA O ID DA SOLICITAÇÃO
+             * ========================================================
+             */
+
+            var solicitacaoCriada =
+                respostaSolicitacao.Models.FirstOrDefault();
+
+
+            if (solicitacaoCriada == null)
+            {
+                throw new Exception(
+                    "A solicitação foi enviada, mas não foi possível obter o ID gerado.");
+            }
+
+
+            var itensBanco = itensParaEnviar
+                .Select(item => new SolicitacaoItemModel
+                {
+                    SolicitacaoId = solicitacaoCriada.Id,
+
+                    SapPeca = item.Sap,
+
+                    Descricao = item.Descricao,
+
+                    Quantidade = item.Quantidade,
+
+                    // ========================================================
+                    // VALOR
+                    // DESATIVADO TEMPORARIAMENTE
+                    //
+                    // Mantido para utilização futura.
+                    //
+                    // Valor = item.Valor,
+                    //
+                    // ========================================================
+
+                    Entregue = false
+                })
+                .ToList();
+
+
+            /*
+             * Insere todos os itens de uma vez.
+             *
+             * Isso é melhor do que realizar um INSERT separado
+             * para cada peça.
+             */
+
+            if (itensBanco.Any())
+            {
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Insert(itensBanco);
+            }
+
+
+            /*
+             * ========================================================
+             * 6. FINALIZA
+             * ========================================================
+             */
 
             await JS.InvokeVoidAsync(
                 "alert",
