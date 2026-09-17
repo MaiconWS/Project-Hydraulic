@@ -171,6 +171,8 @@ window.exportarDetalhamentoExcel = function (dados) {
 
             "Modelo":
                 item.modelo ?? "",
+            "Status":
+                item.status ?? "Pendente",
 
             "Itens":
                 Number(item.itens ?? 0),
@@ -207,6 +209,7 @@ window.exportarDetalhamentoExcel = function (dados) {
             { wch: 15 }, // O.S.
             { wch: 20 }, // Data
             { wch: 35 }, // Modelo
+            { wch: 18 },
             { wch: 12 }, // Itens
             { wch: 14 }, // Entregues
             { wch: 14 }, // Pendentes
@@ -227,7 +230,7 @@ window.exportarDetalhamentoExcel = function (dados) {
         ) {
 
             const celula =
-                worksheet["G" + linha];
+                worksheet["H" + linha];
 
             if (celula) {
 
@@ -253,7 +256,7 @@ window.exportarDetalhamentoExcel = function (dados) {
         ) {
 
             const celula =
-                worksheet["H" + linha];
+                worksheet["I" + linha];
 
             if (celula) {
 
