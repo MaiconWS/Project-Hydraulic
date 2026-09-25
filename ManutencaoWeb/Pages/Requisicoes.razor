@@ -97,8 +97,7 @@
 
             <div class="top-bar-left d-flex align-items-center">
 
-                <button class="menu-toggle d-md-none me-2"
-                        @onclick="ToggleMenu">
+                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
 
                     <i class="bi bi-list"></i>
 
@@ -130,8 +129,7 @@
             <div class="d-flex align-items-start mb-4 gap-3">
 
                 <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;"
-                        @onclick="Sair">
+                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;" @onclick="Sair">
 
                     <i class="bi bi-arrow-left text-dark"></i>
 
@@ -139,8 +137,7 @@
 
                 <div class="section-title mb-0">
 
-                    <h2 class="mb-1"
-                        style="color: #2c3e50; font-weight: 700;">
+                    <h2 class="mb-1" style="color: #2c3e50; font-weight: 700;">
 
                         Controle de Requisições
 
@@ -165,8 +162,7 @@
             {
                 <div class="text-center py-5">
 
-                    <div class="spinner-border text-success"
-                         role="status">
+                    <div class="spinner-border text-success" role="status">
 
                     </div>
 
@@ -214,11 +210,8 @@
                                     <i class="bi bi-search text-muted"></i>
                                 </span>
 
-                                <input type="text"
-                                       class="form-control"
-                                       placeholder="Busque por O.S ou Modelo de componente"
-                                       @bind="termoBusca"
-                                       @bind:event="oninput" />
+                                <input type="text" class="form-control" placeholder="Busque por O.S ou Modelo de componente"
+                                       @bind="termoBusca" @bind:event="oninput" />
 
                             </div>
 
@@ -234,8 +227,7 @@
 
                             </label>
 
-                            <select class="form-select"
-                                    @bind="sistemaSelecionado">
+                            <select class="form-select" @bind="sistemaSelecionado">
 
                                 <option value="">
                                     Todos os sistemas
@@ -260,8 +252,7 @@
                     {
                         <div class="mt-3">
 
-                            <span class="badge rounded-pill"
-                                  style="background-color:#4d6d5d;">
+                            <span class="badge rounded-pill" style="background-color:#4d6d5d;">
 
                                 <i class="bi bi-funnel-fill me-1"></i>
 
@@ -270,9 +261,7 @@
 
                             </span>
 
-                            <button type="button"
-                                    class="btn btn-sm btn-link text-secondary"
-                                    @onclick="LimparFiltroSistema">
+                            <button type="button" class="btn btn-sm btn-link text-secondary" @onclick="LimparFiltroSistema">
 
                                 Limpar filtro
 
@@ -303,9 +292,7 @@
                                 Não existem requisições para os filtros selecionados.
                             </p>
 
-                            <button type="button"
-                                    class="btn btn-outline-success"
-                                    @onclick="LimparFiltros">
+                            <button type="button" class="btn btn-outline-success" @onclick="LimparFiltros">
 
                                 <i class="bi bi-arrow-counterclockwise me-1"></i>
 
@@ -345,8 +332,7 @@
                                             Sistema
                                         </th>
 
-                                        <th class="py-3"
-                                            style="width: 180px;">
+                                        <th class="py-3" style="width: 180px;">
 
                                             Progresso
 
@@ -370,12 +356,12 @@
                                             requisicaoSelecionada?.Id == s.Id;
 
                                         <tr style="
-                                                cursor:pointer;
-                                                background-color:@(
-                                                    isSelected
-                                                        ? "#f1f8f5"
-                                                        : "transparent"
-                                                );"
+                                            cursor:pointer;
+                                            background-color:@(
+                                            isSelected
+                                                ? "#f1f8f5"
+                                                : "transparent"
+                                                                                                                                );"
                                             @onclick="() => SelecionarRequisicao(s.Id)">
 
                                             <td class="ps-4 text-muted">
@@ -403,11 +389,10 @@
 
                                                 @if (!string.IsNullOrWhiteSpace(sistema))
                                                 {
-                                                    <span class="badge rounded-pill"
-                                                          style="
-                                                              background-color:#e8f1ec;
-                                                              color:#4d6d5d;
-                                                          ">
+                                                    <span class="badge rounded-pill" style="
+                                                        background-color:#e8f1ec;
+                                                        color:#4d6d5d;
+                                                        ">
 
                                                         <i class="bi bi-diagram-3 me-1"></i>
 
@@ -433,14 +418,12 @@
                                                         @pct%
                                                     </span>
 
-                                                    <div class="progress flex-grow-1"
-                                                         style="
-                                                             height:6px;
-                                                             background-color:#e9ecef;
-                                                         ">
+                                                    <div class="progress flex-grow-1" style="
+                                                        height:6px;
+                                                        background-color:#e9ecef;
+                                                        ">
 
-                                                        <div class="progress-bar bg-success"
-                                                             style="width:@pct%;">
+                                                        <div class="progress-bar bg-success" style="width:@pct%;">
                                                         </div>
 
                                                     </div>
@@ -452,9 +435,10 @@
 
                                             <td class="pe-4 text-end">
 
-                                                <button class="btn btn-sm @(isSelected
-                                                            ? "btn-success"
-                                                            : "btn-outline-success")">
+                                                <button
+                                                    class="btn btn-sm @(isSelected
+                                                                                                                                                                        ? "btn-success"
+                                                                                                                                                                        : "btn-outline-success")">
 
                                                     @(isSelected
                                                         ? "Editando..."
@@ -481,15 +465,14 @@
                          ================================================= -->
                     @if (requisicaoSelecionada != null)
                     {
-                        <div class="mt-5 p-3 rounded"
-                             style="
-                                 background-color:#f8f9fa;
-                                 border-left:4px solid #198754;
-                             ">
+                        <div class="mt-5 p-3 rounded" style="
+                            background-color:#f8f9fa;
+                            border-left:4px solid #198754;
+                            ">
 
                             <!-- CABEÇALHO -->
                             <div class="d-flex justify-content-between
-                                        align-items-center mb-4">
+                                align-items-center mb-4">
 
                                 <h4 class="mb-0">
 
@@ -502,14 +485,28 @@
 
 
                                 <!-- ADICIONAR PEÇA -->
-                                <button class="btn btn-success"
-                                        @onclick="AbrirModalAdicionarPeca">
+                                <!-- BOTÕES -->
+                                <div class="d-flex align-items-center gap-2">
 
-                                    <i class="bi bi-plus-lg me-1"></i>
+                                    <!-- EXPORTAR EXCEL -->
+                                    <button class="btn btn-outline-success" @onclick="ExportarItensExcel">
 
-                                    Adicionar peça
+                                        <i class="bi bi-file-earmark-excel me-1"></i>
 
-                                </button>
+                                        Exportar Excel
+
+                                    </button>
+
+                                    <!-- ADICIONAR PEÇA -->
+                                    <button class="btn btn-success" @onclick="AbrirModalAdicionarPeca">
+
+                                        <i class="bi bi-plus-lg me-1"></i>
+
+                                        Adicionar peça
+
+                                    </button>
+
+                                </div>
 
                             </div>
 
@@ -522,7 +519,7 @@
                                 <div class="col-md-5">
 
                                     <div class="card border-0 shadow-sm p-3
-                                                bg-white h-100">
+                                        bg-white h-100">
 
                                         <small class="text-muted">
                                             Modelo
@@ -542,7 +539,7 @@
                                 <div class="col-md-2">
 
                                     <div class="card border-0 shadow-sm p-3
-                                                bg-white h-100">
+                                        bg-white h-100">
 
                                         <small class="text-muted">
                                             Sistema
@@ -578,7 +575,7 @@
                                 <div class="col-md-2">
 
                                     <div class="card border-0 shadow-sm p-3
-                                                bg-white h-100">
+                                        bg-white h-100">
 
                                         <small class="text-muted">
                                             Progresso
@@ -604,7 +601,7 @@
                                 <div class="col-md-3">
 
                                     <div class="card border-0 shadow-sm p-3
-                                                bg-white h-100">
+                                        bg-white h-100">
 
                                         <small class="text-muted">
                                             Situação
@@ -678,8 +675,7 @@
                                             {
                                                 <tr>
 
-                                                    <td colspan="4"
-                                                        class="text-center py-4 text-muted">
+                                                    <td colspan="4" class="text-center py-4 text-muted">
 
                                                         Nenhuma peça cadastrada
                                                         para esta requisição.
@@ -734,15 +730,13 @@
                                                         <!-- CHECK ENTREGUE -->
                                                         <td class="text-center pe-4">
 
-                                                            <button type="button"
-                                                                    class="btn @(item.Entregue
-                                                                        ? "btn-success"
-                                                                        : "btn-outline-secondary")
-                                                                        btn-sm px-3"
-                                                                    @onclick="() => AlternarEntrega(item)"
+                                                            <button type="button" class="btn @(item.Entregue
+                                                                                                                                                                                                                ? "btn-success"
+                                                                                                                                                                                                                : "btn-outline-secondary")
+                                                                btn-sm px-3" @onclick="() => AlternarEntrega(item)"
                                                                     title="@(item.Entregue
-                                                                        ? "Marcar como pendente"
-                                                                        : "Marcar como entregue")">
+                                                                                                                                                                                                                ? "Marcar como pendente"
+                                                                                                                                                                                                                : "Marcar como entregue")">
 
                                                                 @if (item.Entregue)
                                                                 {
@@ -782,7 +776,7 @@
                                  RESUMO E AÇÕES
                                  ================================================= -->
                             <div class="card border-0 shadow-sm p-4
-                                        bg-white mb-2">
+                                bg-white mb-2">
 
                                 <div class="row align-items-center g-3">
 
@@ -839,7 +833,7 @@
 
                                             R$ -
 
-                                            @* 
+                                            @*
                                             Se quiser voltar a mostrar o valor:
 
                                             R$ @ValorTotalEstimado.ToString("F2")
@@ -853,12 +847,10 @@
                                     <!-- CONDENAR -->
                                     <div class="col-md-2">
 
-                                        <button type="button"
-                                                class="btn btn-outline-danger
-                                                       w-100
-                                                       py-2
-                                                       fw-bold"
-                                                @onclick="CondenarProducao">
+                                        <button type="button" class="btn btn-outline-danger
+                                            w-100
+                                            py-2
+                                            fw-bold" @onclick="CondenarProducao">
 
                                             <i class="bi bi-x-circle me-1"></i>
 
@@ -872,18 +864,15 @@
                                     <!-- LIBERAR -->
                                     <div class="col-md-2">
 
-                                        <button type="button"
-                                                class="btn btn-success
-                                                       w-100
-                                                       py-2
-                                                       fw-bold"
-                                                disabled="@(!TodosItensEntregues)"
-                                                @onclick="LiberarProducao"
+                                        <button type="button" class="btn btn-success
+                                            w-100
+                                            py-2
+                                            fw-bold" disabled="@(!TodosItensEntregues)" @onclick="LiberarProducao"
                                                 title="@(
-                                                    TodosItensEntregues
-                                                        ? "Liberar produção"
-                                                        : "É necessário entregar todos os itens"
-                                                )">
+                                                TodosItensEntregues
+                                                    ? "Liberar produção"
+                                                    : "É necessário entregar todos os itens"
+                                                                                                                                        )">
 
                                             <i class="bi bi-check-circle me-1"></i>
 
@@ -916,9 +905,7 @@
      ============================================================= -->
 @if (mostrarModalAdicionarPeca)
 {
-    <div class="modal fade show d-block"
-         tabindex="-1"
-         style="background-color:rgba(0,0,0,0.5);">
+    <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
 
         <div class="modal-dialog modal-dialog-centered">
 
@@ -935,9 +922,7 @@
 
                     </h5>
 
-                    <button type="button"
-                            class="btn-close"
-                            @onclick="FecharModalAdicionarPeca">
+                    <button type="button" class="btn-close" @onclick="FecharModalAdicionarPeca">
                     </button>
 
                 </div>
@@ -970,14 +955,9 @@
 
                         <div class="input-group">
 
-                            <input type="text"
-                                   class="form-control"
-                                   placeholder="Digite o SAP"
-                                   @bind="sapPecaBusca" />
+                            <input type="text" class="form-control" placeholder="Digite o SAP" @bind="sapPecaBusca" />
 
-                            <button type="button"
-                                    class="btn btn-outline-success"
-                                    @onclick="BuscarPeca"
+                            <button type="button" class="btn btn-outline-success" @onclick="BuscarPeca"
                                     disabled="@buscandoPeca">
 
                                 @if (buscandoPeca)
@@ -1036,10 +1016,10 @@
                     @if (!string.IsNullOrWhiteSpace(mensagemModal))
                     {
                         <div class="alert @(
-                            mensagemModalErro
-                                ? "alert-danger"
-                                : "alert-info"
-                        )">
+                             mensagemModalErro
+                                 ? "alert-danger"
+                                 : "alert-info"
+                                                                          )">
 
                             @mensagemModal
 
@@ -1058,10 +1038,7 @@
 
                             </label>
 
-                            <input type="number"
-                                   class="form-control"
-                                   min="1"
-                                   @bind="quantidadeNovaPeca" />
+                            <input type="number" class="form-control" min="1" @bind="quantidadeNovaPeca" />
 
                         </div>
                     }
@@ -1072,17 +1049,13 @@
                 <!-- RODAPÉ -->
                 <div class="modal-footer">
 
-                    <button type="button"
-                            class="btn btn-secondary"
-                            @onclick="FecharModalAdicionarPeca">
+                    <button type="button" class="btn btn-secondary" @onclick="FecharModalAdicionarPeca">
 
                         Cancelar
 
                     </button>
 
-                    <button type="button"
-                            class="btn btn-success"
-                            disabled="@(pecaEncontrada == null || salvandoPeca)"
+                    <button type="button" class="btn btn-success" disabled="@(pecaEncontrada == null || salvandoPeca)"
                             @onclick="AdicionarPeca">
 
                         @if (salvandoPeca)
@@ -1167,11 +1140,11 @@
     // Exemplo:
     //
     // BOMBA 2 CORPOS CH
-    //          ↓
+    // ↓
     // Hidráulica
     //
     // MOTOR DIESEL
-    //          ↓
+    // ↓
     // Motor
     // ============================================================
 
@@ -1291,6 +1264,45 @@
     private string mensagemModal = "";
 
     private bool mensagemModalErro = false;
+    // ============================================================
+    // EXPORTAR ITENS DA O.S. PARA EXCEL
+    // ============================================================
+
+    private async Task ExportarItensExcel()
+    {
+        if (requisicaoSelecionada == null)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Nenhuma requisição selecionada."
+            );
+
+            return;
+        }
+
+        if (itensAtuais == null || !itensAtuais.Any())
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Não existem peças para exportar."
+            );
+
+            return;
+        }
+
+        var dados = itensAtuais.Select(item => new
+        {
+            os = requisicaoSelecionada.OsNumero,
+            sap = item.SapPeca,
+            descricao = item.Descricao,
+            quantidade = item.Quantidade
+        }).ToList();
+
+        await JS.InvokeVoidAsync(
+            "exportarItensRequisicaoExcel",
+            dados
+        );
+    }
 
 
     // ============================================================

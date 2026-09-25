@@ -910,4 +910,143 @@ window.exportarRelatorioPDF = async function (elementId) {
     }
 
 };
+// ============================================================
+// EXPORTAR ITENS DA REQUISIÇÃO PARA EXCEL
+// ============================================================
+
+// ============================================================
+// EXPORTAR ITENS DA REQUISIÇÃO PARA EXCEL
+// ============================================================
+
+window.exportarItensRequisicaoExcel = function (dados) {
+
+    console.log("ExportarItensRequisicaoExcel chamado.");
+    console.log("Dados recebidos:", dados);
+
+    // Verificar se existem dados
+    if (!dados || dados.length === 0) {
+
+        alert("Não existem itens para exportar.");
+
+        return;
+    }
+
+
+    // ========================================================
+    // VERIFICAR SE XLSX ESTÁ CARREGADO
+    // ========================================================
+
+    if (typeof XLSX === "undefined") {
+
+        alert(
+            "A biblioteca Excel (SheetJS) não foi carregada."
+        );
+
+        console.error(
+            "XLSX não está disponível."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        // ====================================================
+        // PREPARAR DADOS
+        // ====================================================
+
+        const linhas = dados.map(item => ({
+
+            "O.S.": item.os ?? "",
+
+            "SAP": item.sap ?? "",
+
+            "Descrição": item.descricao ?? "",
+
+            "Quantidade": Number(item.quantidade ?? 0)
+
+        }));
+
+
+        console.log(
+            "Dados preparados para Excel:",
+            linhas
+        );
+
+
+        // ====================================================
+        // CRIAR PLANILHA
+        // ====================================================
+
+        const worksheet =
+            XLSX.utils.json_to_sheet(linhas);
+
+
+        // ====================================================
+        // LARGURA DAS COLUNAS
+        // ====================================================
+
+        worksheet["!cols"] = [
+
+            { wch: 15 }, // O.S.
+
+            { wch: 18 }, // SAP
+
+            { wch: 60 }, // Descrição
+
+            { wch: 15 }  // Quantidade
+
+        ];
+
+
+        // ====================================================
+        // CRIAR ARQUIVO
+        // ====================================================
+
+        const workbook =
+            XLSX.utils.book_new();
+
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Itens"
+        );
+
+
+        // ====================================================
+        // NOME DO ARQUIVO
+        // ====================================================
+
+        const os =
+            dados[0].os || "Sem_OS";
+
+
+        XLSX.writeFile(
+            workbook,
+            `Itens_OS_${os}.xlsx`
+        );
+
+
+        console.log(
+            "Excel gerado com sucesso."
+        );
+
+    }
+    catch (erro) {
+
+        console.error(
+            "Erro ao exportar itens da O.S. para Excel:",
+            erro
+        );
+
+        alert(
+            "Ocorreu um erro ao gerar o arquivo Excel."
+        );
+
+    }
+
+};
+
 
