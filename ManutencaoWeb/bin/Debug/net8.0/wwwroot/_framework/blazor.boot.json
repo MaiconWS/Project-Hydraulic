@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ManutencaoWeb",
   "resources": {
-    "hash": "sha256-vX4HJVR9nE0IqddBc9iKhS7vDE0pOaC4E+OUpKwjxPI=",
+    "hash": "sha256-m4CV5B8rO+fKiIAZpvUgbn26YEa9C9nv50UMp6CXCLM=",
     "jsModuleNative": {
       "dotnet.native.8.0.31.yq74bzv28w.js": "sha256-9NoXeVUo4WNrEqrjAp/y3Yc8NmDcymQkzMGOIbIpGio="
     },
@@ -225,10 +225,10 @@
       "mscorlib.wasm": "sha256-pP80UGziulDYhvVdeUaGEq9FlrHQDQmnCqVvx1FJZis=",
       "netstandard.wasm": "sha256-ARMsMyhWuSDjvzisfZbnEptnxh8Vh7VpHPhuT6iazy0=",
       "System.Private.CoreLib.wasm": "sha256-+28m4yuZsdz9ij1sJHvNH896fSI8gXgrQ9bhGO76Qqo=",
-      "ManutencaoWeb.wasm": "sha256-7Q/0rmf9yMjAhH6tXflT1x4lvWybC89Wf6Q/7+mc/DE="
+      "ManutencaoWeb.wasm": "sha256-4QZ/qbUx1QCtsNmkMFgOH3+5jOcVFLBdu0eVHdSwSpw="
     },
     "pdb": {
-      "ManutencaoWeb.pdb": "sha256-z6uALT/BerrKSLF40J8GSuXNtqC74vF2hew1yesv/ho="
+      "ManutencaoWeb.pdb": "sha256-wh/bN9w63YWnWUmBrwcvZS3S1QaZUVQm3hMj8ZGtmG4="
     }
   },
   "cacheBootResources": true,

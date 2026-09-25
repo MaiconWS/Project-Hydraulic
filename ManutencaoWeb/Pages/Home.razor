@@ -16,7 +16,9 @@
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide"><span> Manutenção WEB</span></i>
         </div>
+
         <ul class="sidebar-menu">
+
             <li class="active">
                 <a href="/">
                     <i class="bi bi-house-door"></i>
@@ -30,17 +32,21 @@
                     <span>Requisições</span>
                 </a>
             </li>
+
             <li>
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
+
             <li>
                 <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
+                    <i class="bi bi-wrench-adjustable"></i>
+                    <span>Liberados</span>
                 </a>
             </li>
+
             @if (Sessao.IsAdmin)
             {
                 <li>
@@ -50,23 +56,35 @@
                     </a>
                 </li>
             }
+
         </ul>
 
         <div class="sidebar-footer">
+
             <div class="d-flex align-items-center gap-2 mb-3 px-2">
-                <div class="user-avatar">@(Sessao.Iniciais)</div>
-                <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong><br/>
+
+                <div class="user-avatar">
+                    @(Sessao.Iniciais)
                 </div>
+
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong>
+                </div>
+
             </div>
-            
+
             <button class="btn-sair" @onclick="Sair">
+
                 <i class="bi bi-box-arrow-right"></i>
+
                 <span>Sair</span>
+
             </button>
+
         </div>
 
     </nav>
+
 
     <!-- =========================================
          CONTEÚDO PRINCIPAL
@@ -81,22 +99,32 @@
         <header class="top-bar">
 
             <div class="top-left d-flex align-items-center">
-                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
+
+                <button class="menu-toggle d-md-none me-2"
+                        @onclick="ToggleMenu">
+
                     <i class="bi bi-list"></i>
+
                 </button>
 
                 <span class="user-greeting">
+
                     Olá, <strong>@Sessao.NomeUsuario!</strong>
+
                 </span>
+
             </div>
 
             <div class="top-right">
+
                 <div class="user-avatar">
                     @(Sessao.Iniciais)
                 </div>
+
             </div>
 
         </header>
+
 
         <!-- =====================================
              CORPO
@@ -105,61 +133,571 @@
         <div class="content-body">
 
             <div class="section-title mb-4">
+
                 <h2>Categoria de Componentes</h2>
-                <p>Selecione uma categoria para continuar sua requisição.</p>
-            </div>
 
-            <!-- =================================
-                 CATEGORIAS
-                 ================================= -->
-
-            <div class="row g-4 mb-5">
-
-                <!-- BOMBA -->
-                <div class="col-md-4">
-                    <div class="category-card" @onclick="@(() => IrParaModelos("Bomba Hidráulica"))">
-                        <div class="card-icon">
-                            <i class="bi bi-gear-wide"></i>
-                        </div>
-                        <h5>Bombas Hidráulicas</h5>
-                        <p>Componentes de bombas hidráulicas e acessórios.</p>
-                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- MOTOR -->
-                <div class="col-md-4">
-                    <div class="category-card" @onclick="@(() => IrParaModelos("Motor Hidráulico"))">
-                        <div class="card-icon">
-                            <i class="bi bi-gear-wide"></i>
-                        </div>
-                        <h5>Motores Hidráulicos</h5>
-                        <p>Componentes de motores hidráulicos e acessórios.</p>
-                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- CILINDRO -->
-                <div class="col-md-4">
-                    <div class="category-card" @onclick="@(() => IrParaModelos("cilindros"))">
-                        <div class="card-icon">
-                            <i class="bi bi-gear-wide"></i>
-                        </div>
-                        <h5>Cilindros Hidráulicos</h5>
-                        <p>Componentes de cilindros hidráulicos e acessórios.</p>
-                        <span class="card-link">Acessar categoria <i class="bi bi-arrow-right"></i></span>
-                    </div>
-                </div>
+                <p>
+                    Selecione uma categoria para continuar sua requisição.
+                </p>
 
             </div>
+
+
+            <!-- =====================================================
+                 SISTEMA: HIDRÁULICA
+                 ===================================================== -->
+
+            <section class="system-section">
+
+                <h3 class="system-title">
+                    Hidráulica
+                </h3>
+
+                <div class="row g-4 mb-5">
+
+                    <!-- BOMBA HIDRÁULICA -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Bomba Hidráulica"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Bombas Hidráulicas
+                            </h5>
+
+                            <p>
+                                Componentes de bombas hidráulicas e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MOTOR HIDRÁULICO -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Motor Hidráulico"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Motores Hidráulicos
+                            </h5>
+
+                            <p>
+                                Componentes de motores hidráulicos e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CILINDROS -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("cilindros"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Cilindros Hidráulicos
+                            </h5>
+
+                            <p>
+                                Componentes de cilindros hidráulicos e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 SISTEMA: MOTOR
+                 ===================================================== -->
+
+            <section class="system-section">
+
+                <h3 class="system-title">
+                    Motor Diesel
+                </h3>
+
+                <div class="row g-4 mb-5">
+
+                    <!-- MOTOR DIESEL -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Motor Diesel"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Motor Diesel
+                            </h5>
+
+                            <p>
+                                Componentes de motores diesel e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOMBA INJETORA -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Bomba Injetora"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Bomba Injetora
+                            </h5>
+
+                            <p>
+                                Componentes de bombas injetoras e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BICO INJETOR -->
+
+                    <div class="col-md-4">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Bico injetor"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Bico Injetor
+                            </h5>
+
+                            <p>
+                                Componentes de bicos injetores e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 SISTEMA: TRANSMISSÃO
+                 ===================================================== -->
+
+            <section class="system-section">
+
+                <h3 class="system-title">
+                    Transmissão
+                </h3>
+
+                <div class="row g-4 mb-5">
+
+                    <!-- CÂMBIOS -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Câmbios"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Câmbios
+                            </h5>
+
+                            <p>
+                                Componentes de câmbios e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TRANSMISSÕES -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Transmissões"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Transmissões
+                            </h5>
+
+                            <p>
+                                Componentes de transmissões e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CAIXAS DE ENGRENAGENS -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Caixas de Engrenagens"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Caixas de Engrenagens
+                            </h5>
+
+                            <p>
+                                Componentes de caixas de engrenagens.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- REDUÇÃO FINAL -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Redução Final"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Redução Final
+                            </h5>
+
+                            <p>
+                                Componentes de redução final e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+                 SISTEMA: RODANTES
+                 ===================================================== -->
+
+            <section class="system-section">
+
+                <h3 class="system-title">
+                    Rodantes
+                </h3>
+
+                <div class="row g-4 mb-5">
+
+                    <!-- RODA GUIA -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Roda Guia"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Roda Guia
+                            </h5>
+
+                            <p>
+                                Componentes de roda guia e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RODA MOTRIZ -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Roda Motriz"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Roda Motriz
+                            </h5>
+
+                            <p>
+                                Componentes de roda motriz e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ESTEIRAS -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Esteiras"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Esteiras
+                            </h5>
+
+                            <p>
+                                Componentes de esteiras e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MOLA -->
+
+                    <div class="col-md-3">
+
+                        <div class="category-card"
+                             @onclick="@(() => IrParaModelos("Mola"))">
+
+                            <div class="card-icon">
+
+                                <i class="bi bi-gear-wide"></i>
+
+                            </div>
+
+                            <h5>
+                                Mola
+                            </h5>
+
+                            <p>
+                                Componentes de molas e acessórios.
+                            </p>
+
+                            <span class="card-link">
+
+                                Acessar categoria
+
+                                <i class="bi bi-arrow-right"></i>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
         </div>
+
     </main>
+
 </div>
 
+
 @code {
+
     private bool isMenuOpen = false;
-    
-    // Proteção de rota: Verifica se o usuário está logado ao carregar a página
+
+
+    // =========================================
+    // PROTEÇÃO DA ROTA
+    // =========================================
+
     protected override void OnInitialized()
     {
         if (!Sessao.EstaLogado)
@@ -168,16 +706,38 @@
         }
     }
 
-    private void ToggleMenu() => isMenuOpen = !isMenuOpen;
+
+    // =========================================
+    // MENU MOBILE
+    // =========================================
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+
+    // =========================================
+    // NAVEGAÇÃO
+    // =========================================
 
     private void IrParaModelos(string categoria)
     {
-        Nav.NavigateTo($"/modelos/{Uri.EscapeDataString(categoria)}");
+        Nav.NavigateTo(
+            $"/modelos/{Uri.EscapeDataString(categoria)}"
+        );
     }
+
+
+    // =========================================
+    // LOGOUT
+    // =========================================
 
     private void Sair()
     {
         Sessao.Logout();
+
         Nav.NavigateTo("/login");
     }
+
 }

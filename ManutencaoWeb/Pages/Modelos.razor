@@ -34,6 +34,12 @@
                     <span>Relatórios</span>
                 </a>
             </li>
+            <li>
+                <a href="/liberados">
+                    <i class="bi bi-wrench-adjustable"></i>
+                    <span>Liberados</span>
+                </a>
+            </li>
             @if (Sessao.IsAdmin)
             {
                 <li>
@@ -46,9 +52,24 @@
         </ul>
 
         <div class="sidebar-footer">
+
+            <div class="d-flex align-items-center gap-2 mb-3 px-2">
+
+                <div class="user-avatar">
+                    @(Sessao.Iniciais)
+                </div>
+
+                <div style="font-size: 12px; color: #cfdcd4;">
+                    <strong>@Sessao.NomeUsuario</strong>
+                </div>
+
+            </div>
+
             <button class="btn-sair" @onclick="Sair">
-                <i class="oi oi-account-logout"></i> Sair
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sair</span>
             </button>
+
         </div>
     </nav>
 
