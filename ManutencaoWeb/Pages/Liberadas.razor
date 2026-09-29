@@ -144,9 +144,33 @@
                      TABELA DE LIBERADOS
                      ========================================= -->
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
-                        <i class="bi bi-funnel text-muted"></i>
-                        <h6 class="mb-0 fw-bold text-muted">Filtros e Listagem</h6>
+                    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-funnel text-muted"></i>
+                            <h6 class="mb-0 fw-bold text-muted">Filtros e Listagem</h6>
+                        </div>
+                        
+                        <!-- FILTRO DE SISTEMA/ÁREA -->
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="filtroSistema" class="text-muted fw-semibold small mb-0">Sistema / Área:</label>
+                            <select id="filtroSistema" class="form-select form-select-sm" style="width: 220px;" @onchange="OnFiltroSistemaChanged">
+                                <option value="Todos os sistemas">Todos os sistemas</option>
+                                <option value="Bico injetor">Bico injetor</option>
+                                <option value="Bomba Hidráulica">Bomba Hidráulica</option>
+                                <option value="Bomba Injetora">Bomba Injetora</option>
+                                <option value="Caixas de Engrenagens">Caixas de Engrenagens</option>
+                                <option value="Câmbios">Câmbios</option>
+                                <option value="cilindros">cilindros</option>
+                                <option value="Esteiras">Esteiras</option>
+                                <option value="Mola">Mola</option>
+                                <option value="Motor Diesel">Motor Diesel</option>
+                                <option value="Motor Hidráulico">Motor Hidráulico</option>
+                                <option value="Redução Final">Redução Final</option>
+                                <option value="Roda Guia">Roda Guia</option>
+                                <option value="Roda Motriz">Roda Motriz</option>
+                                <option value="Transmissões">Transmissões</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="table-responsive">
@@ -165,7 +189,7 @@
                                 @if (!listaLiberados.Any())
                                 {
                                     <tr>
-                                        <td colspan="6" class="text-center py-5 text-muted">Nenhum componente aguardando montagem no momento.</td>
+                                        <td colspan="6" class="text-center py-5 text-muted">Nenhum componente aguardando montagem encontrado.</td>
                                     </tr>
                                 }
                                 else
@@ -199,7 +223,7 @@
                     @if (listaLiberados.Any())
                     {
                         <div class="card-footer bg-white py-3 border-top d-flex justify-content-between align-items-center">
-                            <small class="text-muted">Mostrando 1 a @listaLiberados.Count de @listaLiberados.Count registros</small>
+                            <small class="text-muted">Mostrando 1 a @listaLiberados.Count de @listaLiberados.Count registos</small>
                         </div>
                     }
                 </div>
@@ -210,9 +234,13 @@
 
 @code {
     private bool isLoading = true;
+    
+    // Variáveis para a gestão do filtro e dados
+    private List<SolicitacaoCompletaModel> listaCompleta = new();
     private List<SolicitacaoCompletaModel> listaLiberados = new();
+    private string filtroSistema = "Todos os sistemas";
 
-    // Contadores para os Cards
+    // Contadores para os Cards (calculados sobre a lista filtrada)
     private int totalItens => listaLiberados.Count;
     private int pecasVerificadas => listaLiberados.Sum(s => s.ItensJson?.Sum(i => i.Quantidade) ?? 0);
 
@@ -241,9 +269,10 @@
 
             var dados = response.Models ?? new List<SolicitacaoCompletaModel>();
 
-            listaLiberados = dados
-                .OrderByDescending(s => s.DataEnvio)
-                .ToList();
+            // Guardamos a lista completa para poder aplicar os filtros sem chamar a API de novo
+            listaCompleta = dados.OrderByDescending(s => s.DataEnvio).ToList();
+            
+            AplicarFiltro();
         }
         catch (Exception ex)
         {
@@ -252,6 +281,28 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    // Método que reage à alteração da Dropdown
+    private void OnFiltroSistemaChanged(ChangeEventArgs e)
+    {
+        filtroSistema = e.Value?.ToString() ?? "Todos os sistemas";
+        AplicarFiltro();
+    }
+
+    // Método que atualiza a lista de exibição baseada no filtro escolhido
+    private void AplicarFiltro()
+    {
+        if (filtroSistema == "Todos os sistemas")
+        {
+            listaLiberados = listaCompleta.ToList();
+        }
+        else
+        {
+            // NOTA: Confirme se a propriedade no seu modelo "SolicitacaoCompletaModel" se chama efetivamente "Sistema".
+            // Se o nome for diferente (por ex: SistemaArea), ajuste a expressão abaixo (s.SistemaArea == filtroSistema).
+            listaLiberados = listaCompleta.Where(s => s.Sistema == filtroSistema).ToList();
         }
     }
 
@@ -272,7 +323,7 @@
 
             await JS.InvokeVoidAsync("alert", "Montagem concluída com sucesso!");
             
-            // Recarrega a tela para remover o item da listagem
+            // Recarrega a tela para atualizar a listagem
             await CarregarDados();
         }
         catch (Exception ex)
