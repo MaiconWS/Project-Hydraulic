@@ -1,6 +1,8 @@
 @page "/requisicoes"
+
 @using ManutencaoWeb.Models
 @using ManutencaoWeb.Services
+
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 @inject IJSRuntime JS
@@ -13,12 +15,15 @@
     <!-- =========================================================
          SIDEBAR
          ========================================================= -->
+
     <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
 
         <div class="sidebar-brand">
+
             <i class="bi bi-gear-wide">
                 <span> Manutenção WEB</span>
             </i>
+
         </div>
 
         <ul class="sidebar-menu">
@@ -68,11 +73,11 @@
             <div class="d-flex align-items-center gap-2 mb-3 px-2">
 
                 <div class="user-avatar">
-                    @(Sessao.Iniciais)
+                    @Sessao.Iniciais
                 </div>
 
                 <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong><br />
+                    <strong>@Sessao.NomeUsuario</strong>
                 </div>
 
             </div>
@@ -90,21 +95,24 @@
     <!-- =========================================================
          CONTEÚDO PRINCIPAL
          ========================================================= -->
+
     <main class="main-content">
 
         <!-- TOP BAR -->
+
         <header class="top-bar">
 
             <div class="top-bar-left d-flex align-items-center">
 
-                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
+                <button class="menu-toggle d-md-none me-2"
+                        @onclick="ToggleMenu">
 
                     <i class="bi bi-list"></i>
 
                 </button>
 
                 <span class="user-greeting">
-                    Olá, <strong>@Sessao.NomeUsuario!</strong><br />
+                    Olá, <strong>@Sessao.NomeUsuario!</strong>
                 </span>
 
             </div>
@@ -112,7 +120,7 @@
             <div class="top-bar-right">
 
                 <div class="user-avatar">
-                    @(Sessao.Iniciais)
+                    @Sessao.Iniciais
                 </div>
 
             </div>
@@ -123,13 +131,16 @@
         <!-- =========================================================
              CORPO
              ========================================================= -->
+
         <div class="content-body">
 
             <!-- TÍTULO -->
+
             <div class="d-flex align-items-start mb-4 gap-3">
 
                 <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;" @onclick="Sair">
+                        style="width:42px;height:42px;background:#fff;border-color:#dee2e6;"
+                        @onclick="Sair">
 
                     <i class="bi bi-arrow-left text-dark"></i>
 
@@ -137,7 +148,8 @@
 
                 <div class="section-title mb-0">
 
-                    <h2 class="mb-1" style="color: #2c3e50; font-weight: 700;">
+                    <h2 class="mb-1"
+                        style="color:#2c3e50;font-weight:700;">
 
                         Controle de Requisições
 
@@ -158,12 +170,13 @@
             <!-- =====================================================
                  LOADING
                  ===================================================== -->
+
             @if (isLoading)
             {
                 <div class="text-center py-5">
 
-                    <div class="spinner-border text-success" role="status">
-
+                    <div class="spinner-border text-success"
+                         role="status">
                     </div>
 
                     <div class="mt-3 text-muted">
@@ -172,8 +185,7 @@
 
                 </div>
             }
-
-            else if (solicitacoes == null || !solicitacoes.Any())
+            else if (solicitacoes.Count == 0)
             {
                 <div class="alert alert-info">
 
@@ -184,34 +196,38 @@
 
                 </div>
             }
-
             else
             {
 
                 <!-- =================================================
                      FILTROS
                      ================================================= -->
+
                 <div class="card border-0 shadow-sm p-4 mb-4">
 
                     <div class="row g-3 align-items-end">
 
                         <!-- BUSCA -->
+
                         <div class="col-md-7">
 
                             <label class="fw-bold mb-2">
-
                                 Buscar requisição
-
                             </label>
 
                             <div class="input-group">
 
                                 <span class="input-group-text bg-white">
+
                                     <i class="bi bi-search text-muted"></i>
+
                                 </span>
 
-                                <input type="text" class="form-control" placeholder="Busque por O.S ou Modelo de componente"
-                                       @bind="termoBusca" @bind:event="oninput" />
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Busque por O.S ou Modelo de componente"
+                                       @bind="termoBusca"
+                                       @bind:event="oninput" />
 
                             </div>
 
@@ -219,15 +235,15 @@
 
 
                         <!-- FILTRO SISTEMA -->
+
                         <div class="col-md-5">
 
                             <label class="fw-bold mb-2">
-
                                 Sistema / Área
-
                             </label>
 
-                            <select class="form-select" @bind="sistemaSelecionado">
+                            <select class="form-select"
+                                    @bind="sistemaSelecionado">
 
                                 <option value="">
                                     Todos os sistemas
@@ -248,20 +264,23 @@
 
 
                     <!-- INDICAÇÃO DO FILTRO -->
+
                     @if (!string.IsNullOrWhiteSpace(sistemaSelecionado))
                     {
                         <div class="mt-3">
 
-                            <span class="badge rounded-pill" style="background-color:#4d6d5d;">
+                            <span class="badge rounded-pill"
+                                  style="background-color:#4d6d5d;">
 
                                 <i class="bi bi-funnel-fill me-1"></i>
 
-                                Área:
-                                @sistemaSelecionado
+                                Área: @sistemaSelecionado
 
                             </span>
 
-                            <button type="button" class="btn btn-sm btn-link text-secondary" @onclick="LimparFiltroSistema">
+                            <button type="button"
+                                    class="btn btn-sm btn-link text-secondary"
+                                    @onclick="LimparFiltroSistema">
 
                                 Limpar filtro
 
@@ -274,8 +293,9 @@
 
 
                 <!-- =================================================
-                     MENSAGEM SEM RESULTADOS
+                     SEM RESULTADOS
                      ================================================= -->
+
                 @if (!SolicitacoesFiltradas.Any())
                 {
                     <div class="card border-0 shadow-sm mb-4">
@@ -292,7 +312,9 @@
                                 Não existem requisições para os filtros selecionados.
                             </p>
 
-                            <button type="button" class="btn btn-outline-success" @onclick="LimparFiltros">
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="LimparFiltros">
 
                                 <i class="bi bi-arrow-counterclockwise me-1"></i>
 
@@ -310,6 +332,7 @@
                     <!-- =================================================
                          TABELA MASTER
                          ================================================= -->
+
                     <div class="card border-0 shadow-sm mb-4">
 
                         <div class="table-responsive">
@@ -336,10 +359,8 @@
                                             Sistema
                                         </th>
 
-                                        <th class="py-3" style="width: 180px;">
-
+                                        <th class="py-3" style="width:180px;">
                                             Progresso
-
                                         </th>
 
                                         <th class="pe-4 py-3 text-end">
@@ -354,18 +375,12 @@
 
                                     @foreach (var s in SolicitacoesFiltradas)
                                     {
-                                        int pct = CalcularPorcentagem(s);
+                                        var pct = CalcularPorcentagem(s);
 
-                                        bool isSelected =
+                                        var isSelected =
                                             requisicaoSelecionada?.Id == s.Id;
 
-                                        <tr style="
-                                            cursor:pointer;
-                                            background-color:@(
-                                            isSelected
-                                                ? "#f1f8f5"
-                                                : "transparent"
-                                                                                                                                );"
+                                        <tr style="cursor:pointer; background-color:@(isSelected ? "#f1f8f5" : "transparent");"
                                             @onclick="() => SelecionarRequisicao(s.Id)">
 
                                             <td class="ps-4 text-muted">
@@ -374,7 +389,6 @@
 
                                             </td>
 
-
                                             <td class="fw-bold text-secondary">
 
                                                 @s.ModeloSolicitado
@@ -382,13 +396,15 @@
                                             </td>
 
                                             <td class="text-secondary">
+
                                                 @s.DataEnvio.ToLocalTime().ToString("dd/MM/yyyy")
+
                                             </td>
 
                                             <td>
 
                                                 @{
-                                                    string sistema =
+                                                    var sistema =
                                                         ObterSistemaDoModelo(
                                                             s.ModeloSolicitado
                                                         );
@@ -396,10 +412,8 @@
 
                                                 @if (!string.IsNullOrWhiteSpace(sistema))
                                                 {
-                                                    <span class="badge rounded-pill" style="
-                                                        background-color:#e8f1ec;
-                                                        color:#4d6d5d;
-                                                        ">
+                                                    <span class="badge rounded-pill"
+                                                          style="background-color:#e8f1ec;color:#4d6d5d;">
 
                                                         <i class="bi bi-diagram-3 me-1"></i>
 
@@ -417,6 +431,8 @@
                                             </td>
 
 
+                                            <!-- PROGRESSO -->
+
                                             <td>
 
                                                 <div class="d-flex align-items-center gap-2">
@@ -425,12 +441,11 @@
                                                         @pct%
                                                     </span>
 
-                                                    <div class="progress flex-grow-1" style="
-                                                        height:6px;
-                                                        background-color:#e9ecef;
-                                                        ">
+                                                    <div class="progress flex-grow-1"
+                                                         style="height:6px;background-color:#e9ecef;">
 
-                                                        <div class="progress-bar bg-success" style="width:@pct%;">
+                                                        <div class="progress-bar bg-success"
+                                                             style="width:@pct%;">
                                                         </div>
 
                                                     </div>
@@ -440,16 +455,16 @@
                                             </td>
 
 
+                                            <!-- AÇÃO -->
+
                                             <td class="pe-4 text-end">
 
-                                                <button
-                                                    class="btn btn-sm @(isSelected
-                                                                                                                                                                        ? "btn-success"
-                                                                                                                                                                        : "btn-outline-success")">
+                                                <button type="button"
+                                                        class="btn btn-sm @(isSelected ? "btn-success" : "btn-outline-success")"
+                                                        @onclick:stopPropagation="true"
+                                                        @onclick="() => SelecionarRequisicao(s.Id)">
 
-                                                    @(isSelected
-                                                        ? "Editando..."
-                                                        : "Ver Itens")
+                                                    @(isSelected ? "Fechar" : "Ver Itens")
 
                                                 </button>
 
@@ -468,35 +483,32 @@
 
 
                     <!-- =================================================
-                         DETALHES DA REQUISIÇÃO
+                         DETALHES
                          ================================================= -->
+
                     @if (requisicaoSelecionada != null)
                     {
-                        <div class="mt-5 p-3 rounded" style="
-                            background-color:#f8f9fa;
-                            border-left:4px solid #198754;
-                            ">
+                        <div class="mt-5 p-3 rounded"
+                             style="background-color:#f8f9fa;border-left:4px solid #198754;">
 
                             <!-- CABEÇALHO -->
-                            <div class="d-flex justify-content-between
-                                align-items-center mb-4">
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
 
                                 <h4 class="mb-0">
 
                                     Itens da
+
                                     <strong>
                                         O.S.: @requisicaoSelecionada.OsNumero
                                     </strong>
 
                                 </h4>
 
-
-                                <!-- ADICIONAR PEÇA -->
-                                <!-- BOTÕES -->
                                 <div class="d-flex align-items-center gap-2">
 
-                                    <!-- EXPORTAR EXCEL -->
-                                    <button class="btn btn-outline-success" @onclick="ExportarItensExcel">
+                                    <button class="btn btn-outline-success"
+                                            @onclick="ExportarItensExcel">
 
                                         <i class="bi bi-file-earmark-excel me-1"></i>
 
@@ -504,8 +516,8 @@
 
                                     </button>
 
-                                    <!-- ADICIONAR PEÇA -->
-                                    <button class="btn btn-success" @onclick="AbrirModalAdicionarPeca">
+                                    <button class="btn btn-success"
+                                            @onclick="AbrirModalAdicionarPeca">
 
                                         <i class="bi bi-plus-lg me-1"></i>
 
@@ -518,24 +530,20 @@
                             </div>
 
 
-                            <!-- =================================================
-                                 CARDS
-                                 ================================================= -->
+                            <!-- CARDS -->
+
                             <div class="row g-3 mb-4">
 
                                 <div class="col-md-5">
 
-                                    <div class="card border-0 shadow-sm p-3
-                                        bg-white h-100">
+                                    <div class="card border-0 shadow-sm p-3 bg-white h-100">
 
                                         <small class="text-muted">
                                             Modelo
                                         </small>
 
                                         <h6 class="mb-0 fw-bold">
-
                                             @requisicaoSelecionada.ModeloSolicitado
-
                                         </h6>
 
                                     </div>
@@ -545,8 +553,7 @@
 
                                 <div class="col-md-2">
 
-                                    <div class="card border-0 shadow-sm p-3
-                                        bg-white h-100">
+                                    <div class="card border-0 shadow-sm p-3 bg-white h-100">
 
                                         <small class="text-muted">
                                             Sistema
@@ -555,15 +562,15 @@
                                         <h6 class="mb-0 fw-bold">
 
                                             @{
-                                                string sistemaSelecionadoDetalhe =
+                                                var sistemaDetalhe =
                                                     ObterSistemaDoModelo(
                                                         requisicaoSelecionada.ModeloSolicitado
                                                     );
                                             }
 
-                                            @if (!string.IsNullOrWhiteSpace(sistemaSelecionadoDetalhe))
+                                            @if (!string.IsNullOrWhiteSpace(sistemaDetalhe))
                                             {
-                                                @sistemaSelecionadoDetalhe
+                                                @sistemaDetalhe
                                             }
                                             else
                                             {
@@ -581,23 +588,18 @@
 
                                 <div class="col-md-2">
 
-                                    <div class="card border-0 shadow-sm p-3
-                                        bg-white h-100">
+                                    <div class="card border-0 shadow-sm p-3 bg-white h-100">
 
                                         <small class="text-muted">
                                             Progresso
                                         </small>
 
                                         <h6 class="mb-0 fw-bold">
-
                                             @ItensEntregues de @TotalItens
-
                                         </h6>
 
                                         <small class="text-success">
-
                                             @PorcentagemConcluida% concluído
-
                                         </small>
 
                                     </div>
@@ -607,8 +609,7 @@
 
                                 <div class="col-md-3">
 
-                                    <div class="card border-0 shadow-sm p-3
-                                        bg-white h-100">
+                                    <div class="card border-0 shadow-sm p-3 bg-white h-100">
 
                                         <small class="text-muted">
                                             Situação
@@ -645,6 +646,7 @@
                             <!-- =================================================
                                  TABELA DE ITENS
                                  ================================================= -->
+
                             <div class="card border-0 shadow-sm mb-4">
 
                                 <div class="table-responsive">
@@ -677,12 +679,12 @@
 
                                         <tbody>
 
-                                            @if (itensAtuais == null ||
-                                                 !itensAtuais.Any())
+                                            @if (itensAtuais.Count == 0)
                                             {
                                                 <tr>
 
-                                                    <td colspan="4" class="text-center py-4 text-muted">
+                                                    <td colspan="4"
+                                                        class="text-center py-4 text-muted">
 
                                                         Nenhuma peça cadastrada
                                                         para esta requisição.
@@ -697,33 +699,21 @@
                                                 {
                                                     <tr>
 
-                                                        <!-- SAP -->
                                                         <td class="ps-4 fw-bold text-secondary">
 
                                                             @item.SapPeca
 
                                                         </td>
 
-
-                                                        <!-- DESCRIÇÃO -->
                                                         <td>
 
                                                             @item.Descricao
 
                                                         </td>
 
-
-                                                        <!-- QUANTIDADE -->
                                                         <td>
 
-                                                            <div class="
-                                                                d-inline-flex
-                                                                align-items-center
-                                                                border
-                                                                rounded
-                                                                bg-light
-                                                                px-2
-                                                                py-1">
+                                                            <div class="d-inline-flex align-items-center border rounded bg-light px-2 py-1">
 
                                                                 <span>
                                                                     @item.Quantidade
@@ -734,16 +724,11 @@
                                                         </td>
 
 
-                                                        <!-- CHECK ENTREGUE -->
                                                         <td class="text-center pe-4">
 
-                                                            <button type="button" class="btn @(item.Entregue
-                                                                                                                                                                                                                ? "btn-success"
-                                                                                                                                                                                                                : "btn-outline-secondary")
-                                                                btn-sm px-3" @onclick="() => AlternarEntrega(item)"
-                                                                    title="@(item.Entregue
-                                                                                                                                                                                                                ? "Marcar como pendente"
-                                                                                                                                                                                                                : "Marcar como entregue")">
+                                                            <button type="button"
+                                                                    class="btn @(item.Entregue ? "btn-success" : "btn-outline-secondary") btn-sm px-3"
+                                                                    @onclick="() => AlternarEntrega(item)">
 
                                                                 @if (item.Entregue)
                                                                 {
@@ -782,18 +767,17 @@
                             <!-- =================================================
                                  RESUMO E AÇÕES
                                  ================================================= -->
-                            <div class="card border-0 shadow-sm p-4
-                                bg-white mb-2">
+
+                            <div class="card border-0 shadow-sm p-4 bg-white mb-2">
 
                                 <div class="row align-items-center g-3">
 
                                     <!-- RESUMO -->
+
                                     <div class="col-md-5">
 
                                         <small class="text-muted d-block">
-
                                             Resumo da seleção
-
                                         </small>
 
                                         @if (TotalItens == 0)
@@ -828,36 +812,27 @@
 
 
                                     <!-- VALOR -->
+
                                     <div class="col-md-3">
 
                                         <small class="text-muted d-block">
-
                                             Total estimado
-
                                         </small>
 
                                         <h4 class="text-success fw-bold mb-0">
-
                                             R$ -
-
-                                            @*
-                                            Se quiser voltar a mostrar o valor:
-
-                                            R$ @ValorTotalEstimado.ToString("F2")
-                                            *@
-
                                         </h4>
 
                                     </div>
 
 
                                     <!-- CONDENAR -->
+
                                     <div class="col-md-2">
 
-                                        <button type="button" class="btn btn-outline-danger
-                                            w-100
-                                            py-2
-                                            fw-bold" @onclick="CondenarProducao">
+                                        <button type="button"
+                                                class="btn btn-outline-danger w-100 py-2 fw-bold"
+                                                @onclick="CondenarProducao">
 
                                             <i class="bi bi-x-circle me-1"></i>
 
@@ -869,17 +844,16 @@
 
 
                                     <!-- LIBERAR -->
+
                                     <div class="col-md-2">
 
-                                        <button type="button" class="btn btn-success
-                                            w-100
-                                            py-2
-                                            fw-bold" disabled="@(!TodosItensEntregues)" @onclick="LiberarProducao"
-                                                title="@(
-                                                TodosItensEntregues
+                                        <button type="button"
+                                                class="btn btn-success w-100 py-2 fw-bold"
+                                                disabled="@(!TodosItensEntregues)"
+                                                @onclick="LiberarProducao"
+                                                title="@(TodosItensEntregues
                                                     ? "Liberar produção"
-                                                    : "É necessário entregar todos os itens"
-                                                                                                                                        )">
+                                                    : "É necessário entregar todos os itens")">
 
                                             <i class="bi bi-check-circle me-1"></i>
 
@@ -910,15 +884,20 @@
 <!-- =============================================================
      MODAL - ADICIONAR PEÇA
      ============================================================= -->
+
 @if (mostrarModalAdicionarPeca)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+    <div class="modal fade show d-block"
+         tabindex="-1"
+         style="background-color:rgba(0,0,0,0.5);">
 
         <div class="modal-dialog modal-dialog-centered">
 
             <div class="modal-content border-0 shadow">
 
+
                 <!-- CABEÇALHO -->
+
                 <div class="modal-header">
 
                     <h5 class="modal-title fw-bold">
@@ -929,13 +908,16 @@
 
                     </h5>
 
-                    <button type="button" class="btn-close" @onclick="FecharModalAdicionarPeca">
+                    <button type="button"
+                            class="btn-close"
+                            @onclick="FecharModalAdicionarPeca">
                     </button>
 
                 </div>
 
 
                 <!-- CORPO -->
+
                 <div class="modal-body">
 
                     <div class="alert alert-light border">
@@ -952,19 +934,23 @@
 
 
                     <!-- SAP -->
+
                     <div class="mb-3">
 
                         <label class="form-label fw-bold">
-
                             SAP da peça
-
                         </label>
 
                         <div class="input-group">
 
-                            <input type="text" class="form-control" placeholder="Digite o SAP" @bind="sapPecaBusca" />
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Digite o SAP"
+                                   @bind="sapPecaBusca" />
 
-                            <button type="button" class="btn btn-outline-success" @onclick="BuscarPeca"
+                            <button type="button"
+                                    class="btn btn-outline-success"
+                                    @onclick="BuscarPeca"
                                     disabled="@buscandoPeca">
 
                                 @if (buscandoPeca)
@@ -984,6 +970,7 @@
 
 
                     <!-- RESULTADO -->
+
                     @if (pecaEncontrada != null)
                     {
                         <div class="card border-success mb-3">
@@ -995,22 +982,15 @@
                                 </small>
 
                                 <h6 class="fw-bold mb-1">
-
                                     @pecaEncontrada.SapPeca
-
                                 </h6>
 
                                 <p class="mb-0 text-secondary">
-
                                     @pecaEncontrada.Descricao
-
                                 </p>
 
                                 <div class="mt-2 text-success fw-bold">
-
-                                    R$
-                                    @pecaEncontrada.Valor.ToString("F2")
-
+                                    R$ @pecaEncontrada.Valor.ToString("F2")
                                 </div>
 
                             </div>
@@ -1020,32 +1000,29 @@
 
 
                     <!-- MENSAGEM -->
+
                     @if (!string.IsNullOrWhiteSpace(mensagemModal))
                     {
-                        <div class="alert @(
-                             mensagemModalErro
-                                 ? "alert-danger"
-                                 : "alert-info"
-                                                                          )">
-
+                        <div class="alert @(mensagemModalErro ? "alert-danger" : "alert-info")">
                             @mensagemModal
-
                         </div>
                     }
 
 
                     <!-- QUANTIDADE -->
+
                     @if (pecaEncontrada != null)
                     {
                         <div class="mb-3">
 
                             <label class="form-label fw-bold">
-
                                 Quantidade
-
                             </label>
 
-                            <input type="number" class="form-control" min="1" @bind="quantidadeNovaPeca" />
+                            <input type="number"
+                                   class="form-control"
+                                   min="1"
+                                   @bind="quantidadeNovaPeca" />
 
                         </div>
                     }
@@ -1054,27 +1031,30 @@
 
 
                 <!-- RODAPÉ -->
+
                 <div class="modal-footer">
 
-                    <button type="button" class="btn btn-secondary" @onclick="FecharModalAdicionarPeca">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            @onclick="FecharModalAdicionarPeca">
 
                         Cancelar
 
                     </button>
 
-                    <button type="button" class="btn btn-success" disabled="@(pecaEncontrada == null || salvandoPeca)"
+                    <button type="button"
+                            class="btn btn-success"
+                            disabled="@(pecaEncontrada == null || salvandoPeca)"
                             @onclick="AdicionarPeca">
 
                         @if (salvandoPeca)
                         {
                             <span class="spinner-border spinner-border-sm me-1"></span>
-
                             <span>Adicionando...</span>
                         }
                         else
                         {
                             <i class="bi bi-plus-lg me-1"></i>
-
                             <span>Adicionar peça</span>
                         }
 
@@ -1105,7 +1085,7 @@
 
 
     // ============================================================
-    // ESTADO DA PÁGINA
+    // ESTADO
     // ============================================================
 
     private List<SolicitacaoCompletaModel> solicitacoes = new();
@@ -1118,7 +1098,7 @@
 
 
     // ============================================================
-    // ITENS AGRUPADOS POR SOLICITAÇÃO
+    // CACHE DOS ITENS
     // ============================================================
 
     private Dictionary<long, List<SolicitacaoItemModel>>
@@ -1126,15 +1106,10 @@
 
 
     // ============================================================
-    // FILTRO DE TEXTO
+    // FILTROS
     // ============================================================
 
     private string termoBusca = "";
-
-
-    // ============================================================
-    // FILTRO DE SISTEMA / ÁREA
-    // ============================================================
 
     private string sistemaSelecionado = "";
 
@@ -1142,17 +1117,7 @@
 
 
     // ============================================================
-    // RELAÇÃO MODELO → SISTEMA
-    //
-    // Exemplo:
-    //
-    // BOMBA 2 CORPOS CH
-    // ↓
-    // Hidráulica
-    //
-    // MOTOR DIESEL
-    // ↓
-    // Motor
+    // MODELO → SISTEMA
     // ============================================================
 
     private Dictionary<string, string> sistemaPorModelo =
@@ -1170,16 +1135,11 @@
             IEnumerable<SolicitacaoCompletaModel> resultado =
                 solicitacoes;
 
-
-            // ----------------------------------------------------
-            // FILTRO POR TEXTO
-            // ----------------------------------------------------
-
             if (!string.IsNullOrWhiteSpace(termoBusca))
             {
                 resultado = resultado.Where(s =>
                     (
-                        s.OsNumero != null &&
+                        !string.IsNullOrWhiteSpace(s.OsNumero) &&
                         s.OsNumero.Contains(
                             termoBusca,
                             StringComparison.OrdinalIgnoreCase
@@ -1187,7 +1147,7 @@
                     )
                     ||
                     (
-                        s.ModeloSolicitado != null &&
+                        !string.IsNullOrWhiteSpace(s.ModeloSolicitado) &&
                         s.ModeloSolicitado.Contains(
                             termoBusca,
                             StringComparison.OrdinalIgnoreCase
@@ -1196,23 +1156,16 @@
                 );
             }
 
-
-            // ----------------------------------------------------
-            // FILTRO POR SISTEMA
-            // ----------------------------------------------------
-
             if (!string.IsNullOrWhiteSpace(sistemaSelecionado))
             {
                 resultado = resultado.Where(s =>
-                    ObterSistemaDoModelo(
-                        s.ModeloSolicitado
-                    ).Equals(
-                        sistemaSelecionado,
-                        StringComparison.OrdinalIgnoreCase
-                    )
+                    ObterSistemaDoModelo(s.ModeloSolicitado)
+                        .Equals(
+                            sistemaSelecionado,
+                            StringComparison.OrdinalIgnoreCase
+                        )
                 );
             }
-
 
             return resultado;
         }
@@ -1226,18 +1179,15 @@
     private int TotalItens =>
         itensAtuais.Sum(i => i.Quantidade);
 
-
     private int ItensEntregues =>
         itensAtuais
             .Where(i => i.Entregue)
             .Sum(i => i.Quantidade);
 
-
     private int PorcentagemConcluida =>
         TotalItens > 0
             ? (int)((double)ItensEntregues / TotalItens * 100)
             : 0;
-
 
     private bool TodosItensEntregues =>
         TotalItens > 0 &&
@@ -1245,7 +1195,7 @@
 
 
     // ============================================================
-    // VALOR TOTAL
+    // VALOR
     // ============================================================
 
     private double ValorTotalEstimado =>
@@ -1253,7 +1203,7 @@
 
 
     // ============================================================
-    // MODAL ADICIONAR PEÇA
+    // MODAL
     // ============================================================
 
     private bool mostrarModalAdicionarPeca = false;
@@ -1271,45 +1221,6 @@
     private string mensagemModal = "";
 
     private bool mensagemModalErro = false;
-    // ============================================================
-    // EXPORTAR ITENS DA O.S. PARA EXCEL
-    // ============================================================
-
-    private async Task ExportarItensExcel()
-    {
-        if (requisicaoSelecionada == null)
-        {
-            await JS.InvokeVoidAsync(
-                "alert",
-                "Nenhuma requisição selecionada."
-            );
-
-            return;
-        }
-
-        if (itensAtuais == null || !itensAtuais.Any())
-        {
-            await JS.InvokeVoidAsync(
-                "alert",
-                "Não existem peças para exportar."
-            );
-
-            return;
-        }
-
-        var dados = itensAtuais.Select(item => new
-        {
-            os = requisicaoSelecionada.OsNumero,
-            sap = item.SapPeca,
-            descricao = item.Descricao,
-            quantidade = item.Quantidade
-        }).ToList();
-
-        await JS.InvokeVoidAsync(
-            "exportarItensRequisicaoExcel",
-            dados
-        );
-    }
 
 
     // ============================================================
@@ -1333,9 +1244,9 @@
             isLoading = true;
 
 
-            // ========================================================
-            // 1. CARREGA AS O.S. PENDENTES
-            // ========================================================
+            // --------------------------------------------------------
+            // 1. REQUISIÇÕES PENDENTES
+            // --------------------------------------------------------
 
             var response =
                 await Supabase
@@ -1347,35 +1258,61 @@
                     )
                     .Get();
 
-            solicitacoes = response.Models;
+            solicitacoes = response.Models ?? new();
 
 
-            // ========================================================
-            // 2. CARREGA TODOS OS ITENS
-            // ========================================================
+            // --------------------------------------------------------
+            // 2. ITENS DAS REQUISIÇÕES
+            //
+            // CORREÇÃO:
+            // O SDK utilizado não aceita long como criterion.
+            // Os IDs são convertidos para int e o IN recebe List<int>.
+            // --------------------------------------------------------
 
-            var itensResponse =
-                await Supabase
-                    .From<SolicitacaoItemModel>()
-                    .Get();
+            itensPorSolicitacao.Clear();
+
+            var idsPendentes =
+                solicitacoes
+                    .Select(s => checked((int)s.Id))
+                    .Distinct()
+                    .ToList();
+
+            const int tamanhoLote = 50;
+
+            for (int i = 0; i < idsPendentes.Count; i += tamanhoLote)
+            {
+                var loteIds =
+                    idsPendentes
+                        .Skip(i)
+                        .Take(tamanhoLote)
+                        .ToList();
+
+                var itensResponse =
+                    await Supabase
+                        .From<SolicitacaoItemModel>()
+                        .Filter(
+                            "solicitacao_id",
+                            Postgrest.Constants.Operator.In,
+                            loteIds
+                        )
+                        .Get();
+
+                foreach (var item in itensResponse.Models ?? new())
+                {
+                    if (!itensPorSolicitacao.ContainsKey(item.SolicitacaoId))
+                    {
+                        itensPorSolicitacao[item.SolicitacaoId] =
+                            new List<SolicitacaoItemModel>();
+                    }
+
+                    itensPorSolicitacao[item.SolicitacaoId].Add(item);
+                }
+            }
 
 
-            // ========================================================
-            // 3. AGRUPA OS ITENS PELO ID DA SOLICITAÇÃO
-            // ========================================================
-
-            itensPorSolicitacao =
-                itensResponse.Models
-                    .GroupBy(i => i.SolicitacaoId)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.ToList()
-                    );
-
-
-            // ========================================================
-            // 4. CARREGA OS COMPONENTES
-            // ========================================================
+            // --------------------------------------------------------
+            // 3. COMPONENTES
+            // --------------------------------------------------------
 
             var componentesResponse =
                 await Supabase
@@ -1383,12 +1320,12 @@
                     .Get();
 
             var componentes =
-                componentesResponse.Models;
+                componentesResponse.Models ?? new();
 
 
-            // ========================================================
-            // 5. CARREGA OS SISTEMAS
-            // ========================================================
+            // --------------------------------------------------------
+            // 4. SISTEMAS
+            // --------------------------------------------------------
 
             var sistemasResponse =
                 await Supabase
@@ -1396,12 +1333,12 @@
                     .Get();
 
             var sistemas =
-                sistemasResponse.Models;
+                sistemasResponse.Models ?? new();
 
 
-            // ========================================================
-            // 6. MONTA MODELO → SISTEMA
-            // ========================================================
+            // --------------------------------------------------------
+            // 5. MODELO → SISTEMA
+            // --------------------------------------------------------
 
             sistemaPorModelo.Clear();
 
@@ -1410,23 +1347,18 @@
                 if (string.IsNullOrWhiteSpace(componente.Modelo))
                     continue;
 
-
                 var sistema =
                     sistemas.FirstOrDefault(
                         s => s.Id == componente.SistemaId
                     );
 
-
-                if (sistema == null)
+                if (sistema == null ||
+                    string.IsNullOrWhiteSpace(sistema.Categoria))
+                {
                     continue;
+                }
 
-
-                if (string.IsNullOrWhiteSpace(sistema.Categoria))
-                    continue;
-
-
-                if (!sistemaPorModelo.ContainsKey(
-                        componente.Modelo))
+                if (!sistemaPorModelo.ContainsKey(componente.Modelo))
                 {
                     sistemaPorModelo.Add(
                         componente.Modelo,
@@ -1436,34 +1368,28 @@
             }
 
 
-            // ========================================================
-            // 7. MONTA LISTA DO SELECT
-            // ========================================================
+            // --------------------------------------------------------
+            // 6. SISTEMAS DO FILTRO
+            // --------------------------------------------------------
 
             sistemasDisponiveis =
                 sistemas
                     .Where(s =>
-                        !string.IsNullOrWhiteSpace(
-                            s.Categoria
-                        )
+                        !string.IsNullOrWhiteSpace(s.Categoria)
                     )
                     .Select(s => s.Categoria!)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase
-                    )
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
                     .OrderBy(s => s)
                     .ToList();
 
 
-            // ========================================================
-            // 8. LIMPA SELEÇÃO
-            // ========================================================
+            // --------------------------------------------------------
+            // 7. LIMPA SELEÇÃO
+            // --------------------------------------------------------
 
             requisicaoSelecionada = null;
 
-            itensAtuais =
-                new List<SolicitacaoItemModel>();
-
+            itensAtuais = new();
         }
         catch (Exception ex)
         {
@@ -1480,30 +1406,25 @@
 
 
     // ============================================================
-    // OBTER SISTEMA DO MODELO
+    // SISTEMA DO MODELO
     // ============================================================
 
-    private string ObterSistemaDoModelo(
-        string? modelo)
+    private string ObterSistemaDoModelo(string? modelo)
     {
         if (string.IsNullOrWhiteSpace(modelo))
             return "";
 
-
-        if (sistemaPorModelo.TryGetValue(
-                modelo,
-                out var sistema))
-        {
-            return sistema;
-        }
-
-
-        return "";
+        return sistemaPorModelo.TryGetValue(
+            modelo,
+            out var sistema
+        )
+            ? sistema
+            : "";
     }
 
 
     // ============================================================
-    // LIMPAR FILTRO DE SISTEMA
+    // FILTROS
     // ============================================================
 
     private void LimparFiltroSistema()
@@ -1511,21 +1432,15 @@
         sistemaSelecionado = "";
     }
 
-
-    // ============================================================
-    // LIMPAR TODOS OS FILTROS
-    // ============================================================
-
     private void LimparFiltros()
     {
         termoBusca = "";
-
         sistemaSelecionado = "";
     }
 
 
     // ============================================================
-    // CALCULAR PERCENTUAL
+    // PORCENTAGEM DA REQUISIÇÃO
     // ============================================================
 
     private int CalcularPorcentagem(
@@ -1538,16 +1453,13 @@
             return 0;
         }
 
-
         int total =
             itens.Sum(i => i.Quantidade);
-
 
         int entregues =
             itens
                 .Where(i => i.Entregue)
                 .Sum(i => i.Quantidade);
-
 
         return total > 0
             ? (int)((double)entregues / total * 100)
@@ -1559,62 +1471,78 @@
     // SELECIONAR REQUISIÇÃO
     // ============================================================
 
-    private void SelecionarRequisicao(long id)
+    private async Task SelecionarRequisicao(long id)
     {
-        // --------------------------------------------------------
-        // Clicar novamente fecha os detalhes
-        // --------------------------------------------------------
-
         if (requisicaoSelecionada?.Id == id)
         {
             requisicaoSelecionada = null;
-
-            itensAtuais =
-                new List<SolicitacaoItemModel>();
-
+            itensAtuais = new();
             return;
         }
-
-
-        // --------------------------------------------------------
-        // Localiza a solicitação
-        // --------------------------------------------------------
 
         requisicaoSelecionada =
             solicitacoes.FirstOrDefault(
                 s => s.Id == id
             );
 
-
         if (requisicaoSelecionada == null)
         {
-            itensAtuais =
-                new List<SolicitacaoItemModel>();
-
+            itensAtuais = new();
             return;
         }
 
-
-        // --------------------------------------------------------
-        // Carrega itens em memória
-        // --------------------------------------------------------
-
-        if (itensPorSolicitacao.TryGetValue(
-                id,
-                out var itens))
+        try
         {
-            itensAtuais = itens;
-        }
-        else
-        {
+            itensAtuais = new();
+
+            StateHasChanged();
+
+
+            // --------------------------------------------------------
+            // BUSCA DIRETA DOS ITENS
+            //
+            // CORREÇÃO:
+            // O SDK não aceita long como criterion.
+            // O ID é convertido para int.
+            // --------------------------------------------------------
+
+            var response =
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Filter(
+                        "solicitacao_id",
+                        Postgrest.Constants.Operator.Equals,
+                        checked((int)id)
+                    )
+                    .Get();
+
             itensAtuais =
-                new List<SolicitacaoItemModel>();
+                response.Models ?? new();
+
+
+            // --------------------------------------------------------
+            // ATUALIZA CACHE
+            // --------------------------------------------------------
+
+            itensPorSolicitacao[id] =
+                itensAtuais.ToList();
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            itensAtuais = new();
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Erro ao carregar itens da O.S.: {ex.Message}"
+            );
         }
     }
 
 
     // ============================================================
-    // ALTERNAR ENTRE ENTREGUE / PENDENTE
+    // ALTERNAR ENTREGA
     // ============================================================
 
     private async Task AlternarEntrega(
@@ -1623,20 +1551,10 @@
         bool estadoAnterior =
             item.Entregue;
 
-
         try
         {
-            // ----------------------------------------------------
-            // Altera visualmente
-            // ----------------------------------------------------
-
             item.Entregue =
                 !estadoAnterior;
-
-
-            // ----------------------------------------------------
-            // Salva no banco
-            // ----------------------------------------------------
 
             await Supabase
                 .From<SolicitacaoItemModel>()
@@ -1644,9 +1562,9 @@
                 .Update(item);
 
 
-            // ----------------------------------------------------
-            // Atualiza memória
-            // ----------------------------------------------------
+            // --------------------------------------------------------
+            // ATUALIZA CACHE
+            // --------------------------------------------------------
 
             if (itensPorSolicitacao.TryGetValue(
                     item.SolicitacaoId,
@@ -1657,7 +1575,6 @@
                         i => i.Id == item.Id
                     );
 
-
                 if (itemMemoria != null)
                 {
                     itemMemoria.Entregue =
@@ -1665,18 +1582,12 @@
                 }
             }
 
-
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            // ----------------------------------------------------
-            // Reverte se houver erro
-            // ----------------------------------------------------
-
             item.Entregue =
                 estadoAnterior;
-
 
             await JS.InvokeVoidAsync(
                 "alert",
@@ -1687,41 +1598,31 @@
 
 
     // ============================================================
-    // ABRIR MODAL
+    // MODAL - ABRIR
     // ============================================================
 
     private void AbrirModalAdicionarPeca()
     {
         sapPecaBusca = "";
-
         quantidadeNovaPeca = 1;
-
         pecaEncontrada = null;
-
         mensagemModal = "";
-
         mensagemModalErro = false;
-
         mostrarModalAdicionarPeca = true;
     }
 
 
     // ============================================================
-    // FECHAR MODAL
+    // MODAL - FECHAR
     // ============================================================
 
     private void FecharModalAdicionarPeca()
     {
         mostrarModalAdicionarPeca = false;
-
         sapPecaBusca = "";
-
         quantidadeNovaPeca = 1;
-
         pecaEncontrada = null;
-
         mensagemModal = "";
-
         mensagemModalErro = false;
     }
 
@@ -1733,11 +1634,8 @@
     private async Task BuscarPeca()
     {
         mensagemModal = "";
-
         mensagemModalErro = false;
-
         pecaEncontrada = null;
-
 
         if (string.IsNullOrWhiteSpace(sapPecaBusca))
         {
@@ -1749,11 +1647,9 @@
             return;
         }
 
-
         try
         {
             buscandoPeca = true;
-
 
             var response =
                 await Supabase
@@ -1765,10 +1661,8 @@
                     )
                     .Get();
 
-
             pecaEncontrada =
                 response.Models.FirstOrDefault();
-
 
             if (pecaEncontrada == null)
             {
@@ -1799,9 +1693,7 @@
     private async Task AdicionarPeca()
     {
         mensagemModal = "";
-
         mensagemModalErro = false;
-
 
         if (requisicaoSelecionada == null)
         {
@@ -1813,7 +1705,6 @@
             return;
         }
 
-
         if (pecaEncontrada == null)
         {
             mensagemModal =
@@ -1823,7 +1714,6 @@
 
             return;
         }
-
 
         if (quantidadeNovaPeca <= 0)
         {
@@ -1837,7 +1727,7 @@
 
 
         // --------------------------------------------------------
-        // Verifica duplicidade
+        // DUPLICIDADE
         // --------------------------------------------------------
 
         bool jaExiste =
@@ -1848,7 +1738,6 @@
                     StringComparison.OrdinalIgnoreCase
                 )
             );
-
 
         if (jaExiste)
         {
@@ -1866,9 +1755,9 @@
             salvandoPeca = true;
 
 
-            // ----------------------------------------------------
-            // Cria novo item
-            // ----------------------------------------------------
+            // --------------------------------------------------------
+            // NOVO ITEM
+            // --------------------------------------------------------
 
             var novoItem =
                 new SolicitacaoItemModel
@@ -1888,56 +1777,50 @@
                     Valor =
                         pecaEncontrada.Valor,
 
-                    Entregue =
-                        false
+                    Entregue = false
                 };
 
 
-            // ----------------------------------------------------
+            // --------------------------------------------------------
             // INSERT
-            // ----------------------------------------------------
+            // --------------------------------------------------------
 
             var response =
                 await Supabase
                     .From<SolicitacaoItemModel>()
                     .Insert(novoItem);
 
-
-            // ----------------------------------------------------
-            // Registro retornado pelo banco
-            // ----------------------------------------------------
-
             var itemInserido =
                 response.Models.FirstOrDefault();
 
+
+            // --------------------------------------------------------
+            // ATUALIZA LISTA
+            // --------------------------------------------------------
 
             if (itemInserido != null)
             {
                 itensAtuais.Add(itemInserido);
 
-
-                // Atualiza também o dicionário
-                if (itensPorSolicitacao.TryGetValue(
+                if (!itensPorSolicitacao.TryGetValue(
                         requisicaoSelecionada.Id,
                         out var lista))
                 {
-                    lista.Add(itemInserido);
-                }
-                else
-                {
+                    lista =
+                        new List<SolicitacaoItemModel>();
+
                     itensPorSolicitacao[
                         requisicaoSelecionada.Id
-                    ] = new List<SolicitacaoItemModel>
-                    {
-                        itemInserido
-                    };
+                    ] = lista;
                 }
+
+                lista.Add(itemInserido);
             }
             else
             {
-                // ------------------------------------------------
-                // Fallback
-                // ------------------------------------------------
+                // ----------------------------------------------------
+                // RECARREGA DO BANCO COMO FALLBACK
+                // ----------------------------------------------------
 
                 var itensResponse =
                     await Supabase
@@ -1945,33 +1828,34 @@
                         .Filter(
                             "solicitacao_id",
                             Postgrest.Constants.Operator.Equals,
-                            requisicaoSelecionada.Id.ToString()
+                            checked((int)requisicaoSelecionada.Id)
                         )
                         .Get();
 
-
                 itensAtuais =
-                    itensResponse.Models;
-
+                    itensResponse.Models ?? new();
 
                 itensPorSolicitacao[
                     requisicaoSelecionada.Id
-                ] = itensAtuais.ToList();
+                ] =
+                    itensAtuais.ToList();
             }
 
+
+            // --------------------------------------------------------
+            // LIMPA MODAL
+            // --------------------------------------------------------
 
             mensagemModal =
                 "Peça adicionada com sucesso.";
 
             mensagemModalErro = false;
 
-
             sapPecaBusca = "";
 
             quantidadeNovaPeca = 1;
 
             pecaEncontrada = null;
-
 
             StateHasChanged();
         }
@@ -1990,6 +1874,50 @@
 
 
     // ============================================================
+    // EXPORTAR EXCEL
+    // ============================================================
+
+    private async Task ExportarItensExcel()
+    {
+        if (requisicaoSelecionada == null)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Nenhuma requisição selecionada."
+            );
+
+            return;
+        }
+
+        if (itensAtuais.Count == 0)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Não existem peças para exportar."
+            );
+
+            return;
+        }
+
+        var dados =
+            itensAtuais
+                .Select(item => new
+                {
+                    os = requisicaoSelecionada.OsNumero,
+                    sap = item.SapPeca,
+                    descricao = item.Descricao,
+                    quantidade = item.Quantidade
+                })
+                .ToList();
+
+        await JS.InvokeVoidAsync(
+            "exportarItensRequisicaoExcel",
+            dados
+        );
+    }
+
+
+    // ============================================================
     // LIBERAR PRODUÇÃO
     // ============================================================
 
@@ -1997,7 +1925,6 @@
     {
         if (requisicaoSelecionada == null)
             return;
-
 
         if (!TodosItensEntregues)
         {
@@ -2009,12 +1936,10 @@
             return;
         }
 
-
         try
         {
             requisicaoSelecionada.Status =
                 "Liberado";
-
 
             await Supabase
                 .From<SolicitacaoCompletaModel>()
@@ -2029,11 +1954,10 @@
             );
 
 
-            await CarregarRequisicoes();
-
             termoBusca = "";
-
             sistemaSelecionado = "";
+
+            await CarregarRequisicoes();
         }
         catch (Exception ex)
         {
@@ -2046,7 +1970,7 @@
 
 
     // ============================================================
-    // CONDENAR
+    // CONDENAR PRODUÇÃO
     // ============================================================
 
     private async Task CondenarProducao()
@@ -2054,23 +1978,19 @@
         if (requisicaoSelecionada == null)
             return;
 
-
         bool confirmado =
             await JS.InvokeAsync<bool>(
                 "confirm",
                 "Tem certeza que deseja marcar esta requisição como Condenada?"
             );
 
-
         if (!confirmado)
             return;
-
 
         try
         {
             requisicaoSelecionada.Status =
                 "Condenado";
-
 
             await Supabase
                 .From<SolicitacaoCompletaModel>()
@@ -2085,11 +2005,10 @@
             );
 
 
-            await CarregarRequisicoes();
-
             termoBusca = "";
-
             sistemaSelecionado = "";
+
+            await CarregarRequisicoes();
         }
         catch (Exception ex)
         {
@@ -2109,5 +2028,4 @@
     {
         Nav.NavigateTo("/");
     }
-
 }
