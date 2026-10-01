@@ -17,14 +17,14 @@
         </div>
 
         <ul class="sidebar-menu">
-            <li>
+            <li class="active">
                 <a href="/">
                     <i class="bi bi-house-door"></i>
                     <span>Home</span>
                 </a>
             </li>
 
-            <li class="active">
+            <li>
                 <a href="/requisicoes">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Requisições</span>
@@ -396,10 +396,9 @@
     }
 
 
-    private void Voltar()
+    private async Task Voltar()
     {
-        Nav.NavigateTo(
-            $"/modelos/{Uri.EscapeDataString("Bomba Hidráulica")}");
+        await JS.InvokeVoidAsync("history.back");
     }
 
 

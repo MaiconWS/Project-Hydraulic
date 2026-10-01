@@ -22,7 +22,9 @@
                 <span> Manutenção WEB</span>
             </i>
         </div>
+
         <ul class="sidebar-menu">
+
             <li>
                 <a href="/">
                     <i class="bi bi-house-door"></i>
@@ -36,17 +38,21 @@
                     <span>Requisições</span>
                 </a>
             </li>
+
             <li class="active">
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
                 </a>
             </li>
+
             <li>
                 <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
+                    <i class="bi bi-wrench-adjustable"></i>
+                    <span>Liberados</span>
                 </a>
             </li>
+
             @if (Sessao.IsAdmin)
             {
                 <li>
@@ -56,6 +62,7 @@
                     </a>
                 </li>
             }
+
         </ul>
 
         <div class="sidebar-footer">
@@ -116,18 +123,20 @@
              ===================================================== -->
         <div class="content-body">
 
-            <div id="areaRelatorioPdf"
-                 class="relatorios-export-area">
+            <div id="areaRelatorioPdf" class="relatorios-export-area">
 
                 <!-- =================================================
                      CABEÇALHO DO RELATÓRIO
                      ================================================= -->
                 <div class="section-title mb-4">
-
-                    <h2>
-                        Painel de Relatórios
-                    </h2>
-
+                    <div class="d-flex align-items-start mb-4 gap-3">
+                        <button class="btn btn-light mb-3 border" @onclick="Voltar">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <h2>
+                            Painel de Relatórios
+                        </h2>
+                    </div>
                     <p>
                         Acompanhe o desempenho, métricas de atendimento,
                         consumo de peças e extrato detalhado das
@@ -141,8 +150,7 @@
                 {
                     <div class="text-center py-5">
 
-                        <div class="spinner-border text-success"
-                             role="status">
+                        <div class="spinner-border text-success" role="status">
                         </div>
 
                         <p class="text-muted mt-3">
@@ -176,9 +184,7 @@
                                     Data Inicial
                                 </label>
 
-                                <input type="date"
-                                       class="form-control"
-                                       @bind="filtroDataInicio" />
+                                <input type="date" class="form-control" @bind="filtroDataInicio" />
 
                             </div>
 
@@ -189,9 +195,7 @@
                                     Data Final
                                 </label>
 
-                                <input type="date"
-                                       class="form-control"
-                                       @bind="filtroDataFim" />
+                                <input type="date" class="form-control" @bind="filtroDataFim" />
 
                             </div>
 
@@ -202,8 +206,7 @@
                                     Categoria
                                 </label>
 
-                                <select class="form-select"
-                                        @bind="filtroCategoria">
+                                <select class="form-select" @bind="filtroCategoria">
 
                                     <option value="">
                                         Todas as categorias
@@ -227,8 +230,7 @@
                                     Modelo
                                 </label>
 
-                                <select class="form-select"
-                                        @bind="filtroModelo">
+                                <select class="form-select" @bind="filtroModelo">
 
                                     <option value="">
                                         Todos os modelos
@@ -252,18 +254,14 @@
                                     Número da O.S.
                                 </label>
 
-                                <input type="text"
-                                       class="form-control"
-                                       @bind="filtroOs"
-                                       placeholder="Ex: 1023" />
+                                <input type="text" class="form-control" @bind="filtroOs" placeholder="Ex: 1023" />
 
                             </div>
 
 
                             <div class="col-md-8 d-flex align-items-end gap-2">
 
-                                <button class="btn btn-success px-4 fw-bold"
-                                        @onclick="AplicarFiltros">
+                                <button class="btn btn-success px-4 fw-bold" @onclick="AplicarFiltros">
 
                                     <i class="bi bi-search me-1"></i>
 
@@ -272,8 +270,7 @@
                                 </button>
 
 
-                                <button class="btn btn-outline-secondary px-3"
-                                        @onclick="LimparFiltros">
+                                <button class="btn btn-outline-secondary px-3" @onclick="LimparFiltros">
 
                                     <i class="bi bi-x-circle me-1"></i>
 
@@ -317,8 +314,7 @@
 
                             <div class="relatorios-export-buttons">
 
-                                <button class="btn btn-success"
-                                        @onclick="ExportarRankingExcel"
+                                <button class="btn btn-success" @onclick="ExportarRankingExcel"
                                         disabled="@(top10ItensPorComponente.Count == 0)">
 
                                     <i class="bi bi-file-earmark-excel me-2"></i>
@@ -328,8 +324,7 @@
                                 </button>
 
 
-                                <button class="btn btn-success"
-                                        @onclick="ExportarDetalhamentoExcel"
+                                <button class="btn btn-success" @onclick="ExportarDetalhamentoExcel"
                                         disabled="@(listaFiltrada.Count == 0)">
 
                                     <i class="bi bi-file-earmark-spreadsheet me-2"></i>
@@ -339,8 +334,7 @@
                                 </button>
 
 
-                                <button class="btn btn-danger"
-                                        @onclick="ExportarPdf">
+                                <button class="btn btn-danger" @onclick="ExportarPdf">
 
                                     <i class="bi bi-file-earmark-pdf me-2"></i>
 
@@ -416,11 +410,11 @@
                             <div class="card border-0 shadow-sm p-3 bg-light h-100">
 
                                 <small class="text-muted">
-                                    Valor Total Requisitado
+                                    O.S. Liberadas
                                 </small>
-                                <h3 class="fw-bold mt-1 mb-0 text-success">R$ -</h3>
+
                                 <h3 class="fw-bold mt-1 mb-0 text-success">
-                                    R$ - @*@valorTotalRequisitado.ToString("N2")*@
+                                    @componentesLiberados
                                 </h3>
 
                             </div>
@@ -469,6 +463,32 @@
 
                                     <strong class="text-success">
                                         @requisicoesConcluidas ordens
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="d-flex justify-content-between border-bottom py-2">
+
+                                    <span class="text-muted">
+                                        O.S. Liberadas:
+                                    </span>
+
+                                    <strong class="text-success">
+                                        @componentesLiberados
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="d-flex justify-content-between border-bottom py-2">
+
+                                    <span class="text-muted">
+                                        O.S. Condenadas:
+                                    </span>
+
+                                    <strong class="text-danger">
+                                        @componentesCondenados
                                     </strong>
 
                                 </div>
@@ -539,8 +559,7 @@
                     <!-- =================================================
                          RANKING
                          ================================================= -->
-                    <div id="tabelaRanking"
-                         class="card border-0 shadow-sm mb-4">
+                    <div id="tabelaRanking" class="card border-0 shadow-sm mb-4">
 
                         <div class="card-header bg-white py-3">
 
@@ -565,8 +584,7 @@
                                 </div>
 
 
-                                <button class="btn btn-outline-success btn-sm"
-                                        @onclick="ExportarRankingExcel"
+                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarRankingExcel"
                                         disabled="@(top10ItensPorComponente.Count == 0)">
 
                                     <i class="bi bi-file-earmark-excel me-1"></i>
@@ -604,10 +622,6 @@
                                             Quantidade
                                         </th>
 
-                                        <th class="text-end pe-4">
-                                            Valor Total
-                                        </th>
-
                                     </tr>
 
                                 </thead>
@@ -619,8 +633,7 @@
                                     {
                                         <tr>
 
-                                            <td colspan="5"
-                                                class="text-center py-4 text-muted">
+                                            <td colspan="4" class="text-center py-4 text-muted">
 
                                                 Nenhum dado encontrado.
 
@@ -657,10 +670,6 @@
                                                     </span>
 
                                                 </td>
-                                                
-                                                <td class="text-end pe-4 fw-bold">
-                                                    R$ -@*@item.ValorTotal.ToString("N2")*@
-                                                </td>
 
                                             </tr>
                                         }
@@ -678,8 +687,7 @@
                     <!-- =================================================
                          DETALHAMENTO
                          ================================================= -->
-                    <div id="tabelaDetalhamento"
-                         class="card border-0 shadow-sm mb-5">
+                    <div id="tabelaDetalhamento" class="card border-0 shadow-sm mb-5">
 
                         <div class="card-header bg-white py-3">
 
@@ -694,8 +702,7 @@
                                 </h5>
 
 
-                                <button class="btn btn-outline-success btn-sm"
-                                        @onclick="ExportarDetalhamentoExcel"
+                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarDetalhamentoExcel"
                                         disabled="@(listaFiltrada.Count == 0)">
 
                                     <i class="bi bi-file-earmark-excel me-1"></i>
@@ -738,15 +745,19 @@
                                         </th>
 
                                         <th class="text-center">
+                                            Liberados
+                                        </th>
+
+                                        <th class="text-center">
+                                            Condenados
+                                        </th>
+
+                                        <th class="text-center">
                                             Pendentes
                                         </th>
 
                                         <th class="text-center">
                                             %
-                                        </th>
-
-                                        <th class="text-end pe-4">
-                                            Valor
                                         </th>
 
                                     </tr>
@@ -760,8 +771,7 @@
                                     {
                                         <tr>
 
-                                            <td colspan="8"
-                                                class="text-center py-4 text-muted">
+                                            <td colspan="9" class="text-center py-4 text-muted">
 
                                                 Nenhuma requisição encontrada
                                                 para os filtros selecionados.
@@ -774,40 +784,85 @@
                                     {
                                         @foreach (var item in listaFiltrada)
                                         {
-                                            var itensDaOs = itensPorSolicitacao.ContainsKey(item.Id) ? itensPorSolicitacao[item.Id] : new List<SolicitacaoItemModel>();
+                                            var itensDaOs = itensPorSolicitacao.ContainsKey(item.Id)
+                                                ? itensPorSolicitacao[item.Id]
+                                                : new List<SolicitacaoItemModel>();
+
+                                            // A coluna Itens mostra a quantidade física de peças.
+                                            // Os demais indicadores abaixo contam O.S.: cada O.S. = 1.
                                             var totalItens = itensDaOs.Sum(i => i.Quantidade);
-                                            var itensEntregues = itensDaOs.Where(i => i.Entregue).Sum(i => i.Quantidade);
-                                            var itensPendentes = totalItens - itensEntregues;
-                                            var percentual = totalItens > 0 ? (double)itensEntregues / totalItens * 100 : 0;
-                                            var valorOs = itensDaOs.Sum(i => i.Quantidade * i.Valor);
+
+                                            var osLiberada =
+                                                string.Equals(
+                                                    item.Status?.Trim(),
+                                                    "Liberado",
+                                                    StringComparison.OrdinalIgnoreCase);
+
+                                            var osCondenada =
+                                                string.Equals(
+                                                    item.Status?.Trim(),
+                                                    "Condenado",
+                                                    StringComparison.OrdinalIgnoreCase);
+
+                                            var osEntregue = IsOsEntregue(item);
+
+                                            var osPendente = IsOsPendente(item);
+
+                                            var itensEntregues = osEntregue ? 1 : 0;
+                                            var itensLiberados = osLiberada ? 1 : 0;
+                                            var itensCondenados = osCondenada ? 1 : 0;
+                                            var itensPendentes = osPendente ? 1 : 0;
+
+                                            var percentual =
+                                                osEntregue || osLiberada || osCondenada
+                                                    ? 100
+                                                    : 0;
 
                                             <tr>
+
                                                 <td class="ps-4 fw-bold">
                                                     @item.OsNumero
                                                 </td>
+
                                                 <td>
                                                     @FormatarData(item.DataEnvio)
                                                 </td>
+
                                                 <td>
                                                     @item.ModeloSolicitado
                                                 </td>
+
                                                 <td class="text-center">
                                                     @totalItens
                                                 </td>
+
                                                 <td class="text-center text-success fw-bold">
                                                     @itensEntregues
                                                 </td>
+
+                                                <td class="text-center text-success fw-bold">
+                                                    @itensLiberados
+                                                </td>
+
+                                                <td class="text-center text-danger fw-bold">
+                                                    @itensCondenados
+                                                </td>
+
                                                 <td class="text-center text-warning fw-bold">
                                                     @itensPendentes
                                                 </td>
+
                                                 <td class="text-center">
-                                                    <span class="badge @(percentual >= 100 ? "bg-success" : percentual > 0 ? "bg-warning text-dark" : "bg-secondary")">
+
+                                                    <span
+                                                        class="badge @(percentual >= 100 ? "bg-success" : percentual > 0 ? "bg-warning text-dark" : "bg-secondary")">
+
                                                         @percentual.ToString("F0")%
+
                                                     </span>
+
                                                 </td>
-                                                <td class="text-end pe-4 fw-bold">
-                                                    R$ - @*@valorOs.ToString("N2")*@
-                                                </td>
+
                                             </tr>
                                         }
                                     }
@@ -835,7 +890,6 @@
      ESTILO LOCAL DA PÁGINA
      ============================================================= -->
 <style>
-
     .relatorios-export-buttons {
         display: flex;
         flex-wrap: wrap;
@@ -871,7 +925,6 @@
         }
 
     }
-
 </style>
 
 
@@ -925,44 +978,98 @@
     private int totalRequisicoes =>
         listaFiltrada.Count;
 
-    private int requisicoesPendentes => 
-        listaFiltrada.Count(s => !SolicitacaoConcluida(s));
 
-    private int requisicoesConcluidas => 
-        listaFiltrada.Count(SolicitacaoConcluida);
+    // ============================================================
+    // O.S. LIBERADAS
+    // ============================================================
 
-    private double valorTotalRequisitado =>
-        listaFiltrada.Sum(s =>
-        (itensPorSolicitacao.ContainsKey(s.Id) ? itensPorSolicitacao[s.Id] : new List<SolicitacaoItemModel>())
-        .Sum(i => i.Quantidade * i.Valor));
+    private int requisicoesLiberadas =>
+        listaFiltrada.Count(s =>
+            string.Equals(
+                s.Status?.Trim(),
+                "Liberado",
+                StringComparison.OrdinalIgnoreCase));
+
+
+    // ============================================================
+    // O.S. CONDENADAS
+    // ============================================================
+
+    private int requisicoesCondenadas =>
+        listaFiltrada.Count(s =>
+            string.Equals(
+                s.Status?.Trim(),
+                "Condenado",
+                StringComparison.OrdinalIgnoreCase));
+
+
+    // ============================================================
+    // O.S. CONCLUÍDAS
+    // ============================================================
+    // Uma O.S. concluída é aquela em que todas as peças
+    // foram entregues.
+    //
+    // Cada O.S. vale 1, independentemente da quantidade
+    // de peças que ela possui.
+
+    private int requisicoesConcluidas =>
+    Math.Max(
+        0,
+        totalRequisicoes
+        - requisicoesPendentes
+        - requisicoesLiberadas
+        - requisicoesCondenadas
+    );
+
+
+    // ============================================================
+    // O.S. PENDENTES
+    // ============================================================
+    // Status Pendente + pelo menos uma peça ainda não entregue.
+
+    private int requisicoesPendentes =>
+        listaFiltrada.Count(IsOsPendente);
+
+
+    // ============================================================
+    // COMPONENTES LIBERADOS
+    // ============================================================
+
+    private int componentesLiberados =>
+        requisicoesLiberadas;
+
+
+    // ============================================================
+    // COMPONENTES CONDENADOS
+    // ============================================================
+
+    private int componentesCondenados =>
+        requisicoesCondenadas;
+
+
+    // ============================================================
+    // PERCENTUAL MÉDIO DE ATENDIMENTO
+    // ============================================================
 
     private double percentualMedioAtendimento
     {
         get
         {
-            if (!listaFiltrada.Any()) return 0;
+            if (totalRequisicoes == 0)
+                return 0;
 
-            double somaPercentuais = 0;
-            int requisicoesComItens = 0;
+            int requisicoesAtendidas =
+                requisicoesConcluidas
+                + requisicoesLiberadas
+                + requisicoesCondenadas;
 
-            foreach (var solicitacao in listaFiltrada)
-            {
-                var itens = itensPorSolicitacao.ContainsKey(solicitacao.Id) ? itensPorSolicitacao[solicitacao.Id] : new List<SolicitacaoItemModel>();
-                var total = itens.Sum(i => i.Quantidade);
-                var entregues = itens.Where(i => i.Entregue).Sum(i => i.Quantidade);
-
-                if (total > 0)
-                {
-                    somaPercentuais += ((double)entregues / total) * 100;
-                    requisicoesComItens++;
-                }
-            }
-
-            if (requisicoesComItens == 0) return 0;
-
-            return somaPercentuais / requisicoesComItens;
+            return
+                (double)requisicoesAtendidas
+                / totalRequisicoes
+                * 100;
         }
     }
+
 
     private string modeloMaisSolicitado = "-";
 
@@ -991,6 +1098,11 @@
         await CarregarDados();
     }
 
+    private async Task Voltar()
+    {
+        await JS.InvokeVoidAsync("history.back");
+    }
+
 
     // ============================================================
     // CARREGAR DADOS
@@ -1003,55 +1115,112 @@
             isLoading = true;
 
             // ----------------------------------------------------
-            // REQUISIÇÕES E ITENS DA NOVA ARQUITETURA
+            // REQUISIÇÕES
             // ----------------------------------------------------
-            var response = await Supabase.From<SolicitacaoCompletaModel>().Get();
-            todasSolicitacoes = response.Models ?? new List<SolicitacaoCompletaModel>();
 
-            var responseItens = await Supabase.From<SolicitacaoItemModel>().Get();
-            var todosOsItensBd = responseItens.Models ?? new List<SolicitacaoItemModel>();
+            var response =
+                await Supabase
+                    .From<SolicitacaoCompletaModel>()
+                    .Get();
 
-            // Agrupamos os itens vinculando-os ao ID da solicitação correspondente
-            itensPorSolicitacao = todosOsItensBd
-                .GroupBy(i => i.SolicitacaoId)
-                .ToDictionary(g => g.Key, g => g.ToList());
+            todasSolicitacoes =
+                response.Models
+                ?? new List<SolicitacaoCompletaModel>();
 
-            listaFiltrada = new List<SolicitacaoCompletaModel>(todasSolicitacoes);
 
             // ----------------------------------------------------
-            // SISTEMAS / CATEGORIAS E COMPONENTES / MODELOS
+            // ITENS
             // ----------------------------------------------------
-            // ... (O CARREGAMENTO DESTAS PARTE SEGUE IGUAL AO SEU ARQUIVO ORIGINAL)
-            
-            var resSistemas = await Supabase.From<SistemaModel>().Get();
-            sistemas = resSistemas.Models ?? new List<SistemaModel>();
 
-            categorias = sistemas
-                .Where(s => !string.IsNullOrWhiteSpace(s.Categoria))
-                .Select(s => s.Categoria!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(c => c)
-                .ToList();
+            var responseItens =
+                await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Get();
 
-            var resComponentes = await Supabase.From<ComponenteModel>().Get();
-            componentesCadastrados = resComponentes.Models ?? new List<ComponenteModel>();
+            var todosOsItensBd =
+                responseItens.Models
+                ?? new List<SolicitacaoItemModel>();
 
-            modelos = componentesCadastrados
-                .Where(c => !string.IsNullOrWhiteSpace(c.Modelo))
-                .Select(c => c.Modelo!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(m => m)
-                .ToList();
+
+            // ----------------------------------------------------
+            // AGRUPAR ITENS POR O.S.
+            // ----------------------------------------------------
+
+            itensPorSolicitacao =
+                todosOsItensBd
+                    .GroupBy(i => i.SolicitacaoId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.ToList());
+
+
+            listaFiltrada =
+                new List<SolicitacaoCompletaModel>(
+                    todasSolicitacoes);
+
+
+            // ----------------------------------------------------
+            // SISTEMAS / CATEGORIAS
+            // ----------------------------------------------------
+
+            var resSistemas =
+                await Supabase
+                    .From<SistemaModel>()
+                    .Get();
+
+            sistemas =
+                resSistemas.Models
+                ?? new List<SistemaModel>();
+
+
+            categorias =
+                sistemas
+                    .Where(s =>
+                        !string.IsNullOrWhiteSpace(
+                            s.Categoria))
+                    .Select(s => s.Categoria!)
+                    .Distinct(
+                        StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(c => c)
+                    .ToList();
+
+
+            // ----------------------------------------------------
+            // COMPONENTES / MODELOS
+            // ----------------------------------------------------
+
+            var resComponentes =
+                await Supabase
+                    .From<ComponenteModel>()
+                    .Get();
+
+            componentesCadastrados =
+                resComponentes.Models
+                ?? new List<ComponenteModel>();
+
+
+            modelos =
+                componentesCadastrados
+                    .Where(c =>
+                        !string.IsNullOrWhiteSpace(
+                            c.Modelo))
+                    .Select(c => c.Modelo!)
+                    .Distinct(
+                        StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(m => m)
+                    .ToList();
+
 
             CalcularIndicadores();
         }
-        
+
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync(
                 "alert",
                 $"Erro ao carregar dados do relatório:\n{ex.Message}");
         }
+
         finally
         {
             isLoading = false;
@@ -1114,14 +1283,16 @@
                             filtroCategoria,
                             StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Modelo!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Distinct(
+                        StringComparer.OrdinalIgnoreCase)
                     .ToHashSet(
                         StringComparer.OrdinalIgnoreCase);
 
 
             query =
                 query.Where(s =>
-                    !string.IsNullOrWhiteSpace(s.ModeloSolicitado) &&
+                    !string.IsNullOrWhiteSpace(
+                        s.ModeloSolicitado) &&
                     modelosDaCategoria.Contains(
                         s.ModeloSolicitado));
         }
@@ -1138,7 +1309,8 @@
 
             query =
                 query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date >= dataInicio);
+                    ObterDataLocal(s.DataEnvio).Date
+                    >= dataInicio);
         }
 
 
@@ -1153,7 +1325,8 @@
 
             query =
                 query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date <= dataFim);
+                    ObterDataLocal(s.DataEnvio).Date
+                    <= dataFim);
         }
 
 
@@ -1203,7 +1376,9 @@
         {
             modeloMaisSolicitado = "-";
             componenteMaisFrequente = "-";
+
             top10ItensPorComponente.Clear();
+
             return;
         }
 
@@ -1232,9 +1407,14 @@
         // PEÇA MAIS FREQUENTE
         // --------------------------------------------------------
 
-        var todosOsItens = listaFiltrada
-            .SelectMany(s => itensPorSolicitacao.ContainsKey(s.Id) ? itensPorSolicitacao[s.Id] : new List<SolicitacaoItemModel>())
-            .ToList();
+        var todosOsItens =
+            listaFiltrada
+                .SelectMany(s =>
+                    itensPorSolicitacao.ContainsKey(s.Id)
+                        ? itensPorSolicitacao[s.Id]
+                        : new List<SolicitacaoItemModel>())
+                .ToList();
+
 
         if (!todosOsItens.Any())
         {
@@ -1242,13 +1422,20 @@
         }
         else
         {
-            var itemMaisComum = todosOsItens
-                .Where(i => !string.IsNullOrWhiteSpace(i.Descricao))
-                .GroupBy(i => i.Descricao!, StringComparer.OrdinalIgnoreCase)
-                .OrderByDescending(g => g.Sum(i => i.Quantidade))
-                .FirstOrDefault();
+            var itemMaisComum =
+                todosOsItens
+                    .Where(i =>
+                        !string.IsNullOrWhiteSpace(
+                            i.Descricao))
+                    .GroupBy(
+                        i => i.Descricao!,
+                        StringComparer.OrdinalIgnoreCase)
+                    .OrderByDescending(
+                        g => g.Sum(i => i.Quantidade))
+                    .FirstOrDefault();
 
-            componenteMaisFrequente = itemMaisComum?.Key ?? "-";
+            componenteMaisFrequente =
+                itemMaisComum?.Key ?? "-";
         }
 
 
@@ -1256,29 +1443,51 @@
         // RANKING
         // --------------------------------------------------------
 
-        var ranking = new List<ItemRankingModel>();
+        var ranking =
+            new List<ItemRankingModel>();
+
 
         foreach (var requisicao in listaFiltrada)
         {
-            if (string.IsNullOrWhiteSpace(requisicao.ModeloSolicitado)) continue;
+            if (string.IsNullOrWhiteSpace(
+                requisicao.ModeloSolicitado))
+            {
+                continue;
+            }
 
-            var itens = itensPorSolicitacao.ContainsKey(requisicao.Id) ? itensPorSolicitacao[requisicao.Id] : new List<SolicitacaoItemModel>();
-            if (!itens.Any()) continue;
+
+            var itens =
+                itensPorSolicitacao.ContainsKey(
+                    requisicao.Id)
+                    ? itensPorSolicitacao[requisicao.Id]
+                    : new List<SolicitacaoItemModel>();
+
+
+            if (!itens.Any())
+                continue;
+
 
             foreach (var item in itens)
             {
                 ranking.Add(
                     new ItemRankingModel
                     {
-                        Modelo = requisicao.ModeloSolicitado,
-                        SapPeca = item.SapPeca,  // Lendo do SapPeca da nova arquitetura
-                        Descricao = item.Descricao,
-                        TotalQuantidade = item.Quantidade,
-                        ValorTotal = item.Quantidade * item.Valor
+                        Modelo =
+                            requisicao.ModeloSolicitado,
+
+                        SapPeca =
+                            item.SapPeca,
+
+                        Descricao =
+                            item.Descricao,
+
+                        TotalQuantidade =
+                            item.Quantidade,
+
+                        ValorTotal = 0
                     });
             }
         }
-
 
 
         // --------------------------------------------------------
@@ -1337,16 +1546,80 @@
 
 
     // ============================================================
-    // VERIFICAR SE REQUISIÇÃO FOI CONCLUÍDA
+    // VERIFICAR SE O.S. FOI CONCLUÍDA
     // ============================================================
 
-    private bool SolicitacaoConcluida(SolicitacaoCompletaModel solicitacao)
+    private bool SolicitacaoConcluida(
+        SolicitacaoCompletaModel solicitacao)
     {
-        var itens = itensPorSolicitacao.ContainsKey(solicitacao.Id) ? itensPorSolicitacao[solicitacao.Id] : new List<SolicitacaoItemModel>();
-        
-        if (!itens.Any()) return false;
-        
-        return itens.All(i => i.Entregue);
+        return
+            IsOsEntregue(solicitacao)
+            ||
+            string.Equals(
+                solicitacao.Status?.Trim(),
+                "Liberado",
+                StringComparison.OrdinalIgnoreCase)
+            ||
+            string.Equals(
+                solicitacao.Status?.Trim(),
+                "Condenado",
+                StringComparison.OrdinalIgnoreCase);
+    }
+
+
+    // ============================================================
+    // VERIFICAR O.S. ENTREGUE
+    // ============================================================
+
+    // O.S. entregue:
+    // status Pendente e todas as peças da O.S. entregues.
+    //
+    // A O.S. é contabilizada somente uma vez.
+
+    private bool IsOsEntregue(SolicitacaoCompletaModel solicitacao)
+    {
+        if (!itensPorSolicitacao.TryGetValue(
+                solicitacao.Id,
+                out var itens))
+        {
+            return false;
+        }
+
+        if (itens == null || itens.Count == 0)
+            return false;
+
+        return itens.All(i => i.Entregue == true);
+    }
+
+
+    // ============================================================
+    // VERIFICAR O.S. PENDENTE
+    // ============================================================
+
+    // O.S. pendente:
+    // status Pendente e ainda existe pelo menos uma peça não entregue.
+    //
+    // Independentemente de ter 1 ou 20 peças,
+    // a contagem é sempre 1 O.S.
+
+    private bool IsOsPendente(
+        SolicitacaoCompletaModel solicitacao)
+    {
+        var status =
+            solicitacao.Status?.Trim()
+            ?? "Pendente";
+
+
+        if (!string.Equals(
+            status,
+            "Pendente",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+
+        return !IsOsEntregue(solicitacao);
     }
 
 
@@ -1362,7 +1635,9 @@
                 s => s.Id == componente.SistemaId);
 
 
-        return sistema?.Categoria ?? string.Empty;
+        return
+            sistema?.Categoria
+            ?? string.Empty;
     }
 
 
@@ -1370,7 +1645,8 @@
     // DATA
     // ============================================================
 
-    private DateTime ObterDataLocal(DateTime data)
+    private DateTime ObterDataLocal(
+        DateTime data)
     {
         if (data.Kind == DateTimeKind.Utc)
             return data.ToLocalTime();
@@ -1379,10 +1655,12 @@
     }
 
 
-    private string FormatarData(DateTime data)
+    private string FormatarData(
+        DateTime data)
     {
-        return ObterDataLocal(data)
-            .ToString("dd/MM/yyyy HH:mm");
+        return
+            ObterDataLocal(data)
+                .ToString("dd/MM/yyyy HH:mm");
     }
 
 
@@ -1401,23 +1679,35 @@
             return;
         }
 
+
         var dados =
             top10ItensPorComponente
                 .Select(x => new
                 {
-                    Modelo = x.Modelo ?? "",
-                    CodigoSAP = x.SapPeca ?? "",
-                    Descricao = x.Descricao ?? "",
-                    Quantidade = x.TotalQuantidade,
-                    ValorTotal = x.ValorTotal
+                    Modelo =
+                        x.Modelo ?? "",
+
+                    CodigoSAP =
+                        x.SapPeca ?? "",
+
+                    Descricao =
+                        x.Descricao ?? "",
+
+                    Quantidade =
+                        x.TotalQuantidade
                 })
                 .ToList();
+
 
         await JS.InvokeVoidAsync(
             "exportarRankingExcel",
             dados);
     }
 
+
+    // ============================================================
+    // EXPORTAR DETALHAMENTO PARA EXCEL
+    // ============================================================
 
     private async Task ExportarDetalhamentoExcel()
     {
@@ -1430,34 +1720,104 @@
             return;
         }
 
+
         var dados =
             listaFiltrada
                 .Select(item =>
                 {
-                    var itensDaOs = itensPorSolicitacao.ContainsKey(item.Id) ? itensPorSolicitacao[item.Id] : new List<SolicitacaoItemModel>();
-                    
-                    var totalItens = itensDaOs.Sum(i => i.Quantidade);
-                    var itensEntregues = itensDaOs.Where(i => i.Entregue).Sum(i => i.Quantidade);
-                    var itensPendentes = totalItens - itensEntregues;
-                    var percentual = totalItens > 0 ? (double)itensEntregues / totalItens * 100 : 0;
-                    var valor = itensDaOs.Sum(i => i.Quantidade * i.Valor);
+                    var itensDaOs =
+                        itensPorSolicitacao.ContainsKey(
+                            item.Id)
+                            ? itensPorSolicitacao[item.Id]
+                            : new List<SolicitacaoItemModel>();
+
+
+                    var status =
+                        item.Status?.Trim()
+                        ?? "Pendente";
+
+
+                    var totalItens =
+                        itensDaOs.Sum(i => i.Quantidade);
+
+
+                    // Cada O.S. vale 1 nos indicadores de situação.
+
+                    var osLiberada =
+                        string.Equals(
+                            status,
+                            "Liberado",
+                            StringComparison.OrdinalIgnoreCase);
+
+
+                    var osCondenada =
+                        string.Equals(
+                            status,
+                            "Condenado",
+                            StringComparison.OrdinalIgnoreCase);
+
+
+                    var osEntregue =
+                        IsOsEntregue(item);
+
+
+                    var osPendente =
+                        IsOsPendente(item);
+
 
                     return new
                     {
-                        OS = item.OsNumero ?? "",
-                        Data = FormatarData(item.DataEnvio),
-                        Modelo = item.ModeloSolicitado ?? "",
-                        Status = item.Status ?? "Pendente",
-                        Itens = totalItens,
-                        Entregues = itensEntregues,
-                        Pendentes = itensPendentes,
-                        Percentual = percentual,
-                        Valor = valor
+                        OS =
+                            item.OsNumero ?? "",
+
+                        Data =
+                            FormatarData(
+                                item.DataEnvio),
+
+                        Modelo =
+                            item.ModeloSolicitado ?? "",
+
+                        Status =
+                            status,
+
+                        // Quantidade física de peças
+                        // permanece apenas como informação.
+
+                        Itens =
+                            totalItens,
+
+                        // Indicadores: cada O.S. = 1
+
+                        Entregues =
+                            osEntregue ? 1 : 0,
+
+                        Liberados =
+                            osLiberada ? 1 : 0,
+
+                        Condenados =
+                            osCondenada ? 1 : 0,
+
+                        Pendentes =
+                            osPendente ? 1 : 0,
+
+                        Percentual =
+                            (
+                                osEntregue
+                                ||
+                                osLiberada
+                                ||
+                                osCondenada
+                            )
+                            ? 100
+                            : 0
                     };
                 })
                 .ToList();
 
-        await JS.InvokeVoidAsync("exportarDetalhamentoExcel", dados);
+
+        await JS.InvokeVoidAsync(
+            "exportarDetalhamentoExcel",
+            dados);
     }
 
 

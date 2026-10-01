@@ -39,10 +39,7 @@ window.exportarRankingExcel = function (dados) {
                 item.descricao ?? "",
 
             "Quantidade":
-                Number(item.quantidade ?? 0),
-
-            "Valor Total":
-                Number(item.valorTotal ?? 0)
+                Number(item.quantidade ?? 0)
 
         }));
 
@@ -64,36 +61,9 @@ window.exportarRankingExcel = function (dados) {
             { wch: 30 }, // Modelo
             { wch: 18 }, // Código SAP
             { wch: 50 }, // Descrição
-            { wch: 15 }, // Quantidade
-            { wch: 18 }  // Valor
+            { wch: 15 }  // Quantidade
 
         ];
-
-
-        // ========================================================
-        // FORMATAR VALOR MONETÁRIO
-        // ========================================================
-
-        for (
-            let linha = 2;
-            linha <= linhas.length + 1;
-            linha++
-        ) {
-
-            const celula =
-                worksheet["E" + linha];
-
-            if (celula) {
-
-                celula.t =
-                    "n";
-
-                celula.z =
-                    'R$ #,##0.00';
-
-            }
-
-        }
 
 
         // ========================================================
@@ -171,6 +141,7 @@ window.exportarDetalhamentoExcel = function (dados) {
 
             "Modelo":
                 item.modelo ?? "",
+
             "Status":
                 item.status ?? "Pendente",
 
@@ -180,14 +151,17 @@ window.exportarDetalhamentoExcel = function (dados) {
             "Entregues":
                 Number(item.entregues ?? 0),
 
+            "Liberados":
+                Number(item.liberados ?? 0),
+
+            "Condenados":
+                Number(item.condenados ?? 0),
+
             "Pendentes":
                 Number(item.pendentes ?? 0),
 
             "Percentual Atendimento":
-                Number(item.percentual ?? 0) / 100,
-
-            "Valor":
-                Number(item.valor ?? 0)
+                Number(item.percentual ?? 0) / 100
 
         }));
 
@@ -209,12 +183,13 @@ window.exportarDetalhamentoExcel = function (dados) {
             { wch: 15 }, // O.S.
             { wch: 20 }, // Data
             { wch: 35 }, // Modelo
-            { wch: 18 },
+            { wch: 18 }, // Status
             { wch: 12 }, // Itens
             { wch: 14 }, // Entregues
+            { wch: 14 }, // Liberados
+            { wch: 14 }, // Condenados
             { wch: 14 }, // Pendentes
-            { wch: 25 }, // Percentual
-            { wch: 18 }  // Valor
+            { wch: 25 }  // Percentual
 
         ];
 
@@ -230,7 +205,7 @@ window.exportarDetalhamentoExcel = function (dados) {
         ) {
 
             const celula =
-                worksheet["H" + linha];
+                worksheet["J" + linha];
 
             if (celula) {
 
@@ -239,32 +214,6 @@ window.exportarDetalhamentoExcel = function (dados) {
 
                 celula.z =
                     "0.0%";
-
-            }
-
-        }
-
-
-        // ========================================================
-        // FORMATAR VALOR
-        // ========================================================
-
-        for (
-            let linha = 2;
-            linha <= linhas.length + 1;
-            linha++
-        ) {
-
-            const celula =
-                worksheet["I" + linha];
-
-            if (celula) {
-
-                celula.t =
-                    "n";
-
-                celula.z =
-                    'R$ #,##0.00';
 
             }
 
@@ -910,9 +859,7 @@ window.exportarRelatorioPDF = async function (elementId) {
     }
 
 };
-// ============================================================
-// EXPORTAR ITENS DA REQUISIÇÃO PARA EXCEL
-// ============================================================
+
 
 // ============================================================
 // EXPORTAR ITENS DA REQUISIÇÃO PARA EXCEL
@@ -1048,5 +995,3 @@ window.exportarItensRequisicaoExcel = function (dados) {
     }
 
 };
-
-
