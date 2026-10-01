@@ -1,21 +1,19 @@
-@page "/relatorios"
-
+@page "/requisicoes"
 @using ManutencaoWeb.Models
 @using ManutencaoWeb.Services
-
-@inject SessaoService Sessao
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject SessaoService Sessao
 
-<PageTitle>Relatórios - ManutencaoWeb</PageTitle>
+<PageTitle>Requisições - ManutencaoWeb</PageTitle>
 
 <div class="dashboard-wrapper">
 
     <!-- =========================================================
-         MENU LATERAL
+         SIDEBAR
          ========================================================= -->
-    <nav class="sidebar">
+    <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
 
         <div class="sidebar-brand">
             <i class="bi bi-gear-wide">
@@ -32,14 +30,14 @@
                 </a>
             </li>
 
-            <li>
+            <li class="active">
                 <a href="/requisicoes">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Requisições</span>
                 </a>
             </li>
 
-            <li class="active">
+            <li>
                 <a href="/relatorios">
                     <i class="bi bi-bar-chart"></i>
                     <span>Relatórios</span>
@@ -70,21 +68,18 @@
             <div class="d-flex align-items-center gap-2 mb-3 px-2">
 
                 <div class="user-avatar">
-                    @Sessao.Iniciais
+                    @(Sessao.Iniciais)
                 </div>
 
                 <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong>
+                    <strong>@Sessao.NomeUsuario</strong><br />
                 </div>
 
             </div>
 
             <button class="btn-sair" @onclick="Sair">
-
                 <i class="bi bi-box-arrow-right"></i>
-
                 <span>Sair</span>
-
             </button>
 
         </div>
@@ -97,20 +92,27 @@
          ========================================================= -->
     <main class="main-content">
 
+        <!-- TOP BAR -->
         <header class="top-bar">
 
-            <div class="top-left d-flex align-items-center">
+            <div class="top-bar-left d-flex align-items-center">
+
+                <button class="menu-toggle d-md-none me-2" @onclick="ToggleMenu">
+
+                    <i class="bi bi-list"></i>
+
+                </button>
 
                 <span class="user-greeting">
-                    Relatórios e Indicadores
+                    Olá, <strong>@Sessao.NomeUsuario!</strong><br />
                 </span>
 
             </div>
 
-            <div class="top-right">
+            <div class="top-bar-right">
 
                 <div class="user-avatar">
-                    @Sessao.Iniciais
+                    @(Sessao.Iniciais)
                 </div>
 
             </div>
@@ -118,44 +120,187 @@
         </header>
 
 
-        <!-- =====================================================
-             ÁREA QUE SERÁ EXPORTADA PARA PDF
-             ===================================================== -->
+        <!-- =========================================================
+             CORPO
+             ========================================================= -->
         <div class="content-body">
 
-            <div id="areaRelatorioPdf" class="relatorios-export-area">
+            <!-- TÍTULO -->
+            <div class="d-flex align-items-start mb-4 gap-3">
 
-                <!-- =================================================
-                     CABEÇALHO DO RELATÓRIO
-                     ================================================= -->
-                <div class="section-title mb-4">
-                    <div class="d-flex align-items-start mb-4 gap-3">
-                        <button class="btn btn-light mb-3 border" @onclick="Voltar">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <h2>
-                            Painel de Relatórios
-                        </h2>
-                    </div>
-                    <p>
-                        Acompanhe o desempenho, métricas de atendimento,
-                        consumo de peças e extrato detalhado das
-                        Ordens de Serviço.
+                <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                        style="width: 42px; height: 42px; background: #fff; border-color: #dee2e6;" @onclick="Sair">
+
+                    <i class="bi bi-arrow-left text-dark"></i>
+
+                </button>
+
+                <div class="section-title mb-0">
+
+                    <h2 class="mb-1" style="color: #2c3e50; font-weight: 700;">
+
+                        Controle de Requisições
+
+                    </h2>
+
+                    <p class="text-muted mb-0">
+
+                        Acompanhe e atualize a entrega dos componentes
+                        solicitados por Ordem de Serviço.
+
                     </p>
 
                 </div>
 
+            </div>
 
-                @if (isLoading)
-                {
-                    <div class="text-center py-5">
 
-                        <div class="spinner-border text-success" role="status">
+            <!-- =====================================================
+                 LOADING
+                 ===================================================== -->
+            @if (isLoading)
+            {
+                <div class="text-center py-5">
+
+                    <div class="spinner-border text-success" role="status">
+
+                    </div>
+
+                    <div class="mt-3 text-muted">
+                        Carregando requisições...
+                    </div>
+
+                </div>
+            }
+
+            else if (solicitacoes == null || !solicitacoes.Any())
+            {
+                <div class="alert alert-info">
+
+                    <i class="bi bi-info-circle me-2"></i>
+
+                    Nenhuma requisição pendente encontrada
+                    no banco de dados.
+
+                </div>
+            }
+
+            else
+            {
+
+                <!-- =================================================
+                     FILTROS
+                     ================================================= -->
+                <div class="card border-0 shadow-sm p-4 mb-4">
+
+                    <div class="row g-3 align-items-end">
+
+                        <!-- BUSCA -->
+                        <div class="col-md-7">
+
+                            <label class="fw-bold mb-2">
+
+                                Buscar requisição
+
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text bg-white">
+                                    <i class="bi bi-search text-muted"></i>
+                                </span>
+
+                                <input type="text" class="form-control" placeholder="Busque por O.S ou Modelo de componente"
+                                       @bind="termoBusca" @bind:event="oninput" />
+
+                            </div>
+
                         </div>
 
-                        <p class="text-muted mt-3">
-                            Carregando dados dos relatórios...
-                        </p>
+
+                        <!-- FILTRO SISTEMA -->
+                        <div class="col-md-5">
+
+                            <label class="fw-bold mb-2">
+
+                                Sistema / Área
+
+                            </label>
+
+                            <select class="form-select" @bind="sistemaSelecionado">
+
+                                <option value="">
+                                    Todos os sistemas
+                                </option>
+
+                                @foreach (var sistema in sistemasDisponiveis)
+                                {
+                                    <option value="@sistema">
+                                        @sistema
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INDICAÇÃO DO FILTRO -->
+                    @if (!string.IsNullOrWhiteSpace(sistemaSelecionado))
+                    {
+                        <div class="mt-3">
+
+                            <span class="badge rounded-pill" style="background-color:#4d6d5d;">
+
+                                <i class="bi bi-funnel-fill me-1"></i>
+
+                                Área:
+                                @sistemaSelecionado
+
+                            </span>
+
+                            <button type="button" class="btn btn-sm btn-link text-secondary" @onclick="LimparFiltroSistema">
+
+                                Limpar filtro
+
+                            </button>
+
+                        </div>
+                    }
+
+                </div>
+
+
+                <!-- =================================================
+                     MENSAGEM SEM RESULTADOS
+                     ================================================= -->
+                @if (!SolicitacoesFiltradas.Any())
+                {
+                    <div class="card border-0 shadow-sm mb-4">
+
+                        <div class="text-center py-5">
+
+                            <i class="bi bi-search fs-1 text-muted"></i>
+
+                            <h5 class="mt-3 text-secondary">
+                                Nenhuma requisição encontrada
+                            </h5>
+
+                            <p class="text-muted mb-3">
+                                Não existem requisições para os filtros selecionados.
+                            </p>
+
+                            <button type="button" class="btn btn-outline-success" @onclick="LimparFiltros">
+
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>
+
+                                Limpar filtros
+
+                            </button>
+
+                        </div>
 
                     </div>
                 }
@@ -163,516 +308,154 @@
                 {
 
                     <!-- =================================================
-                         FILTROS
+                         TABELA MASTER
                          ================================================= -->
-                    <div class="card border-0 shadow-sm p-4 mb-4">
-
-                        <h5 class="mb-3 fw-bold text-secondary">
-
-                            <i class="bi bi-funnel me-2"></i>
-
-                            Filtros de Pesquisa
-
-                        </h5>
-
-
-                        <div class="row g-3">
-
-                            <div class="col-md-3">
-
-                                <label class="form-label small fw-bold">
-                                    Data Inicial
-                                </label>
-
-                                <input type="date" class="form-control" @bind="filtroDataInicio" />
-
-                            </div>
-
-
-                            <div class="col-md-3">
-
-                                <label class="form-label small fw-bold">
-                                    Data Final
-                                </label>
-
-                                <input type="date" class="form-control" @bind="filtroDataFim" />
-
-                            </div>
-
-
-                            <div class="col-md-3">
-
-                                <label class="form-label small fw-bold">
-                                    Categoria
-                                </label>
-
-                                <select class="form-select" @bind="filtroCategoria">
-
-                                    <option value="">
-                                        Todas as categorias
-                                    </option>
-
-                                    @foreach (var categoria in categorias)
-                                    {
-                                        <option value="@categoria">
-                                            @categoria
-                                        </option>
-                                    }
-
-                                </select>
-
-                            </div>
-
-
-                            <div class="col-md-3">
-
-                                <label class="form-label small fw-bold">
-                                    Modelo
-                                </label>
-
-                                <select class="form-select" @bind="filtroModelo">
-
-                                    <option value="">
-                                        Todos os modelos
-                                    </option>
-
-                                    @foreach (var modelo in modelos)
-                                    {
-                                        <option value="@modelo">
-                                            @modelo
-                                        </option>
-                                    }
-
-                                </select>
-
-                            </div>
-
-
-                            <div class="col-md-4">
-
-                                <label class="form-label small fw-bold">
-                                    Número da O.S.
-                                </label>
-
-                                <input type="text" class="form-control" @bind="filtroOs" placeholder="Ex: 1023" />
-
-                            </div>
-
-
-                            <div class="col-md-8 d-flex align-items-end gap-2">
-
-                                <button class="btn btn-success px-4 fw-bold" @onclick="AplicarFiltros">
-
-                                    <i class="bi bi-search me-1"></i>
-
-                                    Filtrar
-
-                                </button>
-
-
-                                <button class="btn btn-outline-secondary px-3" @onclick="LimparFiltros">
-
-                                    <i class="bi bi-x-circle me-1"></i>
-
-                                    Limpar
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         BOTÕES DE EXPORTAÇÃO
-                         ================================================= -->
-                    <div class="card border-0 shadow-sm p-3 mb-4">
-
-                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-
-                            <div>
-
-                                <h5 class="fw-bold mb-1">
-
-                                    <i class="bi bi-download text-success me-2"></i>
-
-                                    Exportar Relatório
-
-                                </h5>
-
-                                <small class="text-muted">
-
-                                    As exportações em Excel respeitam os filtros
-                                    atualmente aplicados.
-
-                                </small>
-
-                            </div>
-
-
-                            <div class="relatorios-export-buttons">
-
-                                <button class="btn btn-success" @onclick="ExportarRankingExcel"
-                                        disabled="@(top10ItensPorComponente.Count == 0)">
-
-                                    <i class="bi bi-file-earmark-excel me-2"></i>
-
-                                    Ranking Excel
-
-                                </button>
-
-
-                                <button class="btn btn-success" @onclick="ExportarDetalhamentoExcel"
-                                        disabled="@(listaFiltrada.Count == 0)">
-
-                                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>
-
-                                    O.S. Excel
-
-                                </button>
-
-
-                                <button class="btn btn-danger" @onclick="ExportarPdf">
-
-                                    <i class="bi bi-file-earmark-pdf me-2"></i>
-
-                                    Relatório PDF
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         RESUMO
-                         ================================================= -->
-                    <div class="row g-3 mb-4">
-
-                        <div class="col-md-3">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    Total de Requisições
-                                </small>
-
-                                <h3 class="fw-bold mt-1 mb-0">
-                                    @totalRequisicoes
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    Requisições Pendentes
-                                </small>
-
-                                <h3 class="fw-bold mt-1 mb-0 text-warning">
-                                    @requisicoesPendentes
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    Requisições Concluídas
-                                </small>
-
-                                <h3 class="fw-bold mt-1 mb-0 text-success">
-                                    @requisicoesConcluidas
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-3">
-
-                            <div class="card border-0 shadow-sm p-3 bg-light h-100">
-
-                                <small class="text-muted">
-                                    O.S. Liberadas
-                                </small>
-
-                                <h3 class="fw-bold mt-1 mb-0 text-success">
-                                    @componentesLiberados
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         INDICADORES
-                         ================================================= -->
-                    <div class="row g-3 mb-4">
-
-                        <div class="col-md-6">
-
-                            <div class="card border-0 shadow-sm p-4 h-100">
-
-                                <h5 class="fw-bold mb-3">
-
-                                    <i class="bi bi-speedometer2 text-success me-2"></i>
-
-                                    Indicadores de Controle
-
-                                </h5>
-
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        O.S. Pendentes:
-                                    </span>
-
-                                    <strong>
-                                        @requisicoesPendentes ordens
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        O.S. Concluídas:
-                                    </span>
-
-                                    <strong class="text-success">
-                                        @requisicoesConcluidas ordens
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        O.S. Liberadas:
-                                    </span>
-
-                                    <strong class="text-success">
-                                        @componentesLiberados
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        O.S. Condenadas:
-                                    </span>
-
-                                    <strong class="text-danger">
-                                        @componentesCondenados
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between py-2">
-
-                                    <span class="text-muted">
-                                        Percentual Médio de Atendimento:
-                                    </span>
-
-                                    <strong class="text-success">
-                                        @percentualMedioAtendimento.ToString("F1")%
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-md-6">
-
-                            <div class="card border-0 shadow-sm p-4 h-100">
-
-                                <h5 class="fw-bold mb-3">
-
-                                    <i class="bi bi-bar-chart-line text-success me-2"></i>
-
-                                    Destaques
-
-                                </h5>
-
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        Modelo mais solicitado:
-                                    </span>
-
-                                    <strong>
-                                        @modeloMaisSolicitado
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between py-2">
-
-                                    <span class="text-muted">
-                                        Peça mais requisitada:
-                                    </span>
-
-                                    <strong>
-                                        @componenteMaisFrequente
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         RANKING
-                         ================================================= -->
-                    <div id="tabelaRanking" class="card border-0 shadow-sm mb-4">
-
-                        <div class="card-header bg-white py-3">
-
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-
-                                <div>
-
-                                    <h5 class="fw-bold mb-1">
-
-                                        <i class="bi bi-box-seam text-success me-2"></i>
-
-                                        Peças Mais Requisitadas por Modelo
-
-                                    </h5>
-
-                                    <small class="text-muted">
-
-                                        Top 10 peças de cada modelo conforme os filtros selecionados.
-
-                                    </small>
-
-                                </div>
-
-
-                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarRankingExcel"
-                                        disabled="@(top10ItensPorComponente.Count == 0)">
-
-                                    <i class="bi bi-file-earmark-excel me-1"></i>
-
-                                    Excel
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
+                    <div class="card border-0 shadow-sm mb-4">
 
                         <div class="table-responsive">
 
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table align-middle mb-0 table-hover">
 
-                                <thead class="table-light">
+                                <thead class="bg-success text-white">
 
                                     <tr>
 
-                                        <th class="ps-4">
-                                            Modelo
+                                        <th class="ps-4 py-3">
+                                            O.S
                                         </th>
 
-                                        <th>
-                                            Código SAP
+                                        <th class="py-3">
+                                            Componente
                                         </th>
 
-                                        <th>
-                                            Descrição
+                                        <th class="py-3">
+                                            Data de Solicitação
                                         </th>
 
-                                        <th class="text-center">
-                                            Quantidade
+                                        <th class="py-3">
+                                            Sistema
+                                        </th>
+
+                                        <th class="py-3" style="width: 180px;">
+
+                                            Progresso
+
+                                        </th>
+
+                                        <th class="pe-4 py-3 text-end">
+                                            Ação
                                         </th>
 
                                     </tr>
 
                                 </thead>
 
-
                                 <tbody>
 
-                                    @if (!top10ItensPorComponente.Any())
+                                    @foreach (var s in SolicitacoesFiltradas)
                                     {
-                                        <tr>
+                                        int pct = CalcularPorcentagem(s);
 
-                                            <td colspan="4" class="text-center py-4 text-muted">
+                                        bool isSelected =
+                                            requisicaoSelecionada?.Id == s.Id;
 
-                                                Nenhum dado encontrado.
+                                        <tr style="
+                                            cursor:pointer;
+                                            background-color:@(
+                                            isSelected
+                                                ? "#f1f8f5"
+                                                : "transparent"
+                                                                                                                        );"
+                                            @onclick="() => SelecionarRequisicao(s.Id)">
+
+                                            <td class="ps-4 text-muted">
+
+                                                O.S.: @s.OsNumero
+
+                                            </td>
+
+
+                                            <td class="fw-bold text-secondary">
+
+                                                @s.ModeloSolicitado
+
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                @s.DataEnvio.ToLocalTime().ToString("dd/MM/yyyy")
+                                            </td>
+
+                                            <td>
+
+                                                @{
+                                                    string sistema =
+                                                        ObterSistemaDoModelo(
+                                                            s.ModeloSolicitado
+                                                        );
+                                                }
+
+                                                @if (!string.IsNullOrWhiteSpace(sistema))
+                                                {
+                                                    <span class="badge rounded-pill" style="
+                                                        background-color:#e8f1ec;
+                                                        color:#4d6d5d;
+                                                        ">
+
+                                                        <i class="bi bi-diagram-3 me-1"></i>
+
+                                                        @sistema
+
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">
+                                                        Não informado
+                                                    </span>
+                                                }
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div class="d-flex align-items-center gap-2">
+
+                                                    <span style="min-width:45px;">
+                                                        @pct%
+                                                    </span>
+
+                                                    <div class="progress flex-grow-1" style="
+                                                        height:6px;
+                                                        background-color:#e9ecef;
+                                                        ">
+
+                                                        <div class="progress-bar bg-success" style="width:@pct%;">
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </td>
+
+
+                                            <td class="pe-4 text-end">
+
+                                                <button
+                                                    class="btn btn-sm @(isSelected
+                                                                                                                                                                        ? "btn-success"
+                                                                                                                                                                        : "btn-outline-success")">
+
+                                                    @(isSelected
+                                                        ? "Editando..."
+                                                        : "Ver Itens")
+
+                                                </button>
 
                                             </td>
 
                                         </tr>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var item in top10ItensPorComponente)
-                                        {
-                                            <tr>
-
-                                                <td class="ps-4 fw-bold">
-                                                    @item.Modelo
-                                                </td>
-
-                                                <td>
-                                                    <code>
-                                                        @item.SapPeca
-                                                    </code>
-                                                </td>
-
-                                                <td>
-                                                    @item.Descricao
-                                                </td>
-
-                                                <td class="text-center">
-
-                                                    <span class="badge bg-success">
-
-                                                        @item.TotalQuantidade un.
-
-                                                    </span>
-
-                                                </td>
-
-                                            </tr>
-                                        }
                                     }
 
                                 </tbody>
@@ -685,199 +468,437 @@
 
 
                     <!-- =================================================
-                         DETALHAMENTO
+                         DETALHES DA REQUISIÇÃO
                          ================================================= -->
-                    <div id="tabelaDetalhamento" class="card border-0 shadow-sm mb-5">
+                    @if (requisicaoSelecionada != null)
+                    {
+                        <div class="mt-5 p-3 rounded" style="
+                            background-color:#f8f9fa;
+                            border-left:4px solid #198754;
+                            ">
 
-                        <div class="card-header bg-white py-3">
+                            <!-- CABEÇALHO -->
+                            <div class="d-flex justify-content-between
+                                align-items-center mb-4">
 
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <h4 class="mb-0">
 
-                                <h5 class="fw-bold mb-0">
+                                    Itens da
+                                    <strong>
+                                        O.S.: @requisicaoSelecionada.OsNumero
+                                    </strong>
 
-                                    <i class="bi bi-table text-success me-2"></i>
-
-                                    Detalhamento por O.S
-
-                                </h5>
+                                </h4>
 
 
-                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarDetalhamentoExcel"
-                                        disabled="@(listaFiltrada.Count == 0)">
+                                <!-- ADICIONAR PEÇA -->
+                                <!-- BOTÕES -->
+                                <div class="d-flex align-items-center gap-2">
 
-                                    <i class="bi bi-file-earmark-excel me-1"></i>
+                                    <!-- EXPORTAR EXCEL -->
+                                    <button class="btn btn-outline-success" @onclick="ExportarItensExcel">
 
-                                    Excel
+                                        <i class="bi bi-file-earmark-excel me-1"></i>
 
-                                </button>
+                                        Exportar Excel
+
+                                    </button>
+
+                                    <!-- ADICIONAR PEÇA -->
+                                    <button class="btn btn-success" @onclick="AbrirModalAdicionarPeca">
+
+                                        <i class="bi bi-plus-lg me-1"></i>
+
+                                        Adicionar peça
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 CARDS
+                                 ================================================= -->
+                            <div class="row g-3 mb-4">
+
+                                <div class="col-md-5">
+
+                                    <div class="card border-0 shadow-sm p-3
+                                        bg-white h-100">
+
+                                        <small class="text-muted">
+                                            Modelo
+                                        </small>
+
+                                        <h6 class="mb-0 fw-bold">
+
+                                            @requisicaoSelecionada.ModeloSolicitado
+
+                                        </h6>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-2">
+
+                                    <div class="card border-0 shadow-sm p-3
+                                        bg-white h-100">
+
+                                        <small class="text-muted">
+                                            Sistema
+                                        </small>
+
+                                        <h6 class="mb-0 fw-bold">
+
+                                            @{
+                                                string sistemaSelecionadoDetalhe =
+                                                    ObterSistemaDoModelo(
+                                                        requisicaoSelecionada.ModeloSolicitado
+                                                    );
+                                            }
+
+                                            @if (!string.IsNullOrWhiteSpace(sistemaSelecionadoDetalhe))
+                                            {
+                                                @sistemaSelecionadoDetalhe
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    Não informado
+                                                </span>
+                                            }
+
+                                        </h6>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-2">
+
+                                    <div class="card border-0 shadow-sm p-3
+                                        bg-white h-100">
+
+                                        <small class="text-muted">
+                                            Progresso
+                                        </small>
+
+                                        <h6 class="mb-0 fw-bold">
+
+                                            @ItensEntregues de @TotalItens
+
+                                        </h6>
+
+                                        <small class="text-success">
+
+                                            @PorcentagemConcluida% concluído
+
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-md-3">
+
+                                    <div class="card border-0 shadow-sm p-3
+                                        bg-white h-100">
+
+                                        <small class="text-muted">
+                                            Situação
+                                        </small>
+
+                                        @if (TodosItensEntregues)
+                                        {
+                                            <h6 class="mb-0 text-success fw-bold">
+
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+
+                                                Todos entregues
+
+                                            </h6>
+                                        }
+                                        else
+                                        {
+                                            <h6 class="mb-0 text-warning fw-bold">
+
+                                                <i class="bi bi-clock-fill me-1"></i>
+
+                                                Aguardando peças
+
+                                            </h6>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 TABELA DE ITENS
+                                 ================================================= -->
+                            <div class="card border-0 shadow-sm mb-4">
+
+                                <div class="table-responsive">
+
+                                    <table class="table align-middle mb-0">
+
+                                        <thead class="bg-secondary text-white">
+
+                                            <tr>
+
+                                                <th class="ps-4">
+                                                    SAP
+                                                </th>
+
+                                                <th>
+                                                    Componente
+                                                </th>
+
+                                                <th>
+                                                    Quantidade
+                                                </th>
+
+                                                <th class="text-center pe-4">
+                                                    Entregue
+                                                </th>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            @if (itensAtuais == null ||
+                                                 !itensAtuais.Any())
+                                            {
+                                                <tr>
+
+                                                    <td colspan="4" class="text-center py-4 text-muted">
+
+                                                        Nenhuma peça cadastrada
+                                                        para esta requisição.
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var item in itensAtuais)
+                                                {
+                                                    <tr>
+
+                                                        <!-- SAP -->
+                                                        <td class="ps-4 fw-bold text-secondary">
+
+                                                            @item.SapPeca
+
+                                                        </td>
+
+
+                                                        <!-- DESCRIÇÃO -->
+                                                        <td>
+
+                                                            @item.Descricao
+
+                                                        </td>
+
+
+                                                        <!-- QUANTIDADE -->
+                                                        <td>
+
+                                                            <div class="
+                                                                d-inline-flex
+                                                                align-items-center
+                                                                border
+                                                                rounded
+                                                                bg-light
+                                                                px-2
+                                                                py-1">
+
+                                                                <span>
+                                                                    @item.Quantidade
+                                                                </span>
+
+                                                            </div>
+
+                                                        </td>
+
+
+                                                        <!-- CHECK ENTREGUE -->
+                                                        <td class="text-center pe-4">
+
+                                                            <button type="button" class="btn @(item.Entregue
+                                                                                                                                                                                                                ? "btn-success"
+                                                                                                                                                                                                                : "btn-outline-secondary")
+                                                                btn-sm px-3" @onclick="() => AlternarEntrega(item)"
+                                                                    title="@(item.Entregue
+                                                                                                                                                                                                                ? "Marcar como pendente"
+                                                                                                                                                                                                                : "Marcar como entregue")">
+
+                                                                @if (item.Entregue)
+                                                                {
+                                                                    <i class="bi bi-check-lg"></i>
+
+                                                                    <span class="ms-1">
+                                                                        Entregue
+                                                                    </span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <i class="bi bi-square"></i>
+
+                                                                    <span class="ms-1">
+                                                                        Pendente
+                                                                    </span>
+                                                                }
+
+                                                            </button>
+
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =================================================
+                                 RESUMO E AÇÕES
+                                 ================================================= -->
+                            <div class="card border-0 shadow-sm p-4
+                                bg-white mb-2">
+
+                                <div class="row align-items-center g-3">
+
+                                    <!-- RESUMO -->
+                                    <div class="col-md-5">
+
+                                        <small class="text-muted d-block">
+
+                                            Resumo da seleção
+
+                                        </small>
+
+                                        @if (TotalItens == 0)
+                                        {
+                                            <strong>
+                                                Nenhum item cadastrado
+                                            </strong>
+                                        }
+                                        else if (TodosItensEntregues)
+                                        {
+                                            <strong class="text-success">
+
+                                                <i class="bi bi-check-circle-fill me-1"></i>
+
+                                                Todos os @TotalItens itens
+                                                foram entregues
+
+                                            </strong>
+                                        }
+                                        else
+                                        {
+                                            <strong>
+
+                                                @(TotalItens - ItensEntregues)
+                                                itens faltantes de
+                                                @TotalItens componentes
+
+                                            </strong>
+                                        }
+
+                                    </div>
+
+
+                                    <!-- VALOR -->
+                                    <div class="col-md-3">
+
+                                        <small class="text-muted d-block">
+
+                                            Total estimado
+
+                                        </small>
+
+                                        <h4 class="text-success fw-bold mb-0">
+
+                                            R$ -
+
+                                            @*
+                                            Se quiser voltar a mostrar o valor:
+
+                                            R$ @ValorTotalEstimado.ToString("F2")
+                                            *@
+
+                                        </h4>
+
+                                    </div>
+
+
+                                    <!-- CONDENAR -->
+                                    <div class="col-md-2">
+
+                                        <button type="button" class="btn btn-outline-danger
+                                            w-100
+                                            py-2
+                                            fw-bold" @onclick="CondenarProducao">
+
+                                            <i class="bi bi-x-circle me-1"></i>
+
+                                            Condenar
+
+                                        </button>
+
+                                    </div>
+
+
+                                    <!-- LIBERAR -->
+                                    <div class="col-md-2">
+
+                                        <button type="button" class="btn btn-success
+                                            w-100
+                                            py-2
+                                            fw-bold" disabled="@(!TodosItensEntregues)" @onclick="LiberarProducao"
+                                                title="@(
+                                                TodosItensEntregues
+                                                    ? "Liberar produção"
+                                                    : "É necessário entregar todos os itens"
+                                                                                                                                )">
+
+                                            <i class="bi bi-check-circle me-1"></i>
+
+                                            Liberar
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
                         </div>
-
-
-                        <div class="table-responsive">
-
-                            <table class="table table-hover align-middle mb-0">
-
-                                <thead class="table-light">
-
-                                    <tr>
-
-                                        <th class="ps-4">
-                                            O.S.
-                                        </th>
-
-                                        <th>
-                                            Data
-                                        </th>
-
-                                        <th>
-                                            Modelo
-                                        </th>
-
-                                        <th class="text-center">
-                                            Itens
-                                        </th>
-
-                                        <th class="text-center">
-                                            Entregues
-                                        </th>
-
-                                        <th class="text-center">
-                                            Liberados
-                                        </th>
-
-                                        <th class="text-center">
-                                            Condenados
-                                        </th>
-
-                                        <th class="text-center">
-                                            Pendentes
-                                        </th>
-
-                                        <th class="text-center">
-                                            %
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-
-                                <tbody>
-
-                                    @if (!listaFiltrada.Any())
-                                    {
-                                        <tr>
-
-                                            <td colspan="9" class="text-center py-4 text-muted">
-
-                                                Nenhuma requisição encontrada
-                                                para os filtros selecionados.
-
-                                            </td>
-
-                                        </tr>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var item in listaFiltrada)
-                                        {
-                                            var itensDaOs = itensPorSolicitacao.ContainsKey(item.Id)
-                                                ? itensPorSolicitacao[item.Id]
-                                                : new List<SolicitacaoItemModel>();
-
-                                            // A coluna Itens mostra a quantidade física de peças.
-                                            // Os demais indicadores abaixo contam O.S.: cada O.S. = 1.
-                                            var totalItens = itensDaOs.Sum(i => i.Quantidade);
-
-                                            var osLiberada =
-                                                string.Equals(
-                                                    item.Status?.Trim(),
-                                                    "Liberado",
-                                                    StringComparison.OrdinalIgnoreCase);
-
-                                            var osCondenada =
-                                                string.Equals(
-                                                    item.Status?.Trim(),
-                                                    "Condenado",
-                                                    StringComparison.OrdinalIgnoreCase);
-
-                                            var osEntregue = IsOsEntregue(item);
-
-                                            var osPendente = IsOsPendente(item);
-
-                                            var itensEntregues = osEntregue ? 1 : 0;
-                                            var itensLiberados = osLiberada ? 1 : 0;
-                                            var itensCondenados = osCondenada ? 1 : 0;
-                                            var itensPendentes = osPendente ? 1 : 0;
-
-                                            var percentual =
-                                                osEntregue || osLiberada || osCondenada
-                                                    ? 100
-                                                    : 0;
-
-                                            <tr>
-
-                                                <td class="ps-4 fw-bold">
-                                                    @item.OsNumero
-                                                </td>
-
-                                                <td>
-                                                    @FormatarData(item.DataEnvio)
-                                                </td>
-
-                                                <td>
-                                                    @item.ModeloSolicitado
-                                                </td>
-
-                                                <td class="text-center">
-                                                    @totalItens
-                                                </td>
-
-                                                <td class="text-center text-success fw-bold">
-                                                    @itensEntregues
-                                                </td>
-
-                                                <td class="text-center text-success fw-bold">
-                                                    @itensLiberados
-                                                </td>
-
-                                                <td class="text-center text-danger fw-bold">
-                                                    @itensCondenados
-                                                </td>
-
-                                                <td class="text-center text-warning fw-bold">
-                                                    @itensPendentes
-                                                </td>
-
-                                                <td class="text-center">
-
-                                                    <span
-                                                        class="badge @(percentual >= 100 ? "bg-success" : percentual > 0 ? "bg-warning text-dark" : "bg-secondary")">
-
-                                                        @percentual.ToString("F0")%
-
-                                                    </span>
-
-                                                </td>
-
-                                            </tr>
-                                        }
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
+                    }
 
                 }
 
-            </div>
+            }
 
         </div>
 
@@ -887,200 +908,383 @@
 
 
 <!-- =============================================================
-     ESTILO LOCAL DA PÁGINA
+     MODAL - ADICIONAR PEÇA
      ============================================================= -->
-<style>
-    .relatorios-export-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+@if (mostrarModalAdicionarPeca)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
 
-    .relatorios-export-buttons .btn {
-        min-width: 150px;
-        font-weight: 600;
-    }
+        <div class="modal-dialog modal-dialog-centered">
 
-    .relatorios-export-area {
-        width: 100%;
-    }
+            <div class="modal-content border-0 shadow">
 
-    #areaRelatorioPdf {
-        background: #f4f6f5;
-    }
+                <!-- CABEÇALHO -->
+                <div class="modal-header">
 
-    .relatorios-export-area .card {
-        break-inside: avoid;
-    }
+                    <h5 class="modal-title fw-bold">
 
-    @@media (max-width: 768px) {
+                        <i class="bi bi-plus-circle me-2 text-success"></i>
 
-        .relatorios-export-buttons {
-            width: 100%;
-        }
+                        Adicionar peça
 
-        .relatorios-export-buttons .btn {
-            flex: 1;
-            min-width: 140px;
-        }
+                    </h5>
 
-    }
-</style>
+                    <button type="button" class="btn-close" @onclick="FecharModalAdicionarPeca">
+                    </button>
+
+                </div>
+
+
+                <!-- CORPO -->
+                <div class="modal-body">
+
+                    <div class="alert alert-light border">
+
+                        <small class="text-muted">
+                            O.S.
+                        </small>
+
+                        <div class="fw-bold">
+                            @requisicaoSelecionada?.OsNumero
+                        </div>
+
+                    </div>
+
+
+                    <!-- SAP -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-bold">
+
+                            SAP da peça
+
+                        </label>
+
+                        <div class="input-group">
+
+                            <input type="text" class="form-control" placeholder="Digite o SAP" @bind="sapPecaBusca" />
+
+                            <button type="button" class="btn btn-outline-success" @onclick="BuscarPeca"
+                                    disabled="@buscandoPeca">
+
+                                @if (buscandoPeca)
+                                {
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-search"></i>
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESULTADO -->
+                    @if (pecaEncontrada != null)
+                    {
+                        <div class="card border-success mb-3">
+
+                            <div class="card-body">
+
+                                <small class="text-muted">
+                                    Peça encontrada
+                                </small>
+
+                                <h6 class="fw-bold mb-1">
+
+                                    @pecaEncontrada.SapPeca
+
+                                </h6>
+
+                                <p class="mb-0 text-secondary">
+
+                                    @pecaEncontrada.Descricao
+
+                                </p>
+
+                                <div class="mt-2 text-success fw-bold">
+
+                                    R$
+                                    @pecaEncontrada.Valor.ToString("F2")
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+
+
+                    <!-- MENSAGEM -->
+                    @if (!string.IsNullOrWhiteSpace(mensagemModal))
+                    {
+                        <div class="alert @(
+                             mensagemModalErro
+                                 ? "alert-danger"
+                                 : "alert-info"
+                                                                  )">
+
+                            @mensagemModal
+
+                        </div>
+                    }
+
+
+                    <!-- QUANTIDADE -->
+                    @if (pecaEncontrada != null)
+                    {
+                        <div class="mb-3">
+
+                            <label class="form-label fw-bold">
+
+                                Quantidade
+
+                            </label>
+
+                            <input type="number" class="form-control" min="1" @bind="quantidadeNovaPeca" />
+
+                        </div>
+                    }
+
+                </div>
+
+
+                <!-- RODAPÉ -->
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" @onclick="FecharModalAdicionarPeca">
+
+                        Cancelar
+
+                    </button>
+
+                    <button type="button" class="btn btn-success" disabled="@(pecaEncontrada == null || salvandoPeca)"
+                            @onclick="AdicionarPeca">
+
+                        @if (salvandoPeca)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+
+                            <span>Adicionando...</span>
+                        }
+                        else
+                        {
+                            <i class="bi bi-plus-lg me-1"></i>
+
+                            <span>Adicionar peça</span>
+                        }
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
 
 
 @code {
 
     // ============================================================
-    // ESTADO
+    // MENU MOBILE
     // ============================================================
+
+    private bool isMenuOpen = false;
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
+
+
+    // ============================================================
+    // ESTADO DA PÁGINA
+    // ============================================================
+
+    private List<SolicitacaoCompletaModel> solicitacoes = new();
+
+    private SolicitacaoCompletaModel? requisicaoSelecionada;
+
+    private List<SolicitacaoItemModel> itensAtuais = new();
 
     private bool isLoading = true;
 
 
     // ============================================================
-    // DADOS
+    // ITENS AGRUPADOS POR SOLICITAÇÃO
     // ============================================================
 
-    private List<SolicitacaoCompletaModel> todasSolicitacoes = new();
-
-    private Dictionary<long, List<SolicitacaoItemModel>> itensPorSolicitacao = new();
-
-    private List<SolicitacaoCompletaModel> listaFiltrada = new();
-
-    private List<SistemaModel> sistemas = new();
-
-    private List<ComponenteModel> componentesCadastrados = new();
-
-    private List<string> categorias = new();
-
-    private List<string> modelos = new();
+    private Dictionary<long, List<SolicitacaoItemModel>>
+        itensPorSolicitacao = new();
 
 
     // ============================================================
-    // FILTROS
+    // FILTRO DE TEXTO
     // ============================================================
 
-    private DateTime? filtroDataInicio;
-
-    private DateTime? filtroDataFim;
-
-    private string filtroCategoria = string.Empty;
-
-    private string filtroModelo = string.Empty;
-
-    private string filtroOs = string.Empty;
+    private string termoBusca = "";
 
 
     // ============================================================
-    // INDICADORES
+    // FILTRO DE SISTEMA / ÁREA
     // ============================================================
 
-    private int totalRequisicoes =>
-        listaFiltrada.Count;
+    private string sistemaSelecionado = "";
 
-
-    // ============================================================
-    // O.S. LIBERADAS
-    // ============================================================
-
-    private int requisicoesLiberadas =>
-        listaFiltrada.Count(s =>
-            string.Equals(
-                s.Status?.Trim(),
-                "Liberado",
-                StringComparison.OrdinalIgnoreCase));
+    private List<string> sistemasDisponiveis = new();
 
 
     // ============================================================
-    // O.S. CONDENADAS
+    // RELAÇÃO MODELO → SISTEMA
     // ============================================================
 
-    private int requisicoesCondenadas =>
-        listaFiltrada.Count(s =>
-            string.Equals(
-                s.Status?.Trim(),
-                "Condenado",
-                StringComparison.OrdinalIgnoreCase));
+    private Dictionary<string, string> sistemaPorModelo =
+        new(StringComparer.OrdinalIgnoreCase);
 
 
     // ============================================================
-    // O.S. CONCLUÍDAS
-    // ============================================================
-    // Uma O.S. concluída é aquela em que todas as peças
-    // foram entregues.
-    //
-    // Cada O.S. vale 1, independentemente da quantidade
-    // de peças que ela possui.
-
-    private int requisicoesConcluidas =>
-    Math.Max(
-        0,
-        totalRequisicoes
-        - requisicoesPendentes
-        - requisicoesLiberadas
-        - requisicoesCondenadas
-    );
-
-
-    // ============================================================
-    // O.S. PENDENTES
-    // ============================================================
-    // Status Pendente + pelo menos uma peça ainda não entregue.
-
-    private int requisicoesPendentes =>
-        listaFiltrada.Count(IsOsPendente);
-
-
-    // ============================================================
-    // COMPONENTES LIBERADOS
+    // REQUISIÇÕES FILTRADAS
     // ============================================================
 
-    private int componentesLiberados =>
-        requisicoesLiberadas;
-
-
-    // ============================================================
-    // COMPONENTES CONDENADOS
-    // ============================================================
-
-    private int componentesCondenados =>
-        requisicoesCondenadas;
-
-
-    // ============================================================
-    // PERCENTUAL MÉDIO DE ATENDIMENTO
-    // ============================================================
-
-    private double percentualMedioAtendimento
+    private IEnumerable<SolicitacaoCompletaModel> SolicitacoesFiltradas
     {
         get
         {
-            if (totalRequisicoes == 0)
-                return 0;
+            IEnumerable<SolicitacaoCompletaModel> resultado =
+                solicitacoes;
 
-            int requisicoesAtendidas =
-                requisicoesConcluidas
-                + requisicoesLiberadas
-                + requisicoesCondenadas;
+            // FILTRO POR TEXTO
+            if (!string.IsNullOrWhiteSpace(termoBusca))
+            {
+                resultado = resultado.Where(s =>
+                    (
+                        s.OsNumero != null &&
+                        s.OsNumero.Contains(
+                            termoBusca,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    ||
+                    (
+                        s.ModeloSolicitado != null &&
+                        s.ModeloSolicitado.Contains(
+                            termoBusca,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                );
+            }
 
-            return
-                (double)requisicoesAtendidas
-                / totalRequisicoes
-                * 100;
+            // FILTRO POR SISTEMA
+            if (!string.IsNullOrWhiteSpace(sistemaSelecionado))
+            {
+                resultado = resultado.Where(s =>
+                    ObterSistemaDoModelo(
+                        s.ModeloSolicitado
+                    ).Equals(
+                        sistemaSelecionado,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+            }
+
+            return resultado;
         }
     }
 
 
-    private string modeloMaisSolicitado = "-";
+    // ============================================================
+    // PROPRIEDADES DOS ITENS
+    // ============================================================
 
-    private string componenteMaisFrequente = "-";
+    private int TotalItens =>
+        itensAtuais.Sum(i => i.Quantidade);
+
+
+    private int ItensEntregues =>
+        itensAtuais
+            .Where(i => i.Entregue)
+            .Sum(i => i.Quantidade);
+
+
+    private int PorcentagemConcluida =>
+        TotalItens > 0
+            ? (int)((double)ItensEntregues / TotalItens * 100)
+            : 0;
+
+
+    private bool TodosItensEntregues =>
+        TotalItens > 0 &&
+        ItensEntregues == TotalItens;
 
 
     // ============================================================
-    // RANKING
+    // VALOR TOTAL
     // ============================================================
 
-    private List<ItemRankingModel> top10ItensPorComponente = new();
+    private double ValorTotalEstimado =>
+        itensAtuais.Sum(i => i.Quantidade * i.Valor);
+
+
+    // ============================================================
+    // MODAL ADICIONAR PEÇA
+    // ============================================================
+
+    private bool mostrarModalAdicionarPeca = false;
+    private string sapPecaBusca = "";
+    private int quantidadeNovaPeca = 1;
+    private bool buscandoPeca = false;
+    private bool salvandoPeca = false;
+    private PecaModel? pecaEncontrada;
+    private string mensagemModal = "";
+    private bool mensagemModalErro = false;
+
+    // ============================================================
+    // EXPORTAR ITENS DA O.S. PARA EXCEL
+    // ============================================================
+
+    private async Task ExportarItensExcel()
+    {
+        if (requisicaoSelecionada == null)
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Nenhuma requisição selecionada."
+            );
+
+            return;
+        }
+
+        if (itensAtuais == null || !itensAtuais.Any())
+        {
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Não existem peças para exportar."
+            );
+
+            return;
+        }
+
+        var dados = itensAtuais.Select(item => new
+        {
+            os = requisicaoSelecionada.OsNumero,
+            sap = item.SapPeca,
+            descricao = item.Descricao,
+            quantidade = item.Quantidade
+        }).ToList();
+
+        await JS.InvokeVoidAsync(
+            "exportarItensRequisicaoExcel",
+            dados
+        );
+    }
 
 
     // ============================================================
@@ -1089,138 +1293,154 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!Sessao.EstaLogado)
-        {
-            Nav.NavigateTo("/login");
-            return;
-        }
-
-        await CarregarDados();
-    }
-
-    private async Task Voltar()
-    {
-        await JS.InvokeVoidAsync("history.back");
+        await CarregarRequisicoes();
     }
 
 
     // ============================================================
-    // CARREGAR DADOS
+    // CARREGAR REQUISIÇÕES
     // ============================================================
 
-    private async Task CarregarDados()
+    private async Task CarregarRequisicoes()
     {
         try
         {
             isLoading = true;
 
-            // ----------------------------------------------------
-            // REQUISIÇÕES
-            // ----------------------------------------------------
-
+            // ========================================================
+            // 1. CARREGA AS O.S. PENDENTES
+            // ========================================================
             var response =
                 await Supabase
                     .From<SolicitacaoCompletaModel>()
+                    .Filter(
+                        "status",
+                        Postgrest.Constants.Operator.Equals,
+                        "Pendente"
+                    )
                     .Get();
 
-            todasSolicitacoes =
-                response.Models
-                ?? new List<SolicitacaoCompletaModel>();
+            solicitacoes = response.Models;
 
+            // ========================================================
+            // 2. CARREGA ITENS APENAS DAS O.S. PENDENTES (Corrigido)
+            // ========================================================
+            var idsPendentes = solicitacoes.Select(s => s.Id).Distinct().ToList();
+            itensPorSolicitacao.Clear();
 
-            // ----------------------------------------------------
-            // ITENS
-            // ----------------------------------------------------
+            if (idsPendentes.Any())
+            {
+                // Divide a busca em lotes de 50 para evitar erro de URL muito longa na API (HTTP 414)
+                int tamanhoLote = 50;
+    
+                for (int i = 0; i < idsPendentes.Count; i += tamanhoLote)
+                {
+                    // Precisamos converter os IDs para 'object' para o operador In funcionar sem falhas no C# SDK
+                    var loteIds = idsPendentes.Skip(i).Take(tamanhoLote).Cast<object>().ToList();
 
-            var responseItens =
-                await Supabase
-                    .From<SolicitacaoItemModel>()
-                    .Get();
+                    var itensResponse = await Supabase
+                        .From<SolicitacaoItemModel>()
+                        .Filter("solicitacao_id", Postgrest.Constants.Operator.In, loteIds)
+                        .Get();
 
-            var todosOsItensBd =
-                responseItens.Models
-                ?? new List<SolicitacaoItemModel>();
+                    if (itensResponse.Models != null)
+                    {
+                        foreach (var item in itensResponse.Models)
+                        {
+                            if (!itensPorSolicitacao.ContainsKey(item.SolicitacaoId))
+                            {
+                                itensPorSolicitacao[item.SolicitacaoId] = new List<SolicitacaoItemModel>();
+                            }
+                
+                            itensPorSolicitacao[item.SolicitacaoId].Add(item);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                itensPorSolicitacao = new Dictionary<long, List<SolicitacaoItemModel>>();
+            }
 
-
-            // ----------------------------------------------------
-            // AGRUPAR ITENS POR O.S.
-            // ----------------------------------------------------
-
-            itensPorSolicitacao =
-                todosOsItensBd
-                    .GroupBy(i => i.SolicitacaoId)
-                    .ToDictionary(
-                        g => g.Key,
-                        g => g.ToList());
-
-
-            listaFiltrada =
-                new List<SolicitacaoCompletaModel>(
-                    todasSolicitacoes);
-
-
-            // ----------------------------------------------------
-            // SISTEMAS / CATEGORIAS
-            // ----------------------------------------------------
-
-            var resSistemas =
-                await Supabase
-                    .From<SistemaModel>()
-                    .Get();
-
-            sistemas =
-                resSistemas.Models
-                ?? new List<SistemaModel>();
-
-
-            categorias =
-                sistemas
-                    .Where(s =>
-                        !string.IsNullOrWhiteSpace(
-                            s.Categoria))
-                    .Select(s => s.Categoria!)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(c => c)
-                    .ToList();
-
-
-            // ----------------------------------------------------
-            // COMPONENTES / MODELOS
-            // ----------------------------------------------------
-
-            var resComponentes =
+            // ========================================================
+            // 3. CARREGA OS COMPONENTES
+            // ========================================================
+            var componentesResponse =
                 await Supabase
                     .From<ComponenteModel>()
                     .Get();
 
-            componentesCadastrados =
-                resComponentes.Models
-                ?? new List<ComponenteModel>();
+            var componentes =
+                componentesResponse.Models;
 
+            // ========================================================
+            // 4. CARREGA OS SISTEMAS
+            // ========================================================
+            var sistemasResponse =
+                await Supabase
+                    .From<SistemaModel>()
+                    .Get();
 
-            modelos =
-                componentesCadastrados
-                    .Where(c =>
+            var sistemas =
+                sistemasResponse.Models;
+
+            // ========================================================
+            // 5. MONTA MODELO → SISTEMA
+            // ========================================================
+            sistemaPorModelo.Clear();
+
+            foreach (var componente in componentes)
+            {
+                if (string.IsNullOrWhiteSpace(componente.Modelo))
+                    continue;
+
+                var sistema =
+                    sistemas.FirstOrDefault(
+                        s => s.Id == componente.SistemaId
+                    );
+
+                if (sistema == null || string.IsNullOrWhiteSpace(sistema.Categoria))
+                    continue;
+
+                if (!sistemaPorModelo.ContainsKey(componente.Modelo))
+                {
+                    sistemaPorModelo.Add(
+                        componente.Modelo,
+                        sistema.Categoria
+                    );
+                }
+            }
+
+            // ========================================================
+            // 6. MONTA LISTA DO SELECT
+            // ========================================================
+            sistemasDisponiveis =
+                sistemas
+                    .Where(s =>
                         !string.IsNullOrWhiteSpace(
-                            c.Modelo))
-                    .Select(c => c.Modelo!)
+                            s.Categoria
+                        )
+                    )
+                    .Select(s => s.Categoria!)
                     .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(m => m)
+                        StringComparer.OrdinalIgnoreCase
+                    )
+                    .OrderBy(s => s)
                     .ToList();
 
-
-            CalcularIndicadores();
+            // ========================================================
+            // 7. LIMPA SELEÇÃO
+            // ========================================================
+            requisicaoSelecionada = null;
+            itensAtuais = new List<SolicitacaoItemModel>();
         }
-
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync(
                 "alert",
-                $"Erro ao carregar dados do relatório:\n{ex.Message}");
+                $"Erro ao carregar requisições: {ex.Message}"
+            );
         }
-
         finally
         {
             isLoading = false;
@@ -1229,114 +1449,20 @@
 
 
     // ============================================================
-    // FILTROS
+    // OBTER SISTEMA DO MODELO
     // ============================================================
 
-    private void AplicarFiltros()
+    private string ObterSistemaDoModelo(string? modelo)
     {
-        var query =
-            todasSolicitacoes.AsEnumerable();
+        if (string.IsNullOrWhiteSpace(modelo))
+            return "";
 
-
-        // --------------------------------------------------------
-        // O.S.
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroOs))
+        if (sistemaPorModelo.TryGetValue(modelo, out var sistema))
         {
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(s.OsNumero) &&
-                    s.OsNumero.Contains(
-                        filtroOs.Trim(),
-                        StringComparison.OrdinalIgnoreCase));
+            return sistema;
         }
 
-
-        // --------------------------------------------------------
-        // MODELO
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroModelo))
-        {
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(s.ModeloSolicitado) &&
-                    s.ModeloSolicitado.Equals(
-                        filtroModelo,
-                        StringComparison.OrdinalIgnoreCase));
-        }
-
-
-        // --------------------------------------------------------
-        // CATEGORIA
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroCategoria))
-        {
-            var modelosDaCategoria =
-                componentesCadastrados
-                    .Where(c =>
-                        !string.IsNullOrWhiteSpace(c.Modelo) &&
-                        string.Equals(
-                            CategoriaDoComponente(c),
-                            filtroCategoria,
-                            StringComparison.OrdinalIgnoreCase))
-                    .Select(c => c.Modelo!)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .ToHashSet(
-                        StringComparer.OrdinalIgnoreCase);
-
-
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(
-                        s.ModeloSolicitado) &&
-                    modelosDaCategoria.Contains(
-                        s.ModeloSolicitado));
-        }
-
-
-        // --------------------------------------------------------
-        // DATA INICIAL
-        // --------------------------------------------------------
-
-        if (filtroDataInicio.HasValue)
-        {
-            var dataInicio =
-                filtroDataInicio.Value.Date;
-
-            query =
-                query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date
-                    >= dataInicio);
-        }
-
-
-        // --------------------------------------------------------
-        // DATA FINAL
-        // --------------------------------------------------------
-
-        if (filtroDataFim.HasValue)
-        {
-            var dataFim =
-                filtroDataFim.Value.Date;
-
-            query =
-                query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date
-                    <= dataFim);
-        }
-
-
-        listaFiltrada =
-            query
-                .OrderByDescending(s => s.DataEnvio)
-                .ToList();
-
-
-        CalcularIndicadores();
+        return "";
     }
 
 
@@ -1344,492 +1470,377 @@
     // LIMPAR FILTROS
     // ============================================================
 
+    private void LimparFiltroSistema()
+    {
+        sistemaSelecionado = "";
+    }
+
     private void LimparFiltros()
     {
-        filtroDataInicio = null;
-
-        filtroDataFim = null;
-
-        filtroCategoria = string.Empty;
-
-        filtroModelo = string.Empty;
-
-        filtroOs = string.Empty;
-
-
-        listaFiltrada =
-            new List<SolicitacaoCompletaModel>(
-                todasSolicitacoes);
-
-
-        CalcularIndicadores();
+        termoBusca = "";
+        sistemaSelecionado = "";
     }
 
 
     // ============================================================
-    // CALCULAR INDICADORES
+    // CALCULAR PERCENTUAL
     // ============================================================
 
-    private void CalcularIndicadores()
+    private int CalcularPorcentagem(SolicitacaoCompletaModel solicitacao)
     {
-        if (!listaFiltrada.Any())
+        if (!itensPorSolicitacao.TryGetValue(solicitacao.Id, out var itens))
         {
-            modeloMaisSolicitado = "-";
-            componenteMaisFrequente = "-";
+            return 0;
+        }
 
-            top10ItensPorComponente.Clear();
+        int total = itens.Sum(i => i.Quantidade);
+        int entregues = itens.Where(i => i.Entregue).Sum(i => i.Quantidade);
 
+        return total > 0
+            ? (int)((double)entregues / total * 100)
+            : 0;
+    }
+
+
+    // ============================================================
+    // SELECIONAR REQUISIÇÃO (Corrigido para Lazy Loading)
+    // ============================================================
+
+    private async Task SelecionarRequisicao(long id)
+    {
+        // Clicar novamente fecha os detalhes
+        if (requisicaoSelecionada?.Id == id)
+        {
+            requisicaoSelecionada = null;
+            itensAtuais = new List<SolicitacaoItemModel>();
             return;
         }
 
+        requisicaoSelecionada = solicitacoes.FirstOrDefault(s => s.Id == id);
 
-        // --------------------------------------------------------
-        // MODELO MAIS SOLICITADO
-        // --------------------------------------------------------
-
-        var modeloMaisComum =
-            listaFiltrada
-                .Where(s =>
-                    !string.IsNullOrWhiteSpace(
-                        s.ModeloSolicitado))
-                .GroupBy(
-                    s => s.ModeloSolicitado!,
-                    StringComparer.OrdinalIgnoreCase)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault();
-
-
-        modeloMaisSolicitado =
-            modeloMaisComum?.Key ?? "-";
-
-
-        // --------------------------------------------------------
-        // PEÇA MAIS FREQUENTE
-        // --------------------------------------------------------
-
-        var todosOsItens =
-            listaFiltrada
-                .SelectMany(s =>
-                    itensPorSolicitacao.ContainsKey(s.Id)
-                        ? itensPorSolicitacao[s.Id]
-                        : new List<SolicitacaoItemModel>())
-                .ToList();
-
-
-        if (!todosOsItens.Any())
+        if (requisicaoSelecionada == null)
         {
-            componenteMaisFrequente = "-";
-        }
-        else
-        {
-            var itemMaisComum =
-                todosOsItens
-                    .Where(i =>
-                        !string.IsNullOrWhiteSpace(
-                            i.Descricao))
-                    .GroupBy(
-                        i => i.Descricao!,
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderByDescending(
-                        g => g.Sum(i => i.Quantidade))
-                    .FirstOrDefault();
-
-            componenteMaisFrequente =
-                itemMaisComum?.Key ?? "-";
+            itensAtuais = new List<SolicitacaoItemModel>();
+            return;
         }
 
-
-        // --------------------------------------------------------
-        // RANKING
-        // --------------------------------------------------------
-
-        var ranking =
-            new List<ItemRankingModel>();
-
-
-        foreach (var requisicao in listaFiltrada)
+        try
         {
-            if (string.IsNullOrWhiteSpace(
-                requisicao.ModeloSolicitado))
+            // Limpa a lista atual para feedback visual
+            itensAtuais = new List<SolicitacaoItemModel>();
+            StateHasChanged();
+
+            // BUSCA DIRETA NO BANCO: Note que retiramos o .ToString() do 'id'
+            // Passar o 'id' bruto garante que o banco reconheça como número
+            var response = await Supabase
+                .From<SolicitacaoItemModel>()
+                .Filter(
+                    "solicitacao_id",
+                    Postgrest.Constants.Operator.Equals,
+                    id
+                )
+                .Get();
+
+            // Se retornar nulo por segurança inicia lista vazia
+            itensAtuais = response.Models ?? new List<SolicitacaoItemModel>();
+
+            // Atualiza o cache do dicionário para a requisição atual
+            itensPorSolicitacao[id] = itensAtuais.ToList();
+        
+            // Força a UI a desenhar a tabela de itens
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            itensAtuais = new List<SolicitacaoItemModel>();
+            await JS.InvokeVoidAsync("alert", $"Erro ao carregar itens da O.S.: {ex.Message}");
+        }
+    }
+
+
+    // ============================================================
+    // ALTERNAR ENTRE ENTREGUE / PENDENTE
+    // ============================================================
+
+    private async Task AlternarEntrega(SolicitacaoItemModel item)
+    {
+        bool estadoAnterior = item.Entregue;
+
+        try
+        {
+            // Altera visualmente
+            item.Entregue = !estadoAnterior;
+
+            // Salva no banco
+            await Supabase
+                .From<SolicitacaoItemModel>()
+                .Where(i => i.Id == item.Id)
+                .Update(item);
+
+            // Atualiza memória
+            if (itensPorSolicitacao.TryGetValue(item.SolicitacaoId, out var lista))
             {
-                continue;
+                var itemMemoria = lista.FirstOrDefault(i => i.Id == item.Id);
+                if (itemMemoria != null)
+                {
+                    itemMemoria.Entregue = item.Entregue;
+                }
             }
 
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Reverte se houver erro
+            item.Entregue = estadoAnterior;
+            await JS.InvokeVoidAsync("alert", $"Erro ao salvar alteração da entrega: {ex.Message}");
+        }
+    }
 
-            var itens =
-                itensPorSolicitacao.ContainsKey(
-                    requisicao.Id)
-                    ? itensPorSolicitacao[requisicao.Id]
-                    : new List<SolicitacaoItemModel>();
 
+    // ============================================================
+    // MODAL
+    // ============================================================
 
-            if (!itens.Any())
-                continue;
+    private void AbrirModalAdicionarPeca()
+    {
+        sapPecaBusca = "";
+        quantidadeNovaPeca = 1;
+        pecaEncontrada = null;
+        mensagemModal = "";
+        mensagemModalErro = false;
+        mostrarModalAdicionarPeca = true;
+    }
 
+    private void FecharModalAdicionarPeca()
+    {
+        mostrarModalAdicionarPeca = false;
+        sapPecaBusca = "";
+        quantidadeNovaPeca = 1;
+        pecaEncontrada = null;
+        mensagemModal = "";
+        mensagemModalErro = false;
+    }
 
-            foreach (var item in itens)
+    private async Task BuscarPeca()
+    {
+        mensagemModal = "";
+        mensagemModalErro = false;
+        pecaEncontrada = null;
+
+        if (string.IsNullOrWhiteSpace(sapPecaBusca))
+        {
+            mensagemModal = "Informe o SAP da peça.";
+            mensagemModalErro = true;
+            return;
+        }
+
+        try
+        {
+            buscandoPeca = true;
+            var response = await Supabase
+                .From<PecaModel>()
+                .Filter(
+                    "sap_peca",
+                    Postgrest.Constants.Operator.Equals,
+                    sapPecaBusca.Trim()
+                )
+                .Get();
+
+            pecaEncontrada = response.Models.FirstOrDefault();
+
+            if (pecaEncontrada == null)
             {
-                ranking.Add(
-                    new ItemRankingModel
-                    {
-                        Modelo =
-                            requisicao.ModeloSolicitado,
-
-                        SapPeca =
-                            item.SapPeca,
-
-                        Descricao =
-                            item.Descricao,
-
-                        TotalQuantidade =
-                            item.Quantidade,
-
-                        ValorTotal = 0
-                    });
+                mensagemModal = "Nenhuma peça encontrada com este SAP.";
+                mensagemModalErro = true;
             }
         }
-
-
-        // --------------------------------------------------------
-        // AGRUPAR PEÇA POR MODELO
-        // --------------------------------------------------------
-
-        var rankingAgrupado =
-            ranking
-                .GroupBy(x => new
-                {
-                    Modelo = x.Modelo,
-                    SapPeca = x.SapPeca,
-                    Descricao = x.Descricao
-                })
-                .Select(g =>
-                    new ItemRankingModel
-                    {
-                        Modelo =
-                            g.Key.Modelo,
-
-                        SapPeca =
-                            g.Key.SapPeca,
-
-                        Descricao =
-                            g.Key.Descricao,
-
-                        TotalQuantidade =
-                            g.Sum(x =>
-                                x.TotalQuantidade),
-
-                        ValorTotal =
-                            g.Sum(x =>
-                                x.ValorTotal)
-                    })
-                .ToList();
-
-
-        // --------------------------------------------------------
-        // TOP 10 DE CADA MODELO
-        // --------------------------------------------------------
-
-        top10ItensPorComponente =
-            rankingAgrupado
-                .GroupBy(x => x.Modelo)
-                .SelectMany(g =>
-                    g.OrderByDescending(
-                        x => x.TotalQuantidade)
-                     .ThenByDescending(
-                        x => x.ValorTotal)
-                     .Take(10))
-                .OrderBy(x => x.Modelo)
-                .ThenByDescending(
-                    x => x.TotalQuantidade)
-                .ToList();
-    }
-
-
-    // ============================================================
-    // VERIFICAR SE O.S. FOI CONCLUÍDA
-    // ============================================================
-
-    private bool SolicitacaoConcluida(
-        SolicitacaoCompletaModel solicitacao)
-    {
-        return
-            IsOsEntregue(solicitacao)
-            ||
-            string.Equals(
-                solicitacao.Status?.Trim(),
-                "Liberado",
-                StringComparison.OrdinalIgnoreCase)
-            ||
-            string.Equals(
-                solicitacao.Status?.Trim(),
-                "Condenado",
-                StringComparison.OrdinalIgnoreCase);
-    }
-
-
-    // ============================================================
-    // VERIFICAR O.S. ENTREGUE
-    // ============================================================
-
-    // O.S. entregue:
-    // status Pendente e todas as peças da O.S. entregues.
-    //
-    // A O.S. é contabilizada somente uma vez.
-
-    private bool IsOsEntregue(SolicitacaoCompletaModel solicitacao)
-    {
-        if (!itensPorSolicitacao.TryGetValue(
-                solicitacao.Id,
-                out var itens))
+        catch (Exception ex)
         {
-            return false;
+            mensagemModal = $"Erro ao buscar peça: {ex.Message}";
+            mensagemModalErro = true;
         }
-
-        if (itens == null || itens.Count == 0)
-            return false;
-
-        return itens.All(i => i.Entregue == true);
-    }
-
-
-    // ============================================================
-    // VERIFICAR O.S. PENDENTE
-    // ============================================================
-
-    // O.S. pendente:
-    // status Pendente e ainda existe pelo menos uma peça não entregue.
-    //
-    // Independentemente de ter 1 ou 20 peças,
-    // a contagem é sempre 1 O.S.
-
-    private bool IsOsPendente(
-        SolicitacaoCompletaModel solicitacao)
-    {
-        var status =
-            solicitacao.Status?.Trim()
-            ?? "Pendente";
-
-
-        if (!string.Equals(
-            status,
-            "Pendente",
-            StringComparison.OrdinalIgnoreCase))
+        finally
         {
-            return false;
+            buscandoPeca = false;
         }
-
-
-        return !IsOsEntregue(solicitacao);
     }
 
-
-    // ============================================================
-    // ENCONTRAR CATEGORIA DO COMPONENTE
-    // ============================================================
-
-    private string CategoriaDoComponente(
-        ComponenteModel componente)
+    private async Task AdicionarPeca()
     {
-        var sistema =
-            sistemas.FirstOrDefault(
-                s => s.Id == componente.SistemaId);
+        mensagemModal = "";
+        mensagemModalErro = false;
 
-
-        return
-            sistema?.Categoria
-            ?? string.Empty;
-    }
-
-
-    // ============================================================
-    // DATA
-    // ============================================================
-
-    private DateTime ObterDataLocal(
-        DateTime data)
-    {
-        if (data.Kind == DateTimeKind.Utc)
-            return data.ToLocalTime();
-
-        return data;
-    }
-
-
-    private string FormatarData(
-        DateTime data)
-    {
-        return
-            ObterDataLocal(data)
-                .ToString("dd/MM/yyyy HH:mm");
-    }
-
-
-    // ============================================================
-    // EXPORTAR RANKING PARA EXCEL
-    // ============================================================
-
-    private async Task ExportarRankingExcel()
-    {
-        if (!top10ItensPorComponente.Any())
+        if (requisicaoSelecionada == null)
         {
-            await JS.InvokeVoidAsync(
-                "alert",
-                "Não existem dados para exportar.");
-
+            mensagemModal = "Nenhuma requisição selecionada.";
+            mensagemModalErro = true;
             return;
         }
 
-
-        var dados =
-            top10ItensPorComponente
-                .Select(x => new
-                {
-                    Modelo =
-                        x.Modelo ?? "",
-
-                    CodigoSAP =
-                        x.SapPeca ?? "",
-
-                    Descricao =
-                        x.Descricao ?? "",
-
-                    Quantidade =
-                        x.TotalQuantidade
-                })
-                .ToList();
-
-
-        await JS.InvokeVoidAsync(
-            "exportarRankingExcel",
-            dados);
-    }
-
-
-    // ============================================================
-    // EXPORTAR DETALHAMENTO PARA EXCEL
-    // ============================================================
-
-    private async Task ExportarDetalhamentoExcel()
-    {
-        if (!listaFiltrada.Any())
+        if (pecaEncontrada == null)
         {
-            await JS.InvokeVoidAsync(
-                "alert",
-                "Não existem dados para exportar.");
-
+            mensagemModal = "Busque uma peça antes de adicionar.";
+            mensagemModalErro = true;
             return;
         }
 
+        if (quantidadeNovaPeca <= 0)
+        {
+            mensagemModal = "Informe uma quantidade válida.";
+            mensagemModalErro = true;
+            return;
+        }
 
-        var dados =
-            listaFiltrada
-                .Select(item =>
+        // Verifica duplicidade
+        bool jaExiste = itensAtuais.Any(i =>
+            string.Equals(
+                i.SapPeca?.Trim(),
+                pecaEncontrada.SapPeca?.Trim(),
+                StringComparison.OrdinalIgnoreCase
+            )
+        );
+
+        if (jaExiste)
+        {
+            mensagemModal = "Esta peça já está cadastrada nesta O.S.";
+            mensagemModalErro = true;
+            return;
+        }
+
+        try
+        {
+            salvandoPeca = true;
+
+            var novoItem = new SolicitacaoItemModel
+            {
+                SolicitacaoId = requisicaoSelecionada.Id,
+                SapPeca = pecaEncontrada.SapPeca,
+                Descricao = pecaEncontrada.Descricao,
+                Quantidade = quantidadeNovaPeca,
+                Valor = pecaEncontrada.Valor,
+                Entregue = false
+            };
+
+            var response = await Supabase
+                .From<SolicitacaoItemModel>()
+                .Insert(novoItem);
+
+            var itemInserido = response.Models.FirstOrDefault();
+
+            if (itemInserido != null)
+            {
+                itensAtuais.Add(itemInserido);
+
+                if (itensPorSolicitacao.TryGetValue(requisicaoSelecionada.Id, out var lista))
                 {
-                    var itensDaOs =
-                        itensPorSolicitacao.ContainsKey(
-                            item.Id)
-                            ? itensPorSolicitacao[item.Id]
-                            : new List<SolicitacaoItemModel>();
+                    lista.Add(itemInserido);
+                }
+                else
+                {
+                    itensPorSolicitacao[requisicaoSelecionada.Id] = new List<SolicitacaoItemModel> { itemInserido };
+                }
+            }
+            else
+            {
+                // Fallback
+                var itensResponse = await Supabase
+                    .From<SolicitacaoItemModel>()
+                    .Filter(
+                        "solicitacao_id",
+                        Postgrest.Constants.Operator.Equals,
+                        requisicaoSelecionada.Id.ToString()
+                    )
+                    .Get();
 
+                itensAtuais = itensResponse.Models;
+                itensPorSolicitacao[requisicaoSelecionada.Id] = itensAtuais.ToList();
+            }
 
-                    var status =
-                        item.Status?.Trim()
-                        ?? "Pendente";
+            mensagemModal = "Peça adicionada com sucesso.";
+            mensagemModalErro = false;
 
+            sapPecaBusca = "";
+            quantidadeNovaPeca = 1;
+            pecaEncontrada = null;
 
-                    var totalItens =
-                        itensDaOs.Sum(i => i.Quantidade);
-
-
-                    // Cada O.S. vale 1 nos indicadores de situação.
-
-                    var osLiberada =
-                        string.Equals(
-                            status,
-                            "Liberado",
-                            StringComparison.OrdinalIgnoreCase);
-
-
-                    var osCondenada =
-                        string.Equals(
-                            status,
-                            "Condenado",
-                            StringComparison.OrdinalIgnoreCase);
-
-
-                    var osEntregue =
-                        IsOsEntregue(item);
-
-
-                    var osPendente =
-                        IsOsPendente(item);
-
-
-                    return new
-                    {
-                        OS =
-                            item.OsNumero ?? "",
-
-                        Data =
-                            FormatarData(
-                                item.DataEnvio),
-
-                        Modelo =
-                            item.ModeloSolicitado ?? "",
-
-                        Status =
-                            status,
-
-                        // Quantidade física de peças
-                        // permanece apenas como informação.
-
-                        Itens =
-                            totalItens,
-
-                        // Indicadores: cada O.S. = 1
-
-                        Entregues =
-                            osEntregue ? 1 : 0,
-
-                        Liberados =
-                            osLiberada ? 1 : 0,
-
-                        Condenados =
-                            osCondenada ? 1 : 0,
-
-                        Pendentes =
-                            osPendente ? 1 : 0,
-
-                        Percentual =
-                            (
-                                osEntregue
-                                ||
-                                osLiberada
-                                ||
-                                osCondenada
-                            )
-                            ? 100
-                            : 0
-                    };
-                })
-                .ToList();
-
-
-        await JS.InvokeVoidAsync(
-            "exportarDetalhamentoExcel",
-            dados);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            mensagemModal = $"Erro ao adicionar peça: {ex.Message}";
+            mensagemModalErro = true;
+        }
+        finally
+        {
+            salvandoPeca = false;
+        }
     }
 
 
     // ============================================================
-    // EXPORTAR RELATÓRIO COMPLETO PARA PDF
+    // LIBERAR E CONDENAR PRODUÇÃO
     // ============================================================
 
-    private async Task ExportarPdf()
+    private async Task LiberarProducao()
     {
-        await JS.InvokeVoidAsync(
-            "exportarRelatorioPDF",
-            "areaRelatorioPdf");
+        if (requisicaoSelecionada == null) return;
+
+        if (!TodosItensEntregues)
+        {
+            await JS.InvokeVoidAsync("alert", "Não é possível liberar a produção. Existem peças pendentes.");
+            return;
+        }
+
+        try
+        {
+            requisicaoSelecionada.Status = "Liberado";
+
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Update(requisicaoSelecionada);
+
+            await JS.InvokeVoidAsync("alert", "Produção liberada com sucesso! A O.S. foi removida desta tela.");
+            await CarregarRequisicoes();
+            termoBusca = "";
+            sistemaSelecionado = "";
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao liberar produção: {ex.Message}");
+        }
+    }
+
+    private async Task CondenarProducao()
+    {
+        if (requisicaoSelecionada == null) return;
+
+        bool confirmado = await JS.InvokeAsync<bool>(
+            "confirm",
+            "Tem certeza que deseja marcar esta requisição como Condenada?"
+        );
+
+        if (!confirmado) return;
+
+        try
+        {
+            requisicaoSelecionada.Status = "Condenado";
+
+            await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(s => s.Id == requisicaoSelecionada.Id)
+                .Update(requisicaoSelecionada);
+
+            await JS.InvokeVoidAsync("alert", "Requisição marcada como Condenada com sucesso! A O.S. foi removida desta tela.");
+            await CarregarRequisicoes();
+            termoBusca = "";
+            sistemaSelecionado = "";
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao condenar requisição: {ex.Message}");
+        }
     }
 
 
@@ -1839,27 +1850,7 @@
 
     private void Sair()
     {
-        Sessao.Logout();
-
-        Nav.NavigateTo("/login");
-    }
-
-
-    // ============================================================
-    // MODELO DO RANKING
-    // ============================================================
-
-    public class ItemRankingModel
-    {
-        public string? Modelo { get; set; }
-
-        public string? SapPeca { get; set; }
-
-        public string? Descricao { get; set; }
-
-        public int TotalQuantidade { get; set; }
-
-        public double ValorTotal { get; set; }
+        Nav.NavigateTo("/");
     }
 
 }

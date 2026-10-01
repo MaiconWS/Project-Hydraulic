@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net8.0": {
       "BCrypt.Net-Next/4.2.0": {
@@ -532,7 +532,7 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
-      "Microsoft.NET.Sdk.WebAssembly.Pack/8.0.31": {
+      "Microsoft.NET.Sdk.WebAssembly.Pack/10.0.12": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.Sdk.WebAssembly.Pack.props": {},
@@ -1265,7 +1265,7 @@
           "build/Microsoft.NET.ILLink.Tasks.props": {}
         }
       },
-      "Microsoft.NET.Sdk.WebAssembly.Pack/8.0.31": {
+      "Microsoft.NET.Sdk.WebAssembly.Pack/10.0.12": {
         "type": "package",
         "build": {
           "build/Microsoft.NET.Sdk.WebAssembly.Pack.props": {},
@@ -2477,20 +2477,20 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Microsoft.NET.Sdk.WebAssembly.Pack/8.0.31": {
-      "sha512": "2lpN4OyUAuaUliPm3KJ/BKJstSo0W4saQfxG4kba2jBWovFNnEPlO4RMLN0M7B3mVhkoOvSFReFrxA+vHLggyg==",
+    "Microsoft.NET.Sdk.WebAssembly.Pack/10.0.12": {
+      "sha512": "MIeBVeWkbKdggl3kmmIUnx8ZNEgjD2m1gTN/0W+TDRn6zcL1WZdq5hXhGQ0wjuSlw/8tvwwCg79PemfkJ3+5JA==",
       "type": "package",
-      "path": "microsoft.net.sdk.webassembly.pack/8.0.31",
+      "path": "microsoft.net.sdk.webassembly.pack/10.0.12",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
-        "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "WasmAppHost/BrowserDebugHost.deps.json",
         "WasmAppHost/BrowserDebugHost.dll",
         "WasmAppHost/BrowserDebugHost.runtimeconfig.json",
+        "WasmAppHost/BrowserDebugHost.staticwebassets.endpoints.json",
         "WasmAppHost/BrowserDebugProxy.dll",
         "WasmAppHost/Microsoft.CodeAnalysis.CSharp.Scripting.dll",
         "WasmAppHost/Microsoft.CodeAnalysis.CSharp.dll",
@@ -2503,17 +2503,19 @@
         "WasmAppHost/WasmAppHost.deps.json",
         "WasmAppHost/WasmAppHost.dll",
         "WasmAppHost/WasmAppHost.runtimeconfig.json",
+        "WasmAppHost/WasmAppHost.staticwebassets.endpoints.json",
         "build/Microsoft.NET.Sdk.WebAssembly.Browser.props",
         "build/Microsoft.NET.Sdk.WebAssembly.Browser.targets",
         "build/Microsoft.NET.Sdk.WebAssembly.Pack.props",
         "build/Microsoft.NET.Sdk.WebAssembly.Pack.targets",
         "build/Wasm.web.config",
-        "microsoft.net.sdk.webassembly.pack.8.0.31.nupkg.sha512",
+        "build/browser.runtimeconfig.template.json",
+        "microsoft.net.sdk.webassembly.pack.10.0.12.nupkg.sha512",
         "microsoft.net.sdk.webassembly.pack.nuspec",
+        "tools/net10.0/Microsoft.NET.Sdk.WebAssembly.Pack.Tasks.dll",
+        "tools/net10.0/Microsoft.NET.WebAssembly.Webcil.dll",
         "tools/net472/Microsoft.NET.Sdk.WebAssembly.Pack.Tasks.dll",
-        "tools/net472/Microsoft.NET.WebAssembly.Webcil.dll",
-        "tools/net8.0/Microsoft.NET.Sdk.WebAssembly.Pack.Tasks.dll",
-        "tools/net8.0/Microsoft.NET.WebAssembly.Webcil.dll"
+        "tools/net472/Microsoft.NET.WebAssembly.Webcil.dll"
       ]
     },
     "MimeMapping/2.0.0": {
@@ -2772,12 +2774,12 @@
       "Microsoft.AspNetCore.Components.WebAssembly >= 8.0.30",
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer >= 8.0.30",
       "Microsoft.NET.ILLink.Tasks >= 8.0.31",
-      "Microsoft.NET.Sdk.WebAssembly.Pack >= 8.0.31",
+      "Microsoft.NET.Sdk.WebAssembly.Pack >= 10.0.12",
       "supabase-csharp >= 0.16.2"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\maico\\.nuget\\packages\\": {}
+    "C:\\Users\\MW-NOTE\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2785,11 +2787,11 @@
       "projectUniqueName": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
       "projectName": "ManutencaoWeb",
       "projectPath": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\ManutencaoWeb.csproj",
-      "packagesPath": "C:\\Users\\maico\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\MW-NOTE\\.nuget\\packages\\",
       "outputPath": "C:\\dev\\Project-Hydraulic\\ManutencaoWeb\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\maico\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\MW-NOTE\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -2799,6 +2801,7 @@
       },
       "frameworks": {
         "net8.0": {
+          "framework": "net8.0",
           "targetAlias": "net8.0",
           "projectReferences": {}
         }
@@ -2812,10 +2815,12 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.400"
     },
     "frameworks": {
       "net8.0": {
+        "framework": "net8.0",
         "targetAlias": "net8.0",
         "dependencies": {
           "BCrypt.Net-Next": {
@@ -2840,7 +2845,7 @@
           "Microsoft.NET.Sdk.WebAssembly.Pack": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[8.0.31, )",
+            "version": "[10.0.12, )",
             "autoReferenced": true
           },
           "supabase-csharp": {
@@ -2861,7 +2866,19 @@
         "warn": true,
         "downloadDependencies": [
           {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.31, 8.0.31]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.31, 8.0.31]"
+          },
+          {
             "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
+            "version": "[8.0.31, 8.0.31]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
             "version": "[8.0.31, 8.0.31]"
           }
         ],
@@ -2870,7 +2887,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.425/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json"
       }
     },
     "runtimes": {

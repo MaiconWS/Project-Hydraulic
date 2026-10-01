@@ -1,12 +1,12 @@
 {
   "mainAssemblyName": "ManutencaoWeb",
   "resources": {
-    "hash": "sha256-PrXKS2dOsBO2OKrPyvU+1cFKr3vY1t7T7kBcoeyNSWA=",
+    "hash": "sha256-iA/LO+dEJW9BLGhsvtKRTBYFenqnZG7309p4A35BHb8=",
     "jsModuleNative": {
-      "dotnet.native.8.0.31.yq74bzv28w.js": "sha256-9NoXeVUo4WNrEqrjAp/y3Yc8NmDcymQkzMGOIbIpGio="
+      "dotnet.native.js": "sha256-9NoXeVUo4WNrEqrjAp/y3Yc8NmDcymQkzMGOIbIpGio="
     },
     "jsModuleRuntime": {
-      "dotnet.runtime.8.0.31.pisfcv5tze.js": "sha256-qzVt86q0GKgDNek5+WFBz2hU8jGxI86YJeZmNGXj/qM="
+      "dotnet.runtime.js": "sha256-qzVt86q0GKgDNek5+WFBz2hU8jGxI86YJeZmNGXj/qM="
     },
     "wasmNative": {
       "dotnet.native.wasm": "sha256-f6b8OMzPxZicfBuJQC7pY0XrqnffvHX76rqLeGpL7oI="
@@ -16,6 +16,7 @@
       "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
+    "coreAssembly": {},
     "assembly": {
       "BCrypt-Net-Next.wasm": "sha256-YLmtQroA9xofjV8bJufww+7bWU7Nkn75Gu92Aed+Nzs=",
       "Supabase.Functions.wasm": "sha256-cAmNEcl3ZkcTAcSFQY9ViicWaBQnCMxJGk7fcpxTwAg=",
@@ -225,10 +226,10 @@
       "mscorlib.wasm": "sha256-pP80UGziulDYhvVdeUaGEq9FlrHQDQmnCqVvx1FJZis=",
       "netstandard.wasm": "sha256-ARMsMyhWuSDjvzisfZbnEptnxh8Vh7VpHPhuT6iazy0=",
       "System.Private.CoreLib.wasm": "sha256-+28m4yuZsdz9ij1sJHvNH896fSI8gXgrQ9bhGO76Qqo=",
-      "ManutencaoWeb.wasm": "sha256-mmp+F5jTvW5jDRIcgixGxUh6+eb0cggBeJA28u75qPE="
+      "ManutencaoWeb.wasm": "sha256-/otHG0sOZ8Yt7kpSKNrR5J0ahIPfAi4gKVQgzfjjGAk="
     },
     "pdb": {
-      "ManutencaoWeb.pdb": "sha256-W8xl7MkAPKFMBbnECUTpWF+gHYk+exZgU0t+yNJBcoM="
+      "ManutencaoWeb.pdb": "sha256-UGnj3hE9J81W1NnSWvfZOSdQJ/mL8paxDKqi+dkYHsg="
     }
   },
   "cacheBootResources": true,
