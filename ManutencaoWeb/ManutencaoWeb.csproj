@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.30" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.30" PrivateAssets="all" />
-    <PackageReference Include="supabase-csharp" Version="0.16.2" />
-  </ItemGroup>
+  <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.30" />
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.30" />
+  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.30" PrivateAssets="all" />
+  <PackageReference Include="supabase-csharp" Version="0.16.2" />
+</ItemGroup>
 
 </Project>

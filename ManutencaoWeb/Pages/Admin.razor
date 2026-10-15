@@ -1,81 +1,16 @@
 @page "/admin"
+
+@using Microsoft.AspNetCore.Authorization
 @using ManutencaoWeb.Models
 @using ManutencaoWeb.Services
-@inject SessaoService Sessao
+
+@attribute [Authorize(Roles = "Admin")]
 @inject Supabase.Client Supabase
-@inject NavigationManager Nav
 @inject IJSRuntime JS
 
 <PageTitle>Administração - ManutencaoWeb</PageTitle>
 
-<div class="dashboard-wrapper">
-    <!-- MENU LATERAL -->
-    <nav class="sidebar">
-        <div class="sidebar-brand">
-            <i class="bi bi-gear-wide"><span> Manutenção WEB</span></i>
-        </div>
-        
-        <ul class="sidebar-menu">
-            <li>
-                <a href="/">
-                    <i class="bi bi-house-door"></i>
-                    <span>Home</span>
-                </a>
-            </li>
 
-            <li>
-                <a href="/requisicoes">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Requisições</span>
-                </a>
-            </li>
-            <li>
-                <a href="/relatorios">
-                    <i class="bi bi-bar-chart"></i>
-                    <span>Relatórios</span>
-                </a>
-            </li>
-            <li>
-                <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i> <span>Liberados</span>
-                </a>
-            </li>
-            @if (Sessao.IsAdmin)
-            {
-                <li class="active">
-                    <a href="/admin">
-                        <i class="bi bi-plus-square"></i>
-                        <span>Cadastros Base</span>
-                    </a>
-                </li>
-            }
-        </ul>
-
-        <div class="sidebar-footer">
-            <div class="d-flex align-items-center gap-2 mb-3 px-2">
-                <div class="user-avatar">@(Sessao.Iniciais)</div>
-                <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong><br/>
-                </div>
-            </div>
-            <button class="btn-sair" @onclick="Sair">
-                <i class="bi bi-box-arrow-right"></i> <span>Sair</span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
-        <header class="top-bar">
-            <div class="top-left d-flex align-items-center">
-                <span class="user-greeting">Painel Administrativo</span>
-            </div>
-            <div class="top-right">
-                <div class="user-avatar">@(Sessao.Iniciais)</div>
-            </div>
-        </header>
-
-        <div class="content-body">
             <div class="section-title mb-4">
                 <h2>Gestão de Cadastros</h2>
                 <p>Cadastre novos componentes, peças de reposição e usuários do sistema.</p>
@@ -173,34 +108,32 @@
                                     <input type="text" class="form-control" @bind="novoUsuario.Nome" placeholder="Ex: João da Silva" />
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">E-mail Corporativo</label>
-                                    <input type="email" class="form-control" @bind="novoUsuario.Email" placeholder="joao@crr.com" />
+                                    <label class="form-label fw-bold">E-mail de login</label>
+                                    <input type="email" class="form-control" @bind="novoUsuario.Email" placeholder="login@plataforma.local" />
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label fw-bold">Senha Provisória</label>
-                                    <input type="password" class="form-control" @bind="senhaProvisoria" placeholder="Senha" />
+                                    <label class="form-label fw-bold">Senha provisória (Auth)</label>
+                                    <input type="password" class="form-control" autocomplete="new-password" @bind="senhaProvisoria" placeholder="Senha temporária" />
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label fw-bold">Perfil de Acesso</label>
                                     <select class="form-select" @bind="novoUsuario.Perfil">
                                         <option value="Mecanico">Mecânico</option>
+                                        <option value="Aprovisionador">Aprovisionador</option>
                                         <option value="Admin">Administrador</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="mt-4 text-end">
-                                <button class="btn btn-success px-4 py-2 fw-bold" @onclick="CadastrarUsuario">
-                                    Cadastrar Usuário com Senha Segura
+                                <button class="btn btn-success px-4 py-2 fw-bold" @onclick="CadastrarUsuario" disabled="@cadastrandoUsuario">
+                                    @(cadastrandoUsuario ? "Cadastrando..." : "Criar usuário no Auth")
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-        </div>
-    </main>
-</div>
 
 @code {
     private bool isLoading = true;
@@ -209,18 +142,13 @@
     private PecaModel novaPeca = new();
     private UsuarioModel novoUsuario = new() { Perfil = "Mecanico" };
     private string senhaProvisoria = string.Empty;
+    private bool cadastrandoUsuario;
 
     private List<SistemaModel> sistemas = new();
     private List<ComponenteModel> componentesCadastrados = new();
 
     protected override async Task OnInitializedAsync()
     {
-        if (!Sessao.EstaLogado || !Sessao.IsAdmin)
-        {
-            Nav.NavigateTo("/login");
-            return;
-        }
-
         await CarregarDadosBase();
     }
 
@@ -234,6 +162,7 @@
 
             var resComponentes = await Supabase.From<ComponenteModel>().Get();
             componentesCadastrados = resComponentes.Models;
+
         }
         catch (Exception ex)
         {
@@ -295,29 +224,44 @@
             return;
         }
 
+        cadastrandoUsuario = true;
         try
         {
-            // CRIPTOGRAFIA COM BCRYPT: Converte a senha digitada em um hash seguro
-            novoUsuario.Senha = BCrypt.Net.BCrypt.HashPassword(senhaProvisoria);
+            var accessToken = Supabase.Auth.CurrentSession?.AccessToken;
+            if (string.IsNullOrWhiteSpace(accessToken))
+                throw new InvalidOperationException("Sua sessão expirou. Entre novamente no sistema.");
 
-            // Envia para a tabela usuarios do Supabase
-            await Supabase.From<UsuarioModel>().Insert(novoUsuario);
+            var opcoes = new Supabase.Functions.Client.InvokeFunctionOptions
+            {
+                Headers = new System.Collections.Generic.Dictionary<string, string>
+                {
+                    ["Authorization"] = $"Bearer {accessToken}"
+                },
+                Body = new System.Collections.Generic.Dictionary<string, object>
+                {
+                    ["nome"] = novoUsuario.Nome.Trim(),
+                    ["email"] = novoUsuario.Email.Trim(),
+                    ["password"] = senhaProvisoria,
+                    ["perfil"] = novoUsuario.Perfil ?? "Mecanico"
+                }
+            };
+            await Supabase.Functions.Invoke("create-user-account", options: opcoes);
 
-            await JS.InvokeVoidAsync("alert", "Usuário cadastrado com sucesso com senha criptografada!");
-            
-            // Limpa o formulário
+            await JS.InvokeVoidAsync("alert", "Usuário criado no Supabase Auth e vinculado ao perfil. No primeiro acesso, deverá trocar a senha provisória.");
             novoUsuario = new() { Perfil = "Mecanico" };
             senhaProvisoria = string.Empty;
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", $"Erro ao cadastrar usuário: {ex.Message}");
+            Console.Error.WriteLine($"Falha ao chamar create-user-account: {ex}");
+            await JS.InvokeVoidAsync(
+                "alert",
+                $"Não foi possível criar o usuário ({ex.GetType().Name}): {ex.Message}");
+        }
+        finally
+        {
+            cadastrandoUsuario = false;
         }
     }
 
-    private void Sair()
-    {
-        Sessao.Logout();
-        Nav.NavigateTo("/login");
-    }
 }

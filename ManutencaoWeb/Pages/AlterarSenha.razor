@@ -1,0 +1,122 @@
+@page "/alterar-senha"
+@attribute [Authorize(Roles = "Mecanico,Aprovisionador,Admin")]
+@using ManutencaoWeb.Services
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject SessaoService Sessao
+
+<PageTitle>Alterar senha - ManutencaoWeb</PageTitle>
+
+<div class="mx-auto" style="max-width: 620px;">
+    <div class="section-title mb-4">
+        <h2>Defina uma nova senha</h2>
+        <p>Por segurança, a senha temporária não pode ser usada para continuar no sistema.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4">
+        <div class="mb-3">
+            <label class="form-label fw-bold" for="novaSenha">Nova senha</label>
+            <input id="novaSenha" type="password" class="form-control" autocomplete="new-password" @bind="novaSenha" />
+            <small class="text-muted">Use pelo menos 12 caracteres.</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold" for="confirmarSenha">Confirme a nova senha</label>
+            <input id="confirmarSenha" type="password" class="form-control" autocomplete="new-password" @bind="confirmacaoSenha" />
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(mensagem))
+        {
+            <div class="alert @(erro ? "alert-danger" : "alert-success")" role="status">@mensagem</div>
+        }
+
+        <button class="btn btn-success w-100" @onclick="SalvarNovaSenha" disabled="@salvando">
+            @if (salvando)
+            {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                <span>Salvando...</span>
+            }
+            else
+            {
+                <span>Salvar nova senha</span>
+            }
+        </button>
+    </div>
+</div>
+
+@code {
+    private string novaSenha = string.Empty;
+    private string confirmacaoSenha = string.Empty;
+    private string mensagem = string.Empty;
+    private bool erro;
+    private bool salvando;
+
+    private async Task SalvarNovaSenha()
+    {
+        mensagem = string.Empty;
+
+        if (novaSenha.Length < 12)
+        {
+            mensagem = "A nova senha precisa ter pelo menos 12 caracteres.";
+            erro = true;
+            return;
+        }
+
+        if (!string.Equals(novaSenha, confirmacaoSenha, StringComparison.Ordinal))
+        {
+            mensagem = "A confirmação não corresponde à nova senha.";
+            erro = true;
+            return;
+        }
+
+        salvando = true;
+        try
+        {
+            try
+            {
+                var accessToken = Supabase.Auth.CurrentSession?.AccessToken;
+                if (string.IsNullOrWhiteSpace(accessToken))
+                    throw new InvalidOperationException("Sua sessão expirou. Entre novamente no sistema.");
+
+                var opcoes = new Supabase.Functions.Client.InvokeFunctionOptions
+                {
+                    Headers = new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        ["Authorization"] = $"Bearer {accessToken}"
+                    },
+                    Body = new System.Collections.Generic.Dictionary<string, object>
+                    {
+                        ["newPassword"] = novaSenha
+                    }
+                };
+                await Supabase.Functions.Invoke("change-own-password", options: opcoes);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Falha em change-own-password: {ex}");
+                mensagem = $"Não foi possível alterar a senha: {ex.Message}";
+                erro = true;
+                return;
+            }
+
+            // A senha já foi alterada no Auth. Se o servidor não reconhecer a sessão
+            // antiga no endpoint de logout, ainda assim encerramos o estado local.
+            try
+            {
+                await Supabase.Auth.SignOut();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Logout remoto após troca de senha: {ex.Message}");
+            }
+
+            Sessao.Logout();
+            Nav.NavigateTo("/login", forceLoad: true);
+        }
+        finally
+        {
+            salvando = false;
+        }
+    }
+}

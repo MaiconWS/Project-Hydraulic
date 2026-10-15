@@ -1,0 +1,172 @@
+@page "/gestao-senhas"
+
+@using Microsoft.AspNetCore.Authorization
+@using ManutencaoWeb.Models
+@using ManutencaoWeb.Services
+
+@attribute [Authorize(Roles = "Admin")]
+@inject SessaoService Sessao
+@inject Supabase.Client Supabase
+@inject IJSRuntime JS
+
+<PageTitle>Gestão de Senhas - ManutencaoWeb</PageTitle>
+
+<div class="section-title mb-4">
+    <h2>Gestão de Senhas</h2>
+    <p>Redefina o acesso de um usuário. Ele deverá criar uma nova senha no próximo login.</p>
+</div>
+
+<div class="card border-0 shadow-sm p-4">
+    <h5 class="mb-2"><i class="bi bi-shield-lock text-success me-2"></i> Redefinir senha de acesso</h5>
+    <p class="text-muted">Uma senha temporária individual será gerada e exibida somente nesta tela.</p>
+
+    @if (carregando)
+    {
+        <div class="text-center py-4"><div class="spinner-border text-success"></div></div>
+    }
+    else
+    {
+        <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label class="form-label fw-bold" for="usuarioRedefinicao">Usuário</label>
+                <select id="usuarioRedefinicao" class="form-select" @bind="usuarioParaRedefinirId">
+                    <option value="">Selecione um usuário...</option>
+                    @foreach (var usuario in usuarios)
+                    {
+                        @if (!string.Equals(usuario.Email, Sessao.EmailUsuario, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@usuario.Id">@usuario.Nome — @usuario.Email (@usuario.Perfil)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-outline-danger w-100"
+                        @onclick="RedefinirSenha"
+                        disabled="@(redefinindoSenha || !usuarioParaRedefinirId.HasValue)">
+                    @if (redefinindoSenha)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span><span>Gerando...</span>
+                    }
+                    else
+                    {
+                        <span>Gerar senha temporária</span>
+                    }
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(mensagem))
+    {
+        <div class="alert @(erro ? "alert-danger" : auditFalhou ? "alert-warning" : "alert-success") mt-3 mb-0" role="status">
+            @mensagem
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(senhaTemporaria))
+    {
+        <div class="mt-3">
+            <label class="form-label fw-bold" for="senhaTemporaria">Senha temporária — entregue por canal seguro</label>
+            <div class="input-group">
+                <input id="senhaTemporaria" class="form-control font-monospace" value="@senhaTemporaria" readonly />
+                <button type="button" class="btn btn-outline-secondary" @onclick="CopiarSenha">Copiar</button>
+            </div>
+            <small class="text-muted">Não envie a senha por e-mail fictício nem a registre em chamados ou logs.</small>
+        </div>
+    }
+</div>
+
+@code {
+    private bool carregando = true;
+    private bool redefinindoSenha;
+    private bool erro;
+    private bool auditFalhou;
+    private int? usuarioParaRedefinirId;
+    private string? senhaTemporaria;
+    private string mensagem = string.Empty;
+    private List<UsuarioModel> usuarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var resposta = await Supabase.From<UsuarioModel>().Get();
+            usuarios = resposta.Models;
+        }
+        catch
+        {
+            erro = true;
+            mensagem = "Não foi possível carregar a lista de usuários.";
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private async Task RedefinirSenha()
+    {
+        if (!usuarioParaRedefinirId.HasValue || redefinindoSenha)
+            return;
+
+        var selecionado = usuarios.FirstOrDefault(x => x.Id == usuarioParaRedefinirId.Value);
+        var confirmou = await JS.InvokeAsync<bool>("confirm",
+            $"Redefinir a senha de {selecionado?.Nome ?? "este usuário"}? A senha atual deixará de funcionar.");
+        if (!confirmou)
+            return;
+
+        redefinindoSenha = true;
+        senhaTemporaria = null;
+        mensagem = string.Empty;
+        auditFalhou = false;
+        try
+        {
+            var accessToken = Supabase.Auth.CurrentSession?.AccessToken;
+            if (string.IsNullOrWhiteSpace(accessToken))
+                throw new InvalidOperationException("Sua sessão expirou. Entre novamente no sistema.");
+
+            var opcoes = new Supabase.Functions.Client.InvokeFunctionOptions
+            {
+                Headers = new System.Collections.Generic.Dictionary<string, string>
+                {
+                    ["Authorization"] = $"Bearer {accessToken}"
+                },
+                Body = new System.Collections.Generic.Dictionary<string, object>
+                {
+                    ["usuarioId"] = usuarioParaRedefinirId.Value
+                }
+            };
+            var json = await Supabase.Functions.Invoke("reset-user-password", options: opcoes);
+            using var resposta = System.Text.Json.JsonDocument.Parse(json);
+            var raiz = resposta.RootElement;
+            if (!raiz.TryGetProperty("temporaryPassword", out var senha) || string.IsNullOrWhiteSpace(senha.GetString()))
+                throw new InvalidOperationException("A função não retornou a senha temporária.");
+
+            senhaTemporaria = senha.GetString();
+            mensagem = $"Senha redefinida para {selecionado?.Nome ?? "o usuário selecionado"}. Entregue por canal seguro.";
+            if (raiz.TryGetProperty("auditRecorded", out var audit) && !audit.GetBoolean())
+            {
+                auditFalhou = true;
+                mensagem += " Atenção: o registro de auditoria falhou.";
+            }
+            erro = false;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Falha em reset-user-password: {ex}");
+            mensagem = $"Não foi possível redefinir a senha: {ex.Message}";
+            erro = true;
+        }
+        finally
+        {
+            redefinindoSenha = false;
+        }
+    }
+
+    private async Task CopiarSenha()
+    {
+        if (!string.IsNullOrWhiteSpace(senhaTemporaria))
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", senhaTemporaria);
+    }
+}

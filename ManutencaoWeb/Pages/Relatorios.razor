@@ -1,4 +1,5 @@
 @page "/relatorios"
+@attribute [Authorize(Roles = "Aprovisionador,Admin")]
 
 @using ManutencaoWeb.Models
 @using ManutencaoWeb.Services
@@ -10,118 +11,7 @@
 
 <PageTitle>Relatórios - ManutencaoWeb</PageTitle>
 
-<div class="dashboard-wrapper">
 
-    <!-- =========================================================
-         MENU LATERAL
-         ========================================================= -->
-    <nav class="sidebar">
-
-        <div class="sidebar-brand">
-            <i class="bi bi-gear-wide">
-                <span> Manutenção WEB</span>
-            </i>
-        </div>
-
-        <ul class="sidebar-menu">
-
-            <li>
-                <a href="/">
-                    <i class="bi bi-house-door"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/requisicoes">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Requisições</span>
-                </a>
-            </li>
-
-            <li class="active">
-                <a href="/relatorios">
-                    <i class="bi bi-bar-chart"></i>
-                    <span>Relatórios</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i>
-                    <span>Liberados</span>
-                </a>
-            </li>
-
-            @if (Sessao.IsAdmin)
-            {
-                <li>
-                    <a href="/admin">
-                        <i class="bi bi-plus-square"></i>
-                        <span>Cadastros Base</span>
-                    </a>
-                </li>
-            }
-
-        </ul>
-
-        <div class="sidebar-footer">
-
-            <div class="d-flex align-items-center gap-2 mb-3 px-2">
-
-                <div class="user-avatar">
-                    @Sessao.Iniciais
-                </div>
-
-                <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong>
-                </div>
-
-            </div>
-
-            <button class="btn-sair" @onclick="Sair">
-
-                <i class="bi bi-box-arrow-right"></i>
-
-                <span>Sair</span>
-
-            </button>
-
-        </div>
-
-    </nav>
-
-
-    <!-- =========================================================
-         CONTEÚDO PRINCIPAL
-         ========================================================= -->
-    <main class="main-content">
-
-        <header class="top-bar">
-
-            <div class="top-left d-flex align-items-center">
-
-                <span class="user-greeting">
-                    Relatórios e Indicadores
-                </span>
-
-            </div>
-
-            <div class="top-right">
-
-                <div class="user-avatar">
-                    @Sessao.Iniciais
-                </div>
-
-            </div>
-
-        </header>
-
-
-        <!-- =====================================================
-             ÁREA QUE SERÁ EXPORTADA PARA PDF
-             ===================================================== -->
-        <div class="content-body">
 
             <div id="areaRelatorioPdf" class="relatorios-export-area">
 
@@ -879,11 +769,7 @@
 
             </div>
 
-        </div>
 
-    </main>
-
-</div>
 
 
 <!-- =============================================================

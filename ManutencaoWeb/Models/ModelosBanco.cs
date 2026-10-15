@@ -169,6 +169,9 @@ namespace ManutencaoWeb.Models
         [PrimaryKey("id")]
         public int Id { get; set; }
 
+        [Column("auth_user_id")]
+        public string? AuthUserId { get; set; }
+
         [Column("nome")]
         public string? Nome { get; set; }
 

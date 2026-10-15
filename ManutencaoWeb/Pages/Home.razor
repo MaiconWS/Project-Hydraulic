@@ -1,138 +1,12 @@
-﻿@page "/"
+@page "/"
+@attribute [Authorize(Roles = "Mecanico,Aprovisionador,Admin")]
 @inject NavigationManager Nav
 @using ManutencaoWeb.Services
 @inject SessaoService Sessao
 
 <PageTitle>Home - ManutencaoWeb</PageTitle>
 
-<div class="dashboard-wrapper">
-
-    <!-- =========================================
-         SIDEBAR
-         ========================================= -->
-
-    <nav class="sidebar @(isMenuOpen ? "mobile-open" : "")">
-
-        <div class="sidebar-brand">
-            <i class="bi bi-gear-wide"><span> Manutenção WEB</span></i>
-        </div>
-
-        <ul class="sidebar-menu">
-
-            <li class="active">
-                <a href="/">
-                    <i class="bi bi-house-door"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/requisicoes">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Requisições</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/relatorios">
-                    <i class="bi bi-bar-chart"></i>
-                    <span>Relatórios</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/liberados">
-                    <i class="bi bi-wrench-adjustable"></i>
-                    <span>Liberados</span>
-                </a>
-            </li>
-
-            @if (Sessao.IsAdmin)
-            {
-                <li>
-                    <a href="/admin">
-                        <i class="bi bi-plus-square"></i>
-                        <span>Cadastros Base</span>
-                    </a>
-                </li>
-            }
-
-        </ul>
-
-        <div class="sidebar-footer">
-
-            <div class="d-flex align-items-center gap-2 mb-3 px-2">
-
-                <div class="user-avatar">
-                    @(Sessao.Iniciais)
-                </div>
-
-                <div style="font-size: 12px; color: #cfdcd4;">
-                    <strong>@Sessao.NomeUsuario</strong>
-                </div>
-
-            </div>
-
-            <button class="btn-sair" @onclick="Sair">
-
-                <i class="bi bi-box-arrow-right"></i>
-
-                <span>Sair</span>
-
-            </button>
-
-        </div>
-
-    </nav>
-
-
-    <!-- =========================================
-         CONTEÚDO PRINCIPAL
-         ========================================= -->
-
-    <main class="main-content">
-
-        <!-- =====================================
-             TOP BAR
-             ===================================== -->
-
-        <header class="top-bar">
-
-            <div class="top-left d-flex align-items-center">
-
-                <button class="menu-toggle d-md-none me-2"
-                        @onclick="ToggleMenu">
-
-                    <i class="bi bi-list"></i>
-
-                </button>
-
-                <span class="user-greeting">
-
-                    Olá, <strong>@Sessao.NomeUsuario!</strong>
-
-                </span>
-
-            </div>
-
-            <div class="top-right">
-
-                <div class="user-avatar">
-                    @(Sessao.Iniciais)
-                </div>
-
-            </div>
-
-        </header>
-
-
-        <!-- =====================================
-             CORPO
-             ===================================== -->
-
-        <div class="content-body">
-
-            <div class="section-title mb-4">
+<div class="section-title mb-4">
 
                 <h2>Categoria de Componentes</h2>
 
@@ -682,18 +556,7 @@
 
             </section>
 
-        </div>
-
-    </main>
-
-</div>
-
-
 @code {
-
-    private bool isMenuOpen = false;
-
-
     // =========================================
     // PROTEÇÃO DA ROTA
     // =========================================
@@ -704,16 +567,6 @@
         {
             Nav.NavigateTo("/login");
         }
-    }
-
-
-    // =========================================
-    // MENU MOBILE
-    // =========================================
-
-    private void ToggleMenu()
-    {
-        isMenuOpen = !isMenuOpen;
     }
 
 

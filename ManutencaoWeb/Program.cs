@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Components.Authorization;
+
 using ManutencaoWeb;
-using Supabase;
 using ManutencaoWeb.Services;
+
+using Supabase;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -37,7 +40,27 @@ builder.Services.AddScoped(sp =>
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     });
 
-// Sessão do usuário
+// ============================================================
+// AUTENTICAÇÃO
+// ============================================================
+
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<
+    SupabaseAuthenticationStateProvider>();
+
+builder.Services.AddScoped<
+    AuthenticationStateProvider>(
+    sp => sp.GetRequiredService<
+        SupabaseAuthenticationStateProvider>());
+
+// ============================================================
+// SESSÃO LEGADA
+//
+// Mantida temporariamente durante a migração.
+// NÃO remover ainda.
+// ============================================================
+
 builder.Services.AddSingleton<SessaoService>();
 
 // ============================================================

@@ -4,6 +4,7 @@ namespace ManutencaoWeb.Services
     {
         public bool EstaLogado { get; private set; } = false;
         public bool IsAdmin { get; private set; } = false;
+        public bool ExigeTrocaSenha { get; private set; } = false;
         
         private string _nomeCompleto = string.Empty;
         
@@ -20,10 +21,11 @@ namespace ManutencaoWeb.Services
         public string EmailUsuario { get; private set; } = string.Empty;
         public string Iniciais => string.IsNullOrEmpty(_nomeCompleto) ? "" : _nomeCompleto.Substring(0, 1).ToUpper();
 
-        public void Login(string nome, string email, string perfil)
+        public void Login(string nome, string email, string perfil, bool exigeTrocaSenha = false)
         {
             EstaLogado = true;
             IsAdmin = string.Equals(perfil, "Admin", StringComparison.OrdinalIgnoreCase);
+            ExigeTrocaSenha = exigeTrocaSenha;
             _nomeCompleto = nome;
             EmailUsuario = email;
         }
@@ -32,6 +34,7 @@ namespace ManutencaoWeb.Services
         {
             EstaLogado = false;
             IsAdmin = false;
+            ExigeTrocaSenha = false;
             _nomeCompleto = string.Empty;
             EmailUsuario = string.Empty;
         }
