@@ -1,0 +1,587 @@
+@page "/laudo-sucateamento-teste"
+@attribute [Authorize(Roles = "Aprovisionador,Admin")]
+@using ManutencaoWeb.Models
+@using System.Globalization
+@inject Supabase.Client Supabase
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>Laudo de Sucateamento (teste) - ManutencaoWeb</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+        <button class="btn btn-light border" @onclick="Voltar" aria-label="Voltar">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+            <h2 class="fw-bold mb-1">Laudo de Sucateamento <span class="badge bg-warning text-dark fs-6">Teste</span></h2>
+            <p class="text-muted mb-0">Preencha os dados para gerar um PDF local, revisar e enviar manualmente.</p>
+        </div>
+    </div>
+
+    <div class="alert alert-info" role="note">
+        <i class="bi bi-shield-lock me-2"></i>
+        Este formulário não grava fotos, valores ou dados do laudo no banco nem no armazenamento do navegador.
+        As informações ficam apenas na memória desta página e são usadas para baixar o PDF. O envio por e-mail é manual.
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Carregando</span></div></div>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(erro))
+        {
+            <div class="alert alert-danger">@erro</div>
+        }
+
+        @if (solicitacoesCondenadas.Count == 0)
+        {
+            <div class="alert alert-warning">
+                Não há O.S. com status Condenado no momento. Você ainda pode informar a O.S. manualmente para testar o PDF.
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(mensagem))
+        {
+            <div class="alert alert-success" role="status">@mensagem</div>
+        }
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-clipboard2-check text-success me-2"></i>Identificação do componente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label fw-semibold">O.S. condenada (opcional)</label>
+                        <select class="form-select" @bind="solicitacaoSelecionadaId" @bind:after="AoSelecionarSolicitacaoAsync" disabled="@carregandoItensOs">
+                            <option value="">Selecionar ou preencher manualmente</option>
+                            @foreach (var solicitacao in solicitacoesCondenadas)
+                            {
+                                <option value="@solicitacao.Id">O.S. @solicitacao.OsNumero — @solicitacao.ModeloSolicitado</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label fw-semibold">O.S.</label>
+                        <input class="form-control" @bind="osNumero" maxlength="80" />
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label fw-semibold">Data de recebimento</label>
+                        <InputDate class="form-control" @bind-Value="dataRecebimento" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">SAP do componente</label>
+                        <input class="form-control" @bind="sapComponente" maxlength="80" readonly="@sapComponenteFoiEncontrado" />
+                        @if (sapComponenteFoiEncontrado)
+                        {
+                            <small class="text-muted">Preenchido pelo cadastro do modelo.</small>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(solicitacaoSelecionadaId))
+                        {
+                            <small class="text-warning">@avisoSapComponente</small>
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Descrição do componente / modelo</label>
+                        <input class="form-control" @bind="descricaoComponente" maxlength="180" readonly="@(!string.IsNullOrWhiteSpace(solicitacaoSelecionadaId) && !string.IsNullOrWhiteSpace(descricaoComponente))" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Frota</label>
+                        <input class="form-control" @bind="frota" maxlength="100" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tag ou número de série</label>
+                        <input class="form-control" @bind="tagSerie" maxlength="120" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Parecer técnico e motivo da inviabilidade de reforma</label>
+                        <textarea class="form-control" rows="4" @bind="parecerTecnico" maxlength="2500"
+                                  placeholder="Descreva os danos encontrados e por que a reforma não é recomendada."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-1"><i class="bi bi-gear text-success me-2"></i>Itens da reforma</h5>
+                    <small class="text-muted">Inclua fotos dos itens relevantes (engrenagens, pinhões, carcaças etc.).</small>
+                </div>
+                <button type="button" class="btn btn-outline-success btn-sm" @onclick="AdicionarPeca">
+                    <i class="bi bi-plus-lg me-1"></i>Adicionar item
+                </button>
+            </div>
+            <div class="card-body">
+                @if (carregandoItensOs)
+                {
+                    <div class="text-center py-3"><span class="spinner-border spinner-border-sm text-success me-2"></span>Carregando peças da O.S...</div>
+                }
+                else if (!string.IsNullOrWhiteSpace(avisoItensOs))
+                {
+                    <div class="alert alert-warning py-2">@avisoItensOs</div>
+                }
+                else if (pecasLaudo.Any(peca => peca.VeioDaSolicitacao))
+                {
+                    <div class="alert alert-success py-2">@pecasLaudo.Count(peca => peca.VeioDaSolicitacao) peça(s) solicitada(s) carregada(s). Complete o motivo, valores e fotos necessários ao laudo.</div>
+                }
+                @foreach (var peca in pecasLaudo)
+                {
+                    <div class="border rounded p-3 mb-3" @key="peca">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <strong>Item @(pecasLaudo.IndexOf(peca) + 1)</strong>
+                            @if (pecasLaudo.Count > 1)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoverPeca(peca)">
+                                    <i class="bi bi-trash me-1"></i>Remover
+                                </button>
+                            }
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">SAP da peça</label>
+                                <input class="form-control" @bind="peca.Sap" maxlength="80" readonly="@(peca.VeioDaSolicitacao && !string.IsNullOrWhiteSpace(peca.Sap))" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Descrição</label>
+                                <input class="form-control" @bind="peca.Descricao" maxlength="180" readonly="@(peca.VeioDaSolicitacao && !string.IsNullOrWhiteSpace(peca.Descricao))" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Qtd.</label>
+                                <input type="number" min="1" step="1" class="form-control" @bind="peca.Quantidade" readonly="@(peca.VeioDaSolicitacao && peca.Quantidade > 0)" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Valor unitário (R$)</label>
+                                <input type="number" min="0" step="0.01" class="form-control" @bind="peca.ValorUnitario" />
+                                @if (peca.ValorUnitario.HasValue)
+                                {
+                                    <small class="text-muted">Subtotal: @TotalItem(peca).ToString("C2", CultureInfo.GetCultureInfo("pt-BR"))</small>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Motivo da troca</label>
+                                <textarea class="form-control" rows="2" @bind="peca.Motivo" maxlength="1000"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Fotos do item (opcional, até 4 fotos de 4 MB cada)</label>
+                                <InputFile OnChange="@(e => CarregarFotosAsync(peca, e))" multiple accept="image/jpeg,image/png" class="form-control" />
+                                @if (!string.IsNullOrWhiteSpace(peca.ErroFoto))
+                                {
+                                    <small class="text-danger d-block mt-1">@peca.ErroFoto</small>
+                                }
+                                @if (peca.Fotos.Count > 0)
+                                {
+                                    <div class="d-flex flex-wrap gap-2 mt-2">
+                                        @foreach (var foto in peca.Fotos)
+                                        {
+                                            <div class="border rounded p-1 text-center" style="width: 130px" @key="foto">
+                                                <img src="@foto.DataUrl" alt="Prévia: @foto.Nome" class="img-fluid rounded" style="height: 82px; object-fit: cover" />
+                                                <small class="d-block text-truncate">@foto.Nome</small>
+                                                <button type="button" class="btn btn-link btn-sm text-danger p-0" @onclick="() => RemoverFoto(peca, foto)">Remover</button>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0"><i class="bi bi-calculator text-success me-2"></i>Comparativo do orçamento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Total estimado dos itens da reforma (R$)</label>
+                        <input class="form-control bg-light" value="@TotalReforma.ToString("N2")" readonly />
+                        <small class="text-muted">Calculado com os valores informados acima.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Valor do componente novo (R$)</label>
+                        <input type="number" min="0" step="0.01" class="form-control" @bind="valorComponenteNovo" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Validação antes do envio</label>
+                        <input class="form-control" @bind="responsavelValidacao" maxlength="120" placeholder="Marcio ou Luan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(erroValidacao))
+        {
+            <div class="alert alert-warning" role="alert">@erroValidacao</div>
+        }
+
+        <div class="d-flex flex-wrap gap-2 justify-content-end mb-5">
+            <button type="button" class="btn btn-outline-secondary" @onclick="LimparFormulario">
+                <i class="bi bi-eraser me-1"></i>Limpar formulário
+            </button>
+            <button type="button" class="btn btn-success px-4" @onclick="GerarPdfAsync" disabled="@gerandoPdf">
+                @if (gerandoPdf)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span>Gerando...</span>
+                }
+                else
+                {
+                    <i class="bi bi-file-earmark-pdf me-1"></i><span>Gerar e baixar PDF</span>
+                }
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private const long MaximoFotoBytes = 4 * 1024 * 1024;
+    private const int MaximoFotosPorPeca = 4;
+
+    private bool isLoading = true;
+    private bool gerandoPdf;
+    private bool carregandoItensOs;
+    private bool sapComponenteFoiEncontrado;
+    private string? erro;
+    private string? mensagem;
+    private string? erroValidacao;
+    private string? avisoItensOs;
+    private string? avisoSapComponente;
+    private string solicitacaoSelecionadaId = string.Empty;
+    private string solicitacaoSelecionadaIdAnterior = string.Empty;
+    private List<SolicitacaoCompletaModel> solicitacoesCondenadas = new();
+    private List<ComponenteModel> componentesCadastrados = new();
+
+    private string osNumero = string.Empty;
+    private string sapComponente = string.Empty;
+    private string descricaoComponente = string.Empty;
+    private string frota = string.Empty;
+    private string tagSerie = string.Empty;
+    private DateTime? dataRecebimento;
+    private string parecerTecnico = string.Empty;
+    private decimal? valorComponenteNovo;
+    private string responsavelValidacao = string.Empty;
+    private List<PecaLaudoModel> pecasLaudo = new() { new PecaLaudoModel() };
+
+    private decimal TotalReforma => pecasLaudo.Sum(TotalItem);
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Select("id,os_numero,modelo_solicitado,data_envio,status")
+                .Get();
+            solicitacoesCondenadas = (response.Models ?? new List<SolicitacaoCompletaModel>())
+                .Where(s => string.Equals(s.Status?.Trim(), "Condenado", StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(s => s.DataEnvio)
+                .ToList();
+
+            try
+            {
+                var respostaComponentes = await Supabase
+                    .From<ComponenteModel>()
+                    .Select("sap_comp,modelo")
+                    .Get();
+                componentesCadastrados = respostaComponentes.Models ?? new List<ComponenteModel>();
+            }
+            catch
+            {
+                // O SAP pode ser preenchido manualmente se o cadastro de modelos não estiver disponível.
+                componentesCadastrados.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            erro = $"Não foi possível carregar as O.S. condenadas: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task AoSelecionarSolicitacaoAsync()
+    {
+        if (solicitacaoSelecionadaId != solicitacaoSelecionadaIdAnterior && FormularioPossuiDados())
+        {
+            var confirmado = await JS.InvokeAsync<bool>("confirm", "Trocar a O.S. limpará os dados temporários deste laudo. Deseja continuar?");
+            if (!confirmado)
+            {
+                solicitacaoSelecionadaId = solicitacaoSelecionadaIdAnterior;
+                return;
+            }
+        }
+
+        LimparDadosLaudo();
+        avisoItensOs = null;
+        avisoSapComponente = null;
+        sapComponenteFoiEncontrado = false;
+
+        if (string.IsNullOrWhiteSpace(solicitacaoSelecionadaId))
+        {
+            solicitacaoSelecionadaIdAnterior = string.Empty;
+            return;
+        }
+
+        var solicitacao = solicitacoesCondenadas.FirstOrDefault(s => s.Id.ToString() == solicitacaoSelecionadaId);
+        if (solicitacao is null)
+        {
+            avisoItensOs = "Não foi possível localizar a O.S. selecionada.";
+            return;
+        }
+
+        osNumero = solicitacao.OsNumero ?? string.Empty;
+        descricaoComponente = solicitacao.ModeloSolicitado ?? string.Empty;
+        var sapCandidatos = componentesCadastrados
+            .Where(c => string.Equals(c.Modelo?.Trim(), descricaoComponente.Trim(), StringComparison.OrdinalIgnoreCase))
+            .Select(c => c.SapComp?.Trim())
+            .Where(sap => !string.IsNullOrWhiteSpace(sap))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (sapCandidatos.Count == 1)
+        {
+            sapComponente = sapCandidatos[0]!;
+            sapComponenteFoiEncontrado = true;
+        }
+        else
+        {
+            avisoSapComponente = sapCandidatos.Count > 1
+                ? "Há mais de um SAP cadastrado para este modelo; confira e informe o correto."
+                : "SAP não encontrado no cadastro; informe manualmente.";
+        }
+
+        carregandoItensOs = true;
+        mensagem = null;
+        erroValidacao = null;
+
+        try
+        {
+            var respostaItens = await Supabase
+                .From<SolicitacaoItemModel>()
+                .Select("solicitacao_id,sap_peca,descricao,quantidade")
+                .Filter("solicitacao_id", Postgrest.Constants.Operator.Equals, checked((int)solicitacao.Id))
+                .Get();
+
+            var itens = respostaItens.Models ?? new List<SolicitacaoItemModel>();
+            if (itens.Count > 0)
+            {
+                pecasLaudo = itens.Select(item => new PecaLaudoModel
+                {
+                    Sap = item.SapPeca ?? string.Empty,
+                    Descricao = item.Descricao ?? string.Empty,
+                    Quantidade = item.Quantidade,
+                    VeioDaSolicitacao = true
+                }).ToList();
+            }
+            else
+            {
+                pecasLaudo = new() { new PecaLaudoModel() };
+                avisoItensOs = "Esta O.S. não possui peças cadastradas em solicitacao_itens. Adicione os itens manualmente.";
+            }
+
+            solicitacaoSelecionadaIdAnterior = solicitacaoSelecionadaId;
+        }
+        catch (Exception ex)
+        {
+            pecasLaudo = new() { new PecaLaudoModel() };
+            avisoItensOs = $"Não foi possível carregar as peças da O.S.; você pode adicioná-las manualmente. Detalhe: {ex.Message}";
+            solicitacaoSelecionadaIdAnterior = solicitacaoSelecionadaId;
+        }
+        finally
+        {
+            carregandoItensOs = false;
+        }
+    }
+
+    private void AdicionarPeca() => pecasLaudo.Add(new PecaLaudoModel());
+
+    private void RemoverPeca(PecaLaudoModel peca) => pecasLaudo.Remove(peca);
+
+    private async Task CarregarFotosAsync(PecaLaudoModel peca, InputFileChangeEventArgs args)
+    {
+        peca.ErroFoto = null;
+        try
+        {
+            var arquivos = args.GetMultipleFiles(MaximoFotosPorPeca);
+            if (peca.Fotos.Count + arquivos.Count > MaximoFotosPorPeca)
+            {
+                peca.ErroFoto = $"O limite é de {MaximoFotosPorPeca} fotos por item.";
+                return;
+            }
+
+            foreach (var arquivo in arquivos)
+            {
+                if (arquivo.ContentType is not ("image/jpeg" or "image/png"))
+                {
+                    peca.ErroFoto = "Use somente imagens JPG ou PNG.";
+                    continue;
+                }
+
+                if (arquivo.Size > MaximoFotoBytes)
+                {
+                    peca.ErroFoto = $"A foto {arquivo.Name} excede 4 MB.";
+                    continue;
+                }
+
+                await using var stream = arquivo.OpenReadStream(MaximoFotoBytes);
+                using var buffer = new MemoryStream();
+                await stream.CopyToAsync(buffer);
+                var base64 = Convert.ToBase64String(buffer.ToArray());
+                peca.Fotos.Add(new FotoLaudoModel
+                {
+                    Nome = arquivo.Name,
+                    MimeType = arquivo.ContentType,
+                    DataUrl = $"data:{arquivo.ContentType};base64,{base64}"
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            peca.ErroFoto = $"Não foi possível ler as fotos: {ex.Message}";
+        }
+    }
+
+    private void RemoverFoto(PecaLaudoModel peca, FotoLaudoModel foto) => peca.Fotos.Remove(foto);
+
+    private async Task GerarPdfAsync()
+    {
+        erroValidacao = ValidarFormulario();
+        mensagem = null;
+        if (erroValidacao is not null)
+            return;
+
+        gerandoPdf = true;
+        try
+        {
+            var dados = new
+            {
+                osNumero,
+                sapComponente,
+                descricaoComponente,
+                frota,
+                tagSerie,
+                dataRecebimento = dataRecebimento!.Value.ToString("dd/MM/yyyy"),
+                parecerTecnico,
+                valorComponenteNovo = valorComponenteNovo!.Value,
+                totalReforma = TotalReforma,
+                responsavelValidacao,
+                dataLaudo = DateTime.Today.ToString("dd/MM/yyyy"),
+                pecas = pecasLaudo.Select(peca => new
+                {
+                    sap = peca.Sap,
+                    descricao = peca.Descricao,
+                    quantidade = peca.Quantidade,
+                    motivo = peca.Motivo,
+                    valorUnitario = peca.ValorUnitario!.Value,
+                    subtotal = TotalItem(peca),
+                    fotos = peca.Fotos.Select(foto => new
+                    {
+                        nome = foto.Nome,
+                        mimeType = foto.MimeType,
+                        dataUrl = foto.DataUrl
+                    }).ToList()
+                }).ToList()
+            };
+
+            await JS.InvokeVoidAsync("gerarLaudoSucateamentoPdf", dados);
+            mensagem = "PDF baixado. Revise o laudo com o responsável informado antes de enviá-lo manualmente.";
+        }
+        catch (Exception ex)
+        {
+            erroValidacao = $"Não foi possível gerar o PDF: {ex.Message}";
+        }
+        finally
+        {
+            gerandoPdf = false;
+        }
+    }
+
+    private string? ValidarFormulario()
+    {
+        if (string.IsNullOrWhiteSpace(osNumero)) return "Informe a O.S.";
+        if (string.IsNullOrWhiteSpace(sapComponente)) return "Informe o SAP do componente.";
+        if (string.IsNullOrWhiteSpace(descricaoComponente)) return "Informe a descrição do componente.";
+        if (string.IsNullOrWhiteSpace(frota)) return "Informe a frota.";
+        if (string.IsNullOrWhiteSpace(tagSerie)) return "Informe a tag ou o número de série.";
+        if (!dataRecebimento.HasValue) return "Informe a data de recebimento.";
+        if (string.IsNullOrWhiteSpace(parecerTecnico)) return "Informe o parecer técnico.";
+        if (!valorComponenteNovo.HasValue || valorComponenteNovo.Value < 0) return "Informe o valor do componente novo.";
+        if (string.IsNullOrWhiteSpace(responsavelValidacao)) return "Informe quem validará o laudo antes do envio.";
+        if (pecasLaudo.Count == 0) return "Adicione ao menos um item da reforma.";
+        if (pecasLaudo.Any(p => string.IsNullOrWhiteSpace(p.Descricao) || string.IsNullOrWhiteSpace(p.Motivo)))
+            return "Preencha a descrição e o motivo da troca de todos os itens.";
+        if (pecasLaudo.Any(p => p.Quantidade < 1))
+            return "A quantidade de cada item deve ser maior que zero.";
+        if (pecasLaudo.Any(p => !p.ValorUnitario.HasValue || p.ValorUnitario.Value < 0))
+            return "Informe um valor unitário válido para cada item.";
+        return null;
+    }
+
+    private void LimparFormulario()
+    {
+        solicitacaoSelecionadaId = string.Empty;
+        solicitacaoSelecionadaIdAnterior = string.Empty;
+        sapComponenteFoiEncontrado = false;
+        avisoItensOs = null;
+        avisoSapComponente = null;
+        LimparDadosLaudo();
+    }
+
+    private void LimparDadosLaudo()
+    {
+        osNumero = sapComponente = descricaoComponente = frota = tagSerie = parecerTecnico = responsavelValidacao = string.Empty;
+        dataRecebimento = null;
+        valorComponenteNovo = null;
+        pecasLaudo = new() { new PecaLaudoModel() };
+        erroValidacao = null;
+        mensagem = null;
+    }
+
+    private bool FormularioPossuiDados() =>
+        !string.IsNullOrWhiteSpace(osNumero) ||
+        !string.IsNullOrWhiteSpace(sapComponente) ||
+        !string.IsNullOrWhiteSpace(descricaoComponente) ||
+        !string.IsNullOrWhiteSpace(frota) ||
+        !string.IsNullOrWhiteSpace(tagSerie) ||
+        dataRecebimento.HasValue ||
+        !string.IsNullOrWhiteSpace(parecerTecnico) ||
+        valorComponenteNovo.HasValue ||
+        !string.IsNullOrWhiteSpace(responsavelValidacao) ||
+        pecasLaudo.Any(peca =>
+            !string.IsNullOrWhiteSpace(peca.Sap) ||
+            !string.IsNullOrWhiteSpace(peca.Descricao) ||
+            !string.IsNullOrWhiteSpace(peca.Motivo) ||
+            peca.ValorUnitario.HasValue ||
+            peca.Fotos.Count > 0);
+
+    private static decimal TotalItem(PecaLaudoModel peca) =>
+        peca.Quantidade * (peca.ValorUnitario ?? 0m);
+
+    private async Task Voltar() => await JS.InvokeVoidAsync("history.back");
+
+    private sealed class PecaLaudoModel
+    {
+        public string Sap { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public int Quantidade { get; set; } = 1;
+        public string Motivo { get; set; } = string.Empty;
+        public decimal? ValorUnitario { get; set; }
+        public string? ErroFoto { get; set; }
+        public bool VeioDaSolicitacao { get; set; }
+        public List<FotoLaudoModel> Fotos { get; set; } = new();
+    }
+
+    private sealed class FotoLaudoModel
+    {
+        public string Nome { get; set; } = string.Empty;
+        public string MimeType { get; set; } = string.Empty;
+        public string DataUrl { get; set; } = string.Empty;
+    }
+}
