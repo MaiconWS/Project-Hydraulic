@@ -26,6 +26,17 @@
             </Authorized>
         </AuthorizeView>
 
+        <AuthorizeView Roles="Mecanico,Aprovisionador,Admin">
+            <Authorized>
+                <li>
+                    <a href="/laudo-sucateamento-teste" @onclick="NotificarNavegacao">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Laudos</span>
+                    </a>
+                </li>
+            </Authorized>
+        </AuthorizeView>
+
         <!-- APROVISIONADOR / ADMIN -->
         <AuthorizeView Roles="Aprovisionador,Admin">
             <Authorized>
@@ -48,13 +59,6 @@
                     <a href="/liberados" @onclick="NotificarNavegacao">
                         <i class="bi bi-wrench-adjustable"></i>
                         <span>Liberados</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="/laudo-sucateamento-teste" @onclick="NotificarNavegacao">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <span>Laudo (teste)</span>
                     </a>
                 </li>
 
