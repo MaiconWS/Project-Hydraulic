@@ -3,6 +3,7 @@
 
 @using ManutencaoWeb.Models
 @using ManutencaoWeb.Services
+@using System.Globalization
 
 @inject SessaoService Sessao
 @inject Supabase.Client Supabase
@@ -24,13 +25,11 @@
                             <i class="bi bi-arrow-left"></i>
                         </button>
                         <h2>
-                            Painel de Relatórios
+                            Relatórios Gerenciais
                         </h2>
                     </div>
                     <p>
-                        Acompanhe o desempenho, métricas de atendimento,
-                        consumo de peças e extrato detalhado das
-                        Ordens de Serviço.
+                        Acompanhe indicadores de atendimento, giro dos modelos e consumo de peças.
                     </p>
 
                 </div>
@@ -93,19 +92,19 @@
                             <div class="col-md-3">
 
                                 <label class="form-label small fw-bold">
-                                    Categoria
+                                    Sistema
                                 </label>
 
-                                <select class="form-select" @bind="filtroCategoria">
+                                <select class="form-select" @bind="filtroSistema" @bind:after="AoAlterarSistema">
 
                                     <option value="">
-                                        Todas as categorias
+                                        Todos os sistemas
                                     </option>
 
-                                    @foreach (var categoria in categorias)
+                                    @foreach (var sistema in sistemasDisponiveis)
                                     {
-                                        <option value="@categoria">
-                                            @categoria
+                                        <option value="@sistema">
+                                            @sistema
                                         </option>
                                     }
 
@@ -120,13 +119,14 @@
                                     Modelo
                                 </label>
 
-                                <select class="form-select" @bind="filtroModelo">
+                                <select class="form-select" @bind="filtroModelo" @bind:after="AplicarFiltros"
+                                        disabled="@(string.IsNullOrWhiteSpace(filtroSistema) || !ModelosDisponiveis.Any())">
 
                                     <option value="">
                                         Todos os modelos
                                     </option>
 
-                                    @foreach (var modelo in modelos)
+                                    @foreach (var modelo in ModelosDisponiveis)
                                     {
                                         <option value="@modelo">
                                             @modelo
@@ -134,6 +134,10 @@
                                     }
 
                                 </select>
+
+                                <small class="text-muted">
+                                    Selecione primeiro o sistema para filtrar os modelos.
+                                </small>
 
                             </div>
 
@@ -405,44 +409,153 @@
 
                             <div class="card border-0 shadow-sm p-4 h-100">
 
-                                <h5 class="fw-bold mb-3">
+                                        <h5 class="fw-bold mb-3">
 
                                     <i class="bi bi-bar-chart-line text-success me-2"></i>
 
-                                    Destaques
+                                    @(!string.IsNullOrWhiteSpace(filtroModelo) ? "Giro do modelo selecionado" : "Modelos com maior giro")
 
                                 </h5>
 
-
-                                <div class="d-flex justify-content-between border-bottom py-2">
-
-                                    <span class="text-muted">
-                                        Modelo mais solicitado:
-                                    </span>
-
-                                    <strong>
-                                        @modeloMaisSolicitado
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="d-flex justify-content-between py-2">
-
-                                    <span class="text-muted">
-                                        Peça mais requisitada:
-                                    </span>
-
-                                    <strong>
-                                        @componenteMaisFrequente
-                                    </strong>
-
-                                </div>
+                                @if (!modelosMaisGiro.Any())
+                                {
+                                    <p class="text-muted mb-0">Nenhuma solicitação encontrada para os filtros.</p>
+                                }
+                                else
+                                {
+                                    @foreach (var modeloGiro in modelosMaisGiro)
+                                    {
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between gap-2 mb-1">
+                                                <strong class="text-truncate">@modeloGiro.Modelo</strong>
+                                                <small class="text-muted text-nowrap">@modeloGiro.TotalSolicitacoes O.S. · @modeloGiro.TotalUnidades unidades</small>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar bg-success" role="progressbar"
+                                                     style="width: @(PercentualGiro(modeloGiro))%"></div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
 
                             </div>
 
                         </div>
 
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-header bg-white py-3">
+                                    <h5 class="fw-bold mb-1">
+                                        <i class="bi bi-box-seam text-success me-2"></i>
+                                        Peças mais utilizadas
+                                    </h5>
+                                    <small class="text-muted">
+                                        @(!string.IsNullOrWhiteSpace(filtroModelo) ? $"Consumo do modelo {filtroModelo}." : "Consumo dos modelos incluídos nos filtros.")
+                                        Ordenado por O.S. distintas; unidades desempata. A contagem considera os filtros selecionados.
+                                    </small>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">SAP</th>
+                                                <th>Peça</th>
+                                                <th class="text-center">Unidades</th>
+                                                <th class="text-center">O.S. distintas</th>
+                                                <th>Modelo líder</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (!pecasMaisUtilizadas.Any())
+                                            {
+                                                <tr><td colspan="5" class="text-center py-4 text-muted">Nenhum consumo encontrado para os filtros.</td></tr>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var peca in pecasMaisUtilizadas)
+                                                {
+                                                    <tr>
+                                                        <td class="ps-4"><code>@(string.IsNullOrWhiteSpace(peca.SapPeca) ? "-" : peca.SapPeca)</code></td>
+                                                        <td>@peca.Descricao</td>
+                                                        <td class="text-center fw-semibold">@peca.TotalUnidades</td>
+                                                        <td class="text-center">@peca.OrdensDistintas</td>
+                                                        <td>@(string.IsNullOrWhiteSpace(peca.ModeloLider) ? "-" : peca.ModeloLider)</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <h5 class="fw-bold mb-1">
+                                    <i class="bi bi-bar-chart-line text-success me-2"></i>
+                                    Consumo mensal por peça
+                                </h5>
+                                <small class="text-muted">@(consumoPorOrdensDistintas ? "O.S. distintas por mês" : "Unidades solicitadas por mês") · @TituloEscopoConsumo</small>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Métrica do gráfico de consumo">
+                                <button type="button" class="btn @(consumoPorOrdensDistintas ? "btn-success" : "btn-outline-success")"
+                                        aria-pressed="@consumoPorOrdensDistintas" @onclick="() => consumoPorOrdensDistintas = true">
+                                    O.S. distintas
+                                </button>
+                                <button type="button" class="btn @(!consumoPorOrdensDistintas ? "btn-success" : "btn-outline-success")"
+                                        aria-pressed="@(!consumoPorOrdensDistintas)" @onclick="() => consumoPorOrdensDistintas = false">
+                                    Unidades
+                                </button>
+                            </div>
+                            @if (seriesConsumoMensal.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-3 small">
+                                    @foreach (var serie in seriesConsumoMensal)
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-2">
+                                            <span class="legenda-consumo @serie.ClasseCor"></span>
+                                            @serie.Descricao
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            @if (!seriesConsumoMensal.Any())
+                            {
+                                <p class="text-muted text-center py-5 mb-0">Não há consumo de peças para exibir nesse período e modelo.</p>
+                            }
+                            else
+                            {
+                                <div class="consumo-grafico" role="img" aria-label="Consumo mensal por peça">
+                                    @foreach (var mes in mesesConsumo)
+                                    {
+                                        <div class="consumo-mes">
+                                            <div class="consumo-barras">
+                                                @foreach (var serie in seriesConsumoMensal)
+                                                {
+                                                    var valorMes = ObterValorConsumoMes(serie, mes.Data);
+                                                    var unidadeMetrica = consumoPorOrdensDistintas ? "O.S. distintas" : "unidades";
+                                                    <div class="consumo-barra-coluna" title="@($"{serie.Descricao}: {valorMes} {unidadeMetrica} em {mes.Rotulo}")">
+                                                        @if (valorMes > 0)
+                                                        {
+                                                            <small>@valorMes</small>
+                                                        }
+                                                        <div class="consumo-barra @serie.ClasseCor" style="height: @(AlturaBarraConsumo(valorMes))px"></div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <small class="consumo-rotulo-mes">@mes.Rotulo</small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
                     </div>
 
 
@@ -467,30 +580,36 @@
 
                                     <small class="text-muted">
 
-                                        Top 10 peças de cada modelo conforme os filtros selecionados.
+                                        @top10ItensPorComponente.Select(item => item.Modelo).Distinct().Count() modelos ·
+                                        @top10ItensPorComponente.Count peças no ranking
 
                                     </small>
 
                                 </div>
 
 
-                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarRankingExcel"
-                                        disabled="@(top10ItensPorComponente.Count == 0)">
-
-                                    <i class="bi bi-file-earmark-excel me-1"></i>
-
-                                    Excel
-
-                                </button>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => rankingExpandido = !rankingExpandido"
+                                            aria-expanded="@rankingExpandido" aria-controls="conteudoRanking">
+                                        <i class="bi @(rankingExpandido ? "bi-chevron-up" : "bi-chevron-down") me-1"></i>
+                                        @(rankingExpandido ? "Recolher" : "Ver ranking")
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm" @onclick="ExportarRankingExcel"
+                                            disabled="@(top10ItensPorComponente.Count == 0)">
+                                        <i class="bi bi-file-earmark-excel me-1"></i> Excel
+                                    </button>
+                                </div>
 
                             </div>
 
                         </div>
 
 
-                        <div class="table-responsive">
+                        @if (rankingExpandido)
+                        {
+                        <div id="conteudoRanking" class="table-responsive">
 
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover table-sm align-middle mb-0">
 
                                 <thead class="table-light">
 
@@ -570,6 +689,7 @@
                             </table>
 
                         </div>
+                        }
 
                     </div>
 
@@ -583,32 +703,37 @@
 
                             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-                                <h5 class="fw-bold mb-0">
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        <i class="bi bi-table text-success me-2"></i>
+                                        Detalhamento por O.S
+                                    </h5>
+                                    <small class="text-muted">@listaFiltrada.Count ordens nos filtros selecionados</small>
+                                </div>
 
-                                    <i class="bi bi-table text-success me-2"></i>
 
-                                    Detalhamento por O.S
-
-                                </h5>
-
-
-                                <button class="btn btn-outline-success btn-sm" @onclick="ExportarDetalhamentoExcel"
-                                        disabled="@(listaFiltrada.Count == 0)">
-
-                                    <i class="bi bi-file-earmark-excel me-1"></i>
-
-                                    Excel
-
-                                </button>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="() => detalhamentoExpandido = !detalhamentoExpandido"
+                                            aria-expanded="@detalhamentoExpandido" aria-controls="conteudoDetalhamento">
+                                        <i class="bi @(detalhamentoExpandido ? "bi-chevron-up" : "bi-chevron-down") me-1"></i>
+                                        @(detalhamentoExpandido ? "Recolher" : "Ver ordens")
+                                    </button>
+                                    <button class="btn btn-outline-success btn-sm" @onclick="ExportarDetalhamentoExcel"
+                                            disabled="@(listaFiltrada.Count == 0)">
+                                        <i class="bi bi-file-earmark-excel me-1"></i> Excel
+                                    </button>
+                                </div>
 
                             </div>
 
                         </div>
 
 
-                        <div class="table-responsive">
+                        @if (detalhamentoExpandido)
+                        {
+                        <div id="conteudoDetalhamento" class="table-responsive">
 
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover table-sm align-middle mb-0">
 
                                 <thead class="table-light">
 
@@ -762,6 +887,7 @@
                             </table>
 
                         </div>
+                        }
 
                     </div>
 
@@ -799,6 +925,79 @@
         break-inside: avoid;
     }
 
+    .consumo-grafico {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        min-width: 680px;
+        height: 250px;
+        padding: 12px 8px 0;
+        overflow-x: auto;
+        background: repeating-linear-gradient(
+            to top,
+            transparent 0,
+            transparent 48px,
+            rgba(108, 117, 125, 0.12) 49px,
+            transparent 50px);
+        border-bottom: 1px solid #adb5bd;
+    }
+
+    .consumo-mes {
+        display: flex;
+        flex: 1 0 52px;
+        flex-direction: column;
+        justify-content: flex-end;
+        min-width: 52px;
+    }
+
+    .consumo-barras {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 3px;
+        height: 210px;
+    }
+
+    .consumo-barra-coluna {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        min-width: 8px;
+    }
+
+    .consumo-barra-coluna small {
+        margin-bottom: 2px;
+        color: #495057;
+        font-size: 0.68rem;
+    }
+
+    .consumo-barra {
+        width: min(100%, 24px);
+        min-height: 0;
+        border-radius: 4px 4px 0 0;
+    }
+
+    .consumo-verde { background-color: #198754; }
+    .consumo-azul { background-color: #0d6efd; }
+    .consumo-ambar { background-color: #f0ad00; }
+
+    .legenda-consumo {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+    }
+
+    .consumo-rotulo-mes {
+        padding-top: 6px;
+        text-align: center;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
     @@media (max-width: 768px) {
 
         .relatorios-export-buttons {
@@ -822,6 +1021,10 @@
 
     private bool isLoading = true;
 
+    private bool rankingExpandido;
+    private bool detalhamentoExpandido;
+    private bool consumoPorOrdensDistintas = true;
+
 
     // ============================================================
     // DADOS
@@ -837,9 +1040,7 @@
 
     private List<ComponenteModel> componentesCadastrados = new();
 
-    private List<string> categorias = new();
-
-    private List<string> modelos = new();
+    private List<string> sistemasDisponiveis = new();
 
 
     // ============================================================
@@ -850,7 +1051,7 @@
 
     private DateTime? filtroDataFim;
 
-    private string filtroCategoria = string.Empty;
+    private string filtroSistema = string.Empty;
 
     private string filtroModelo = string.Empty;
 
@@ -957,16 +1158,58 @@
     }
 
 
-    private string modeloMaisSolicitado = "-";
-
-    private string componenteMaisFrequente = "-";
-
-
     // ============================================================
     // RANKING
     // ============================================================
 
     private List<ItemRankingModel> top10ItensPorComponente = new();
+
+    private List<ModeloGiroModel> modelosMaisGiro = new();
+
+    private List<PecaConsumoModel> pecasMaisUtilizadas = new();
+
+    private List<MesConsumoModel> mesesConsumo = new();
+
+    private List<SerieConsumoModel> seriesConsumoMensal = new();
+
+    private IEnumerable<string> ModelosDisponiveis
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(filtroSistema))
+                return Enumerable.Empty<string>();
+
+            return componentesCadastrados
+                .Where(c =>
+                    !string.IsNullOrWhiteSpace(c.Modelo) &&
+                    string.Equals(
+                        CategoriaDoComponente(c),
+                        filtroSistema,
+                        StringComparison.OrdinalIgnoreCase))
+                .Select(c => c.Modelo!.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(modelo => modelo);
+        }
+    }
+
+    private string TituloEscopoConsumo =>
+        $"{(!string.IsNullOrWhiteSpace(filtroModelo) ? filtroModelo : string.IsNullOrWhiteSpace(filtroSistema) ? "todos os sistemas e modelos" : $"todos os modelos de {filtroSistema}")} · {PeriodoConsumo}";
+
+    private string PeriodoConsumo
+    {
+        get
+        {
+            var fim = filtroDataFim?.Date ?? DateTime.Today;
+            var inicio = filtroDataInicio?.Date ?? fim.AddMonths(-5);
+            return $"{inicio:MM/yyyy} a {fim:MM/yyyy}";
+        }
+    }
+
+    private int MaiorGiro =>
+        modelosMaisGiro
+            .Select(modelo => modelo.TotalSolicitacoes)
+            .DefaultIfEmpty(0)
+            .Max();
 
 
     // ============================================================
@@ -1059,7 +1302,7 @@
                 ?? new List<SistemaModel>();
 
 
-            categorias =
+            sistemasDisponiveis =
                 sistemas
                     .Where(s =>
                         !string.IsNullOrWhiteSpace(
@@ -1085,18 +1328,6 @@
                 ?? new List<ComponenteModel>();
 
 
-            modelos =
-                componentesCadastrados
-                    .Where(c =>
-                        !string.IsNullOrWhiteSpace(
-                            c.Modelo))
-                    .Select(c => c.Modelo!)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(m => m)
-                    .ToList();
-
-
             CalcularIndicadores();
         }
 
@@ -1120,104 +1351,8 @@
 
     private void AplicarFiltros()
     {
-        var query =
-            todasSolicitacoes.AsEnumerable();
-
-
-        // --------------------------------------------------------
-        // O.S.
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroOs))
-        {
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(s.OsNumero) &&
-                    s.OsNumero.Contains(
-                        filtroOs.Trim(),
-                        StringComparison.OrdinalIgnoreCase));
-        }
-
-
-        // --------------------------------------------------------
-        // MODELO
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroModelo))
-        {
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(s.ModeloSolicitado) &&
-                    s.ModeloSolicitado.Equals(
-                        filtroModelo,
-                        StringComparison.OrdinalIgnoreCase));
-        }
-
-
-        // --------------------------------------------------------
-        // CATEGORIA
-        // --------------------------------------------------------
-
-        if (!string.IsNullOrWhiteSpace(filtroCategoria))
-        {
-            var modelosDaCategoria =
-                componentesCadastrados
-                    .Where(c =>
-                        !string.IsNullOrWhiteSpace(c.Modelo) &&
-                        string.Equals(
-                            CategoriaDoComponente(c),
-                            filtroCategoria,
-                            StringComparison.OrdinalIgnoreCase))
-                    .Select(c => c.Modelo!)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .ToHashSet(
-                        StringComparer.OrdinalIgnoreCase);
-
-
-            query =
-                query.Where(s =>
-                    !string.IsNullOrWhiteSpace(
-                        s.ModeloSolicitado) &&
-                    modelosDaCategoria.Contains(
-                        s.ModeloSolicitado));
-        }
-
-
-        // --------------------------------------------------------
-        // DATA INICIAL
-        // --------------------------------------------------------
-
-        if (filtroDataInicio.HasValue)
-        {
-            var dataInicio =
-                filtroDataInicio.Value.Date;
-
-            query =
-                query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date
-                    >= dataInicio);
-        }
-
-
-        // --------------------------------------------------------
-        // DATA FINAL
-        // --------------------------------------------------------
-
-        if (filtroDataFim.HasValue)
-        {
-            var dataFim =
-                filtroDataFim.Value.Date;
-
-            query =
-                query.Where(s =>
-                    ObterDataLocal(s.DataEnvio).Date
-                    <= dataFim);
-        }
-
-
         listaFiltrada =
-            query
+            FiltrarSolicitacoes(aplicarModelo: true)
                 .OrderByDescending(s => s.DataEnvio)
                 .ToList();
 
@@ -1236,7 +1371,7 @@
 
         filtroDataFim = null;
 
-        filtroCategoria = string.Empty;
+        filtroSistema = string.Empty;
 
         filtroModelo = string.Empty;
 
@@ -1251,6 +1386,64 @@
         CalcularIndicadores();
     }
 
+    private void AoAlterarSistema()
+    {
+        filtroModelo = string.Empty;
+        AplicarFiltros();
+    }
+
+    private IEnumerable<SolicitacaoCompletaModel> FiltrarSolicitacoes(bool aplicarModelo)
+    {
+        IEnumerable<SolicitacaoCompletaModel> query = todasSolicitacoes;
+
+        if (!string.IsNullOrWhiteSpace(filtroOs))
+        {
+            query = query.Where(s =>
+                !string.IsNullOrWhiteSpace(s.OsNumero) &&
+                s.OsNumero.Contains(filtroOs.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filtroSistema))
+        {
+            var modelosDoSistema = componentesCadastrados
+                .Where(c =>
+                    !string.IsNullOrWhiteSpace(c.Modelo) &&
+                    string.Equals(
+                        CategoriaDoComponente(c),
+                        filtroSistema,
+                        StringComparison.OrdinalIgnoreCase))
+                .Select(c => c.Modelo!.Trim())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            query = query.Where(s =>
+                !string.IsNullOrWhiteSpace(s.ModeloSolicitado) &&
+                modelosDoSistema.Contains(s.ModeloSolicitado.Trim()));
+        }
+
+        if (aplicarModelo && !string.IsNullOrWhiteSpace(filtroModelo))
+        {
+            query = query.Where(s =>
+                string.Equals(
+                    s.ModeloSolicitado?.Trim(),
+                    filtroModelo,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (filtroDataInicio.HasValue)
+        {
+            var dataInicio = filtroDataInicio.Value.Date;
+            query = query.Where(s => ObterDataLocal(s.DataEnvio).Date >= dataInicio);
+        }
+
+        if (filtroDataFim.HasValue)
+        {
+            var dataFim = filtroDataFim.Value.Date;
+            query = query.Where(s => ObterDataLocal(s.DataEnvio).Date <= dataFim);
+        }
+
+        return query;
+    }
+
 
     // ============================================================
     // CALCULAR INDICADORES
@@ -1260,70 +1453,11 @@
     {
         if (!listaFiltrada.Any())
         {
-            modeloMaisSolicitado = "-";
-            componenteMaisFrequente = "-";
-
             top10ItensPorComponente.Clear();
+            CalcularAnalisesGerenciais();
 
             return;
         }
-
-
-        // --------------------------------------------------------
-        // MODELO MAIS SOLICITADO
-        // --------------------------------------------------------
-
-        var modeloMaisComum =
-            listaFiltrada
-                .Where(s =>
-                    !string.IsNullOrWhiteSpace(
-                        s.ModeloSolicitado))
-                .GroupBy(
-                    s => s.ModeloSolicitado!,
-                    StringComparer.OrdinalIgnoreCase)
-                .OrderByDescending(g => g.Count())
-                .FirstOrDefault();
-
-
-        modeloMaisSolicitado =
-            modeloMaisComum?.Key ?? "-";
-
-
-        // --------------------------------------------------------
-        // PEÇA MAIS FREQUENTE
-        // --------------------------------------------------------
-
-        var todosOsItens =
-            listaFiltrada
-                .SelectMany(s =>
-                    itensPorSolicitacao.ContainsKey(s.Id)
-                        ? itensPorSolicitacao[s.Id]
-                        : new List<SolicitacaoItemModel>())
-                .ToList();
-
-
-        if (!todosOsItens.Any())
-        {
-            componenteMaisFrequente = "-";
-        }
-        else
-        {
-            var itemMaisComum =
-                todosOsItens
-                    .Where(i =>
-                        !string.IsNullOrWhiteSpace(
-                            i.Descricao))
-                    .GroupBy(
-                        i => i.Descricao!,
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderByDescending(
-                        g => g.Sum(i => i.Quantidade))
-                    .FirstOrDefault();
-
-            componenteMaisFrequente =
-                itemMaisComum?.Key ?? "-";
-        }
-
 
         // --------------------------------------------------------
         // RANKING
@@ -1368,9 +1502,7 @@
                             item.Descricao,
 
                         TotalQuantidade =
-                            item.Quantidade,
-
-                        ValorTotal = 0
+                            item.Quantidade
                     });
             }
         }
@@ -1402,11 +1534,7 @@
 
                         TotalQuantidade =
                             g.Sum(x =>
-                                x.TotalQuantidade),
-
-                        ValorTotal =
-                            g.Sum(x =>
-                                x.ValorTotal)
+                                x.TotalQuantidade)
                     })
                 .ToList();
 
@@ -1421,13 +1549,202 @@
                 .SelectMany(g =>
                     g.OrderByDescending(
                         x => x.TotalQuantidade)
-                     .ThenByDescending(
-                        x => x.ValorTotal)
                      .Take(10))
                 .OrderBy(x => x.Modelo)
                 .ThenByDescending(
                     x => x.TotalQuantidade)
                 .ToList();
+
+        CalcularAnalisesGerenciais();
+    }
+
+    private void CalcularAnalisesGerenciais()
+    {
+        // Mantém o ranking no mesmo escopo dos cartões e dos demais indicadores.
+        var requisicoesParaGiro = FiltrarSolicitacoes(aplicarModelo: true).ToList();
+
+        // O.S. conta todas as solicitações do modelo, inclusive as que ainda
+        // não possuem linhas em solicitacao_itens. Unidades contam apenas itens gravados.
+        modelosMaisGiro = requisicoesParaGiro
+            .GroupBy(solicitacao =>
+                string.IsNullOrWhiteSpace(solicitacao.ModeloSolicitado)
+                    ? "Modelo não informado"
+                    : solicitacao.ModeloSolicitado.Trim(),
+                StringComparer.OrdinalIgnoreCase)
+            .Select(grupo => new ModeloGiroModel
+            {
+                Modelo = grupo.Key,
+                TotalSolicitacoes = grupo.Select(solicitacao => solicitacao.Id).Distinct().Count(),
+                TotalUnidades = grupo.Sum(solicitacao =>
+                    itensPorSolicitacao.TryGetValue(solicitacao.Id, out var itens)
+                        ? itens.Sum(item => item.Quantidade)
+                        : 0)
+            })
+            .OrderByDescending(modelo => modelo.TotalSolicitacoes)
+            .ThenByDescending(modelo => modelo.TotalUnidades)
+            .Take(5)
+            .ToList();
+
+        var linhasFiltradas = ObterLinhasComItens(listaFiltrada);
+
+        pecasMaisUtilizadas = linhasFiltradas
+            .Where(linha =>
+                !string.IsNullOrWhiteSpace(linha.Item.SapPeca) ||
+                !string.IsNullOrWhiteSpace(linha.Item.Descricao))
+            .GroupBy(linha => new
+            {
+                Sap = linha.Item.SapPeca?.Trim() ?? string.Empty,
+                Descricao = linha.Item.Descricao?.Trim() ?? string.Empty
+            })
+            .Select(grupo => new PecaConsumoModel
+            {
+                SapPeca = grupo.Key.Sap,
+                Descricao = string.IsNullOrWhiteSpace(grupo.Key.Descricao) ? "Descrição não informada" : grupo.Key.Descricao,
+                TotalUnidades = grupo.Sum(linha => linha.Item.Quantidade),
+                OrdensDistintas = grupo.Select(linha => linha.Solicitacao.Id).Distinct().Count(),
+                ModeloLider = grupo
+                    .Where(linha => !string.IsNullOrWhiteSpace(linha.Solicitacao.ModeloSolicitado))
+                    .GroupBy(linha => linha.Solicitacao.ModeloSolicitado!.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderByDescending(modelo => modelo.Sum(linha => linha.Item.Quantidade))
+                    .Select(modelo => modelo.Key)
+                    .FirstOrDefault()
+            })
+            .OrderByDescending(peca => peca.OrdensDistintas)
+            .ThenByDescending(peca => peca.TotalUnidades)
+            .Take(10)
+            .ToList();
+
+        CalcularConsumoMensal(linhasFiltradas);
+    }
+
+    private List<(SolicitacaoCompletaModel Solicitacao, SolicitacaoItemModel Item)> ObterLinhasComItens(
+        IEnumerable<SolicitacaoCompletaModel> requisicoes)
+    {
+        var linhas = new List<(SolicitacaoCompletaModel Solicitacao, SolicitacaoItemModel Item)>();
+
+        foreach (var solicitacao in requisicoes)
+        {
+            if (!itensPorSolicitacao.TryGetValue(solicitacao.Id, out var itens))
+                continue;
+
+            linhas.AddRange(itens.Select(item => (solicitacao, item)));
+        }
+
+        return linhas;
+    }
+
+    private void CalcularConsumoMensal(
+        List<(SolicitacaoCompletaModel Solicitacao, SolicitacaoItemModel Item)> linhas)
+    {
+        var fimReferencia = filtroDataFim?.Date ?? DateTime.Today;
+        var inicioReferencia = filtroDataInicio?.Date ?? fimReferencia.AddMonths(-5);
+
+        if (inicioReferencia > fimReferencia)
+        {
+            mesesConsumo.Clear();
+            seriesConsumoMensal.Clear();
+            return;
+        }
+
+        var primeiroMes = new DateTime(inicioReferencia.Year, inicioReferencia.Month, 1);
+        var ultimoMes = new DateTime(fimReferencia.Year, fimReferencia.Month, 1);
+        var quantidadeMeses = ((ultimoMes.Year - primeiroMes.Year) * 12) + ultimoMes.Month - primeiroMes.Month + 1;
+
+        mesesConsumo = Enumerable.Range(0, quantidadeMeses)
+            .Select(indice => primeiroMes.AddMonths(indice))
+            .TakeWhile(mes => mes <= ultimoMes)
+            .Select(mes => new MesConsumoModel
+            {
+                Data = mes,
+                Rotulo = mes.ToString("MMM/yy", CultureInfo.GetCultureInfo("pt-BR"))
+            })
+            .ToList();
+
+        if (mesesConsumo.Count == 0)
+        {
+            seriesConsumoMensal.Clear();
+            return;
+        }
+
+        var inicioGrafico = mesesConsumo[0].Data;
+        var fimGrafico = mesesConsumo[^1].Data.AddMonths(1);
+        var linhasNoGrafico = linhas
+            .Where(linha =>
+            {
+                var data = ObterDataLocal(linha.Solicitacao.DataEnvio);
+                return data >= inicioGrafico && data < fimGrafico;
+            })
+            .ToList();
+
+        var pecasDoGrafico = linhasNoGrafico
+            .Where(linha =>
+                !string.IsNullOrWhiteSpace(linha.Item.SapPeca) ||
+                !string.IsNullOrWhiteSpace(linha.Item.Descricao))
+            .GroupBy(linha => new
+            {
+                Sap = linha.Item.SapPeca?.Trim() ?? string.Empty,
+                Descricao = linha.Item.Descricao?.Trim() ?? string.Empty
+            })
+            .OrderByDescending(grupo => grupo.Select(linha => linha.Solicitacao.Id).Distinct().Count())
+            .ThenByDescending(grupo => grupo.Sum(linha => linha.Item.Quantidade))
+            .Take(3)
+            .ToList();
+
+        var cores = new[] { "consumo-verde", "consumo-azul", "consumo-ambar" };
+
+        seriesConsumoMensal = pecasDoGrafico
+            .Select((grupo, indice) => new SerieConsumoModel
+            {
+                Descricao = string.IsNullOrWhiteSpace(grupo.Key.Descricao)
+                    ? grupo.Key.Sap
+                    : grupo.Key.Descricao,
+                ClasseCor = cores[indice],
+                UnidadesPorMes = mesesConsumo.ToDictionary(
+                    mes => mes.Data,
+                    mes => grupo
+                        .Where(linha =>
+                        {
+                            var data = ObterDataLocal(linha.Solicitacao.DataEnvio);
+                            return data.Year == mes.Data.Year && data.Month == mes.Data.Month;
+                        })
+                        .Sum(linha => linha.Item.Quantidade)),
+                OrdensDistintasPorMes = mesesConsumo.ToDictionary(
+                    mes => mes.Data,
+                    mes => grupo
+                        .Where(linha =>
+                        {
+                            var data = ObterDataLocal(linha.Solicitacao.DataEnvio);
+                            return data.Year == mes.Data.Year && data.Month == mes.Data.Month;
+                        })
+                        .Select(linha => linha.Solicitacao.Id)
+                        .Distinct()
+                        .Count())
+            })
+            .ToList();
+    }
+
+    private int ObterValorConsumoMes(SerieConsumoModel serie, DateTime mes) =>
+        consumoPorOrdensDistintas
+            ? serie.OrdensDistintasPorMes.GetValueOrDefault(mes)
+            : serie.UnidadesPorMes.GetValueOrDefault(mes);
+
+    private int PercentualGiro(ModeloGiroModel modelo) =>
+        MaiorGiro == 0
+            ? 0
+            : (int)Math.Round((double)modelo.TotalSolicitacoes / MaiorGiro * 100);
+
+    private int AlturaBarraConsumo(int quantidade)
+    {
+        var maiorQuantidade = seriesConsumoMensal
+            .SelectMany(serie => consumoPorOrdensDistintas
+                ? serie.OrdensDistintasPorMes.Values
+                : serie.UnidadesPorMes.Values)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        return maiorQuantidade == 0 || quantidade == 0
+            ? 0
+            : Math.Max(3, (int)Math.Round((double)quantidade / maiorQuantidade * 170));
     }
 
 
@@ -1744,8 +2061,36 @@
         public string? Descricao { get; set; }
 
         public int TotalQuantidade { get; set; }
+    }
 
-        public double ValorTotal { get; set; }
+    private sealed class ModeloGiroModel
+    {
+        public string Modelo { get; set; } = string.Empty;
+        public int TotalSolicitacoes { get; set; }
+        public int TotalUnidades { get; set; }
+    }
+
+    private sealed class PecaConsumoModel
+    {
+        public string SapPeca { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public int TotalUnidades { get; set; }
+        public int OrdensDistintas { get; set; }
+        public string? ModeloLider { get; set; }
+    }
+
+    private sealed class MesConsumoModel
+    {
+        public DateTime Data { get; set; }
+        public string Rotulo { get; set; } = string.Empty;
+    }
+
+    private sealed class SerieConsumoModel
+    {
+        public string Descricao { get; set; } = string.Empty;
+        public string ClasseCor { get; set; } = string.Empty;
+        public Dictionary<DateTime, int> UnidadesPorMes { get; set; } = new();
+        public Dictionary<DateTime, int> OrdensDistintasPorMes { get; set; } = new();
     }
 
 }

@@ -21,8 +21,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold mb-1" style="color: #1a1a1a;">Itens para Montagem</h3>
-                    <p class="text-muted mb-0 small">Lista dos componentes que já tiveram todas as peças verificadas e
-                        estão aguardando a montagem.</p>
+                    <p class="text-muted mb-0 small">Acompanhe os componentes liberados até que sejam marcados como prontos.</p>
                     </div>
                 </div>
 
@@ -60,7 +59,7 @@
                             <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center bg-white">
                                 <i class="bi bi-wrench-adjustable text-success fs-3 me-3"></i>
                                 <div>
-                                    <small class="text-muted fw-semibold">Aguardando Montagem</small>
+                                    <small class="text-muted fw-semibold">Em acompanhamento</small>
                                     <h4 class="fw-bold mb-0">@totalItens</h4>
                                 </div>
                             </div>
@@ -92,7 +91,17 @@
                                         }
                                     </select>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold text-muted">Status</label>
+                                    <select class="form-select" @bind="filtroStatus">
+                                        <option value="">Todos os status</option>
+                                        @foreach (var status in StatusDisponiveis)
+                                        {
+                                            <option value="@status">@status</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
                                     <button class="btn btn-success px-4 fw-bold me-2" @onclick="AplicarFiltros">
                                         <i class="bi bi-search me-1"></i> Filtrar
                                     </button>
@@ -109,7 +118,6 @@
                                     <tr>
                                         <th class="ps-4 fw-semibold border-0 py-3">O.S.</th>
                                         <th class="fw-semibold border-0 py-3">Componente / Modelo</th>
-                                        <th class="fw-semibold border-0 py-3 text-center">Itens Qtd.</th>
                                         <th class="fw-semibold border-0 py-3">Data de Liberação</th>
                                         <th class="fw-semibold border-0 py-3">Status</th>
                                         <th class="fw-semibold border-0 py-3 text-end pe-4">Ações</th>
@@ -119,8 +127,7 @@
                                     @if (!listaLiberados.Any())
                                     {
                                         <tr>
-                                            <td colspan="6" class="text-center py-5 text-muted">Nenhum componente aguardando
-                                                montagem no momento.</td>
+                                            <td colspan="6" class="text-center py-5 text-muted">Nenhum componente em acompanhamento no momento.</td>
                                             </tr>
                                         }
                                 else
@@ -132,13 +139,13 @@
                                                 <tr>
                                                     <td class="ps-4 text-dark fw-bold">@os.OsNumero</td>
                                                     <td class="text-dark">@os.ModeloSolicitado</td>
-                                                    <td class="text-center fw-semibold text-secondary">@qtdItens</td>
                                                     <td class="text-secondary">@os.DataEnvio.ToLocalTime().ToString("dd/MM/yyyy")</td>
                                                     <td>
                                                         <span
                                                             class="badge rounded-pill bg-warning text-dark px-3 py-2 border border-warning"
                                                             style="background-color: #fff8dd !important; color: #d99a00 !important;">
-                                                            <i class="bi bi-clock-history me-1"></i> Aguardando montagem
+                                                            <i class="bi bi-clock-history me-1"></i>
+                                                            @(string.IsNullOrWhiteSpace(os.Status) ? "Não informado" : os.Status)
                                                         </span>
                                                     </td>
                                                     <td class="text-end pe-4">
@@ -177,9 +184,15 @@
     private List<SistemaModel> sistemas = new();
     private List<ComponenteModel> componentesCadastrados = new();
     private List<string> categorias = new();
+    private IEnumerable<string> StatusDisponiveis => todasSolicitacoesLiberadas
+        .Where(s => !string.Equals(s.Status?.Trim(), "Pronto", StringComparison.OrdinalIgnoreCase))
+        .Select(s => string.IsNullOrWhiteSpace(s.Status) ? "Não informado" : s.Status.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(status => status, StringComparer.OrdinalIgnoreCase);
     
     // Variável do filtro
     private string filtroCategoria = string.Empty;
+    private string filtroStatus = string.Empty;
 
     // Contadores para os Cards (Atualizados automaticamente ao filtrar)
     private int totalItens => listaLiberados.Count;
@@ -216,16 +229,19 @@
             var resComponentes = await Supabase.From<ComponenteModel>().Get();
             componentesCadastrados = resComponentes.Models ?? new List<ComponenteModel>();
 
-            // 2. Busca diretamente do Supabase todas as ordens com status "Liberado"
+            // Carrega as solicitações para acompanhar todos os status após a liberação.
             var response = await Supabase
                 .From<SolicitacaoCompletaModel>()
-                .Filter("status", Postgrest.Constants.Operator.Equals, "Liberado")
                 .Get();
 
             var dados = response.Models ?? new List<SolicitacaoCompletaModel>();
 
             // Salva os dados brutos
             todasSolicitacoesLiberadas = dados
+                // Mantém fora desta tela os estados que não representam uma liberação.
+                .Where(s =>
+                    !string.Equals(s.Status, "Pendente", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(s.Status, "Condenado", StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(s => s.DataEnvio)
                 .ToList();
                 
@@ -247,7 +263,12 @@
     // ============================================================
     private void AplicarFiltros()
     {
-        var query = todasSolicitacoesLiberadas.AsEnumerable();
+        // O item só deixa a lista quando o status salvo no banco for "Pronto".
+        var query = todasSolicitacoesLiberadas
+            .Where(s => !string.Equals(
+                s.Status?.Trim(),
+                "Pronto",
+                StringComparison.OrdinalIgnoreCase));
 
         if (!string.IsNullOrWhiteSpace(filtroCategoria))
         {
@@ -266,12 +287,23 @@
                 modelosDaCategoria.Contains(s.ModeloSolicitado));
         }
 
+        if (!string.IsNullOrWhiteSpace(filtroStatus))
+        {
+            query = filtroStatus == "Não informado"
+                ? query.Where(s => string.IsNullOrWhiteSpace(s.Status))
+                : query.Where(s => string.Equals(
+                    s.Status?.Trim(),
+                    filtroStatus,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
         listaLiberados = query.ToList();
     }
 
     private void LimparFiltros()
     {
         filtroCategoria = string.Empty;
+        filtroStatus = string.Empty;
         AplicarFiltros();
     }
 
@@ -291,8 +323,8 @@
 
         try
         {
-            // Atualiza o status para "Montagem Concluída" enviando o modelo completo
-            solicitacao.Status = "Montagem Concluída";
+            // Usa o mesmo status de conclusão definido para ocultar o item desta tela.
+            solicitacao.Status = "Pronto";
 
             await Supabase
                 .From<SolicitacaoCompletaModel>()

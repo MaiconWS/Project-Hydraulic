@@ -7,6 +7,9 @@ namespace ManutencaoWeb.Services
         public bool ExigeTrocaSenha { get; private set; } = false;
         
         private string _nomeCompleto = string.Empty;
+
+        // Nome completo obtido do cadastro do usuário autenticado.
+        public string NomeCompleto => _nomeCompleto;
         
         // Retorna apenas o primeiro nome
         public string NomeUsuario 

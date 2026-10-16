@@ -442,7 +442,10 @@
 
                 DataEnvio = DateTime.UtcNow,
 
-                Status = "Pendente"
+                Status = "Pendente",
+
+                // Nome completo do usuário autenticado que abriu a solicitação.
+                SolicitanteNome = Sessao.NomeCompleto
             };
 
 
