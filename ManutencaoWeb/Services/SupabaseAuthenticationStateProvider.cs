@@ -13,6 +13,9 @@ namespace ManutencaoWeb.Services
         private ClaimsPrincipal _currentUser =
             new ClaimsPrincipal(new ClaimsIdentity());
 
+        private readonly object _sessionRestoreLock = new();
+        private Task? _sessionRestoreTask;
+
         public SupabaseAuthenticationStateProvider(
             Supabase.Client supabase,
             SessaoService sessao)
@@ -27,12 +30,38 @@ namespace ManutencaoWeb.Services
         // ESTADO ATUAL DA AUTENTICAÇÃO
         // ============================================================
 
-        public override Task<AuthenticationState>
+        public override async Task<AuthenticationState>
             GetAuthenticationStateAsync()
         {
-            return Task.FromResult(
-                new AuthenticationState(_currentUser)
-            );
+            await GarantirSessaoRestauradaAsync();
+            return new AuthenticationState(_currentUser);
+        }
+
+        private Task GarantirSessaoRestauradaAsync()
+        {
+            lock (_sessionRestoreLock)
+            {
+                return _sessionRestoreTask ??= RestaurarSessaoAsync();
+            }
+        }
+
+        private async Task RestaurarSessaoAsync()
+        {
+            try
+            {
+                _supabase.Auth.LoadSession();
+                await _supabase.Auth.RetrieveSessionAsync();
+
+                if (_supabase.Auth.CurrentUser != null &&
+                    _currentUser.Identity?.IsAuthenticated != true)
+                {
+                    await AtualizarUsuarioAutenticado();
+                }
+            }
+            catch
+            {
+                LimparAutenticacao();
+            }
         }
 
         // ============================================================

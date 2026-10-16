@@ -5,7 +5,7 @@
 @inject Supabase.Client Supabase
 @inject NavigationManager Nav
 
-<nav class="sidebar @(IsMenuOpen ? "mobile-open" : "")">
+<nav id="app-sidebar" class="sidebar @(IsMenuOpen ? "mobile-open" : "")">
 
     <div class="sidebar-brand">
         <i class="bi bi-gear-wide">
@@ -18,7 +18,7 @@
         <AuthorizeView Roles="Mecanico,Aprovisionador,Admin">
             <Authorized>
                 <li>
-                    <a href="/">
+                    <a href="/" @onclick="NotificarNavegacao">
                         <i class="bi bi-house-door"></i>
                         <span>Home</span>
                     </a>
@@ -31,28 +31,28 @@
             <Authorized>
 
                 <li>
-                    <a href="/requisicoes">
+                    <a href="/requisicoes" @onclick="NotificarNavegacao">
                         <i class="bi bi-clipboard-check"></i>
                         <span>Requisições</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/relatorios">
+                    <a href="/relatorios" @onclick="NotificarNavegacao">
                         <i class="bi bi-bar-chart"></i>
                         <span>Relatórios</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/liberados">
+                    <a href="/liberados" @onclick="NotificarNavegacao">
                         <i class="bi bi-wrench-adjustable"></i>
                         <span>Liberados</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/laudo-sucateamento-teste">
+                    <a href="/laudo-sucateamento-teste" @onclick="NotificarNavegacao">
                         <i class="bi bi-file-earmark-text"></i>
                         <span>Laudo (teste)</span>
                     </a>
@@ -66,14 +66,14 @@
             <Authorized>
 
                 <li>
-                    <a href="/admin">
+                    <a href="/admin" @onclick="NotificarNavegacao">
                         <i class="bi bi-plus-square"></i>
                         <span>Cadastros Base</span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="/gestao-senhas">
+                    <a href="/gestao-senhas" @onclick="NotificarNavegacao">
                         <i class="bi bi-shield-lock"></i>
                         <span>Gestão de Senhas</span>
                     </a>
@@ -113,6 +113,11 @@
 @code {
     [Parameter]
     public bool IsMenuOpen { get; set; }
+
+    [Parameter]
+    public EventCallback OnNavigate { get; set; }
+
+    private Task NotificarNavegacao() => OnNavigate.InvokeAsync();
 
     private async Task Sair()
     {

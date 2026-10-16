@@ -30,8 +30,18 @@ var options = new SupabaseOptions
 // ============================================================
 
 // Supabase
-builder.Services.AddScoped<Supabase.Client>(_ =>
-    new Supabase.Client(url, key, options));
+builder.Services.AddScoped(sp =>
+{
+    var jsRuntime = sp.GetRequiredService<Microsoft.JSInterop.IJSRuntime>()
+        as Microsoft.JSInterop.IJSInProcessRuntime
+        ?? throw new InvalidOperationException(
+            "O armazenamento persistente da sessão requer o runtime WebAssembly.");
+
+    options.AutoRefreshToken = true;
+    options.SessionHandler = new BrowserSupabaseSessionHandler(jsRuntime);
+
+    return new Supabase.Client(url, key, options);
+});
 
 // HttpClient
 builder.Services.AddScoped(sp =>

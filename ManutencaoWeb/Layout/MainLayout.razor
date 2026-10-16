@@ -15,6 +15,11 @@
         isMenuOpen = !isMenuOpen;
     }
 
+    private void FecharMenu()
+    {
+        isMenuOpen = false;
+    }
+
     protected override Task OnParametersSetAsync()
     {
         caminhoAtual = Nav.ToBaseRelativePath(Nav.Uri)
@@ -33,7 +38,15 @@
 
 <div class="dashboard-wrapper">
 
-    <NavMenu IsMenuOpen="@isMenuOpen" />
+    @if (isMenuOpen)
+    {
+        <button class="mobile-menu-backdrop"
+                type="button"
+                aria-label="Fechar menu"
+                @onclick="FecharMenu"></button>
+    }
+
+    <NavMenu IsMenuOpen="@isMenuOpen" OnNavigate="FecharMenu" />
 
     <main class="main-content">
 
@@ -42,6 +55,9 @@
             <div class="top-left d-flex align-items-center">
 
                 <button class="menu-toggle d-md-none me-2"
+                        aria-label="@(isMenuOpen ? "Fechar menu" : "Abrir menu")"
+                        aria-expanded="@isMenuOpen"
+                        aria-controls="app-sidebar"
                         @onclick="ToggleMenu">
 
                     <i class="bi bi-list"></i>
