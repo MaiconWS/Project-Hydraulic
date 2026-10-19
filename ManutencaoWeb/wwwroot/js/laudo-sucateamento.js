@@ -1,4 +1,4 @@
-window.gerarLaudoSucateamentoPdf = function (dados) {
+const criarLaudoSucateamentoPdf = function (dados) {
     if (!window.jspdf || !window.jspdf.jsPDF) {
         throw new Error("A biblioteca de PDF não está disponível.");
     }
@@ -125,5 +125,32 @@ window.gerarLaudoSucateamentoPdf = function (dados) {
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9_-]+/g, "-")
         .replace(/^-+|-+$/g, "") || "componente";
-    pdf.save(`laudo-sucateamento-${limparNome(dados.sapComponente)}-${limparNome(dados.osNumero)}.pdf`);
+    return {
+        pdf,
+        nomeArquivo: `laudo-sucateamento-${limparNome(dados.sapComponente)}-${limparNome(dados.osNumero)}.pdf`
+    };
+};
+
+window.gerarLaudoSucateamentoPdf = function (dados) {
+    const { pdf, nomeArquivo } = criarLaudoSucateamentoPdf(dados);
+    pdf.save(nomeArquivo);
+};
+
+window.compartilharLaudoSucateamentoPdf = async function (dados) {
+    const { pdf, nomeArquivo } = criarLaudoSucateamentoPdf(dados);
+    const arquivo = new File([pdf.output("blob")], nomeArquivo, { type: "application/pdf" });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+        await navigator.share({
+            files: [arquivo],
+            title: "Laudo de sucateamento",
+            text: `Laudo de sucateamento da O.S. ${dados.osNumero}`
+        });
+        return "compartilhado";
+    }
+
+    pdf.save(nomeArquivo);
+    const mensagem = `Segue o laudo de sucateamento da O.S. ${dados.osNumero}. O PDF foi baixado; anexe o arquivo nesta conversa.`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(mensagem)}`, "_blank", "noopener,noreferrer");
+    return "baixado";
 };

@@ -15,14 +15,14 @@
         </button>
         <div>
             <h2 class="fw-bold mb-1">Laudo de Sucateamento <span class="badge bg-warning text-dark fs-6">Teste</span></h2>
-            <p class="text-muted mb-0">Preencha os dados para gerar um PDF local, revisar e enviar manualmente.</p>
+            <p class="text-muted mb-0">Preencha os dados para gerar o PDF e compartilhar pelo WhatsApp quando disponível.</p>
         </div>
     </div>
 
     <div class="alert alert-info" role="note">
         <i class="bi bi-shield-lock me-2"></i>
         Este formulário não grava fotos, valores ou dados do laudo no banco nem no armazenamento do navegador.
-        As informações ficam apenas na memória desta página e são usadas para baixar o PDF. O envio por e-mail é manual.
+        As informações ficam apenas na memória desta página. O compartilhamento do PDF depende dos recursos do navegador e do dispositivo.
     </div>
 
     @if (isLoading)
@@ -163,7 +163,15 @@
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Motivo da troca</label>
-                                <textarea class="form-control" rows="2" @bind="peca.Motivo" maxlength="1000"></textarea>
+                                <InputSelect class="form-select" @bind-Value="peca.Motivo">
+                                    <option value="">Selecione o motivo da troca</option>
+                                    <option value="Contaminação do fluido">Contaminação do fluido</option>
+                                    <option value="Pressão excessiva ou picos de pressão">Pressão excessiva ou picos de pressão</option>
+                                    <option value="Lubrificação ou viscosidade inadequada">Lubrificação ou viscosidade inadequada</option>
+                                    <option value="Cavitação e aeração">Cavitação e aeração</option>
+                                    <option value="Desalinhamento, montagem incorreta ou fadiga">Desalinhamento, montagem incorreta ou fadiga</option>
+                                    <option value="Peça de baixa qualidade">Peça de baixa qualidade</option>
+                                </InputSelect>
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Fotos do item (opcional, até 4 fotos de 4 MB cada)</label>
@@ -224,7 +232,10 @@
             <button type="button" class="btn btn-outline-secondary" @onclick="LimparFormulario">
                 <i class="bi bi-eraser me-1"></i>Limpar formulário
             </button>
-            <button type="button" class="btn btn-success px-4" @onclick="GerarPdfAsync" disabled="@gerandoPdf">
+            <button type="button" class="btn btn-outline-success" @onclick="() => GerarPdfAsync(true)" disabled="@gerandoPdf">
+                <i class="bi bi-whatsapp me-1"></i>Enviar pelo WhatsApp
+            </button>
+            <button type="button" class="btn btn-success px-4" @onclick="() => GerarPdfAsync(false)" disabled="@gerandoPdf">
                 @if (gerandoPdf)
                 {
                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -450,7 +461,7 @@
 
     private void RemoverFoto(PecaLaudoModel peca, FotoLaudoModel foto) => peca.Fotos.Remove(foto);
 
-    private async Task GerarPdfAsync()
+    private async Task GerarPdfAsync(bool compartilharPeloWhatsApp)
     {
         erroValidacao = ValidarFormulario();
         mensagem = null;
@@ -490,8 +501,18 @@
                 }).ToList()
             };
 
-            await JS.InvokeVoidAsync("gerarLaudoSucateamentoPdf", dados);
-            mensagem = "PDF baixado. Revise o laudo com o responsável informado antes de enviá-lo manualmente.";
+            if (compartilharPeloWhatsApp)
+            {
+                var resultado = await JS.InvokeAsync<string>("compartilharLaudoSucateamentoPdf", dados);
+                mensagem = resultado == "compartilhado"
+                    ? "PDF pronto para compartilhar. Selecione o WhatsApp na tela de compartilhamento."
+                    : "O PDF foi baixado e o WhatsApp foi aberto. Anexe o arquivo à conversa.";
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("gerarLaudoSucateamentoPdf", dados);
+                mensagem = "PDF baixado com sucesso.";
+            }
         }
         catch (Exception ex)
         {
