@@ -63,6 +63,26 @@ namespace ManutencaoWeb.Models
         public string? SapComp { get; set; }
     }
 
+    // Projeção administrativa com a chave da tabela, usada para editar e excluir peças.
+    [Table("pecas")]
+    public class PecaAdminModel : BaseModel
+    {
+        [PrimaryKey("id")]
+        public long Id { get; set; }
+
+        [Column("sap_peca")]
+        public string? SapPeca { get; set; }
+
+        [Column("descricao")]
+        public string? Descricao { get; set; }
+
+        [Column("valor")]
+        public double Valor { get; set; }
+
+        [Column("sap_comp")]
+        public string? SapComp { get; set; }
+    }
+
 
     // ============================================================
     // SOLICITAÇÕES
@@ -99,6 +119,9 @@ namespace ManutencaoWeb.Models
 
         [Column("solicitante_nome")]
         public string? SolicitanteNome { get; set; }
+
+        [Column("solicitante_auth_id")]
+        public string? SolicitanteAuthId { get; set; }
     }
 
 
@@ -156,6 +179,9 @@ namespace ManutencaoWeb.Models
 
         [Column("entregue")]
         public bool Entregue { get; set; }
+
+        [Column("peca_nova")]
+        public bool PecaNova { get; set; }
     }
 
 

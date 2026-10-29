@@ -56,12 +56,18 @@
                 <div class="row g-3">
                     <div class="col-lg-6">
                         <label class="form-label fw-semibold">O.S. condenada (opcional)</label>
+                        <input class="form-control mb-2" @bind="filtroSolicitacoesCondenadas" @bind:event="oninput"
+                               placeholder="Digite o número da O.S. ou o modelo para filtrar" disabled="@carregandoItensOs" />
                         <select class="form-select" @bind="solicitacaoSelecionadaId" @bind:after="AoSelecionarSolicitacaoAsync" disabled="@carregandoItensOs">
                             <option value="">Selecionar ou preencher manualmente</option>
-                            @foreach (var solicitacao in solicitacoesCondenadas)
+                            @foreach (var solicitacao in SolicitacoesCondenadasFiltradas)
                             {
                                 <option value="@solicitacao.Id">O.S. @solicitacao.OsNumero — @solicitacao.ModeloSolicitado</option>
                             }
+                        @if (SolicitacoesCondenadasFiltradas.Count == 0 && solicitacoesCondenadas.Count > 0)
+                        {
+                            <small class="text-muted d-block mt-1">Nenhuma O.S. condenada corresponde à busca.</small>
+                        }
                         </select>
                     </div>
                     <div class="col-lg-3">
@@ -174,7 +180,7 @@
                                 </InputSelect>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Fotos do item (opcional, até 4 fotos de 4 MB cada)</label>
+                                <label class="form-label">Fotos do item (opcional, até 4 fotos de 10 MB cada)</label>
                                 <InputFile OnChange="@(e => CarregarFotosAsync(peca, e))" multiple accept="image/jpeg,image/png" class="form-control" />
                                 @if (!string.IsNullOrWhiteSpace(peca.ErroFoto))
                                 {
@@ -251,7 +257,7 @@
 </div>
 
 @code {
-    private const long MaximoFotoBytes = 4 * 1024 * 1024;
+    private const long MaximoFotoBytes = 10 * 1024 * 1024;
     private const int MaximoFotosPorPeca = 4;
 
     private bool isLoading = true;
@@ -264,6 +270,7 @@
     private string? avisoItensOs;
     private string? avisoSapComponente;
     private string solicitacaoSelecionadaId = string.Empty;
+    private string filtroSolicitacoesCondenadas = string.Empty;
     private string solicitacaoSelecionadaIdAnterior = string.Empty;
     private List<SolicitacaoCompletaModel> solicitacoesCondenadas = new();
     private List<ComponenteModel> componentesCadastrados = new();
@@ -280,6 +287,14 @@
     private List<PecaLaudoModel> pecasLaudo = new() { new PecaLaudoModel() };
 
     private decimal TotalReforma => pecasLaudo.Sum(TotalItem);
+    private List<SolicitacaoCompletaModel> SolicitacoesCondenadasFiltradas =>
+        string.IsNullOrWhiteSpace(filtroSolicitacoesCondenadas)
+            ? solicitacoesCondenadas
+            : solicitacoesCondenadas.Where(s =>
+                    (s.OsNumero?.Contains(filtroSolicitacoesCondenadas.Trim(), StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (s.ModeloSolicitado?.Contains(filtroSolicitacoesCondenadas.Trim(), StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -330,6 +345,7 @@
             }
         }
 
+        filtroSolicitacoesCondenadas = string.Empty;
         LimparDadosLaudo();
         avisoItensOs = null;
         avisoSapComponente = null;
@@ -437,7 +453,7 @@
 
                 if (arquivo.Size > MaximoFotoBytes)
                 {
-                    peca.ErroFoto = $"A foto {arquivo.Name} excede 4 MB.";
+                    peca.ErroFoto = $"A foto {arquivo.Name} excede 10 MB.";
                     continue;
                 }
 

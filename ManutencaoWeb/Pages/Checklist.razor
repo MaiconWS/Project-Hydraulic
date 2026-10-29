@@ -405,6 +405,13 @@
             return;
         }
 
+        var solicitanteAuthId = Supabase.Auth.CurrentUser?.Id?.ToString();
+        if (string.IsNullOrWhiteSpace(solicitanteAuthId))
+        {
+            await JS.InvokeVoidAsync("alert", "Não foi possível identificar sua conta. Saia e entre novamente antes de enviar.");
+            return;
+        }
+
 
         isEnviando = true;
 
@@ -445,7 +452,8 @@
                 Status = "Pendente",
 
                 // Nome completo do usuário autenticado que abriu a solicitação.
-                SolicitanteNome = Sessao.NomeCompleto
+                SolicitanteNome = Sessao.NomeCompleto,
+                SolicitanteAuthId = solicitanteAuthId
             };
 
 

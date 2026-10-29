@@ -64,36 +64,60 @@
                     <div class="col-md-6">
                         <div class="card border-0 shadow-sm p-4 h-100">
                             <h5 class="mb-3"><i class="bi bi-tools text-success me-2"></i> Nova Peça</h5>
-                            
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Vincular ao Componente (Modelo)</label>
-                                <select class="form-select" @bind="novaPeca.SapComp">
-                                    <option value="">Selecione um componente...</option>
-                                    @foreach(var comp in componentesCadastrados)
-                                    {
-                                        <option value="@comp.SapComp">@comp.SapComp - @comp.Modelo</option>
-                                    }
-                                </select>
+                                <label class="form-label fw-bold">Pesquisar componente</label>
+                                <input type="search" class="form-control" @bind="filtroComponentesPeca" @bind:event="oninput"
+                                       placeholder="Digite o modelo ou código SAP" />
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Código SAP (Peça)</label>
-                                <input type="text" class="form-control" @bind="novaPeca.SapPeca" placeholder="Ex: 6000913" />
-                            </div>
+                            @for (var i = 0; i < novasPecas.Count; i++)
+                            {
+                                var peca = novasPecas[i];
+                                <div class="border rounded p-3 mb-3" @key="peca">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <strong>Peça @(i + 1)</strong>
+                                        @if (novasPecas.Count > 1)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoverPeca(peca)">Remover</button>
+                                        }
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Vincular ao Componente (Modelo)</label>
+                                        <select class="form-select" @bind="peca.SapComp">
+                                            <option value="">Selecione um componente...</option>
+                                            @foreach(var comp in ComponentesFiltrados(peca))
+                                            {
+                                                <option value="@comp.SapComp">@comp.SapComp - @comp.Modelo</option>
+                                            }
+                                        </select>
+                                        @if (!string.IsNullOrWhiteSpace(filtroComponentesPeca) && ComponentesFiltrados(peca).Count == 0)
+                                        {
+                                            <small class="text-muted d-block mt-1">Nenhum componente encontrado para essa busca.</small>
+                                        }
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Código SAP (Peça)</label>
+                                        <input type="text" class="form-control" @bind="peca.SapPeca" placeholder="Ex: 6000913" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Descrição da Peça</label>
+                                        <input type="text" class="form-control" @bind="peca.Descricao" placeholder="Ex: ANEL DE VEDAÇÃO 3/4" />
+                                    </div>
+                                    <div>
+                                        <label class="form-label fw-bold">Valor Unitário (R$)</label>
+                                        <input type="number" step="0.01" class="form-control" @bind="peca.Valor" placeholder="Ex: 15.50" />
+                                    </div>
+                                </div>
+                            }
 
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Descrição da Peça</label>
-                                <input type="text" class="form-control" @bind="novaPeca.Descricao" placeholder="Ex: ANEL DE VEDAÇÃO 3/4" />
+                            <div class="d-flex gap-2 mt-auto">
+                                <button type="button" class="btn btn-outline-success py-2" @onclick="AdicionarPeca">
+                                    <i class="bi bi-plus-lg me-1"></i>Adicionar outra peça
+                                </button>
+                                <button type="button" class="btn btn-success py-2 fw-bold flex-grow-1" @onclick="CadastrarPecas" disabled="@cadastrandoPecas">
+                                    @(cadastrandoPecas ? "Cadastrando..." : $"Cadastrar {novasPecas.Count} peça(s)")
+                                </button>
                             </div>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Valor Unitário (R$)</label>
-                                <input type="number" step="0.01" class="form-control" @bind="novaPeca.Valor" placeholder="Ex: 15.50" />
-                            </div>
-
-                            <button class="btn btn-success mt-auto py-2 fw-bold" @onclick="CadastrarPeca">
-                                Cadastrar Peça
-                            </button>
                         </div>
                     </div>
 
@@ -132,6 +156,166 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- GERENCIAR PEÇAS EXISTENTES -->
+                    <div class="col-md-12">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h5 class="mb-1"><i class="bi bi-pencil-square text-success me-2"></i>Gerenciar peças cadastradas</h5>
+                            <p class="text-muted mb-3">Pesquise o componente, selecione-o e edite ou exclua as peças vinculadas.</p>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label fw-bold">Pesquisar componente</label>
+                                    <input type="search" class="form-control" @bind="filtroComponentesGerenciar" @bind:event="oninput"
+                                           placeholder="Digite o modelo ou código SAP" />
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label fw-bold">Componente</label>
+                                    <select class="form-select" @bind="sapComponenteGerenciado" @bind:after="CarregarPecasDoComponenteAsync">
+                                        <option value="">Selecione um componente...</option>
+                                        @foreach (var componente in ComponentesGerenciarFiltrados)
+                                        {
+                                            <option value="@componente.SapComp">@componente.SapComp - @componente.Modelo</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(sapComponenteGerenciado))
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Pesquisar peça</label>
+                                    <input type="search" class="form-control" @bind="filtroPecasGerenciar" @bind:event="oninput"
+                                           placeholder="Digite o código SAP ou descrição da peça" />
+                                </div>
+
+                                @if (carregandoPecasGerenciar)
+                                {
+                                    <div class="text-center py-3"><span class="spinner-border spinner-border-sm text-success me-2"></span>Carregando peças...</div>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(erroPecasGerenciar))
+                                {
+                                    <div class="alert alert-danger mb-0">@erroPecasGerenciar</div>
+                                }
+                                else if (PecasGerenciarFiltradas.Count == 0)
+                                {
+                                    <div class="alert alert-info mb-0">Nenhuma peça encontrada para este componente e filtro.</div>
+                                }
+                                else
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr><th>Código SAP</th><th>Descrição</th><th>Valor unitário</th><th class="text-end">Ações</th></tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var peca in PecasGerenciarFiltradas)
+                                                {
+                                                    <tr @key="peca.Id">
+                                                        <td>@peca.SapPeca</td>
+                                                        <td>@peca.Descricao</td>
+                                                        <td>@peca.Valor.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                                                        <td class="text-end text-nowrap">
+                                                            <button type="button" class="btn btn-sm btn-outline-success me-1" @onclick="() => IniciarEdicaoPeca(peca)">Editar</button>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => ExcluirPecaAsync(peca)" disabled="@excluindoPeca">Excluir</button>
+                                                        </td>
+                                                    </tr>
+                                                    @if (pecaEmEdicao?.Id == peca.Id)
+                                                    {
+                                                        <tr>
+                                                            <td colspan="4" class="bg-light p-3">
+                                                                <div class="row g-3 align-items-end">
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label fw-bold">Código SAP</label>
+                                                                        <input class="form-control" @bind="pecaEmEdicao.SapPeca" />
+                                                                    </div>
+                                                                    <div class="col-md-5">
+                                                                        <label class="form-label fw-bold">Descrição</label>
+                                                                        <input class="form-control" @bind="pecaEmEdicao.Descricao" />
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <label class="form-label fw-bold">Valor unitário (R$)</label>
+                                                                        <input type="number" min="0" step="0.01" class="form-control" @bind="pecaEmEdicao.Valor" />
+                                                                    </div>
+                                                                    <div class="col-md-2 d-flex gap-2">
+                                                                        <button type="button" class="btn btn-success" @onclick="SalvarEdicaoPecaAsync" disabled="@salvandoPeca">@(salvandoPeca ? "Salvando..." : "Salvar")</button>
+                                                                        <button type="button" class="btn btn-outline-secondary" @onclick="CancelarEdicaoPeca" disabled="@salvandoPeca">Cancelar</button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <!-- VINCULAR HISTÓRICO SEM IDENTIDADE -->
+                    <div class="col-md-12">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h5 class="mb-1"><i class="bi bi-person-check text-success me-2"></i>Vincular O.S. antigas a mecânicos</h5>
+                            <p class="text-muted mb-3">Use esta opção para atribuir O.S. antigas que não puderam ser associadas automaticamente a uma conta.</p>
+                            @if (!string.IsNullOrWhiteSpace(erroVinculoSolicitacao))
+                            {
+                                <div class="alert alert-danger">@erroVinculoSolicitacao</div>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(mensagemVinculoSolicitacao))
+                            {
+                                <div class="alert alert-success">@mensagemVinculoSolicitacao</div>
+                            }
+
+                            @if (carregandoVinculos)
+                            {
+                                <div class="text-center py-3"><span class="spinner-border spinner-border-sm text-success me-2"></span>Carregando O.S. sem vínculo...</div>
+                            }
+                            else if (solicitacoesSemVinculo.Count == 0)
+                            {
+                                <div class="alert alert-info mb-0">Não há O.S. antigas pendentes de associação.</div>
+                            }
+                            else if (mecanicosCadastrados.Count == 0)
+                            {
+                                <div class="alert alert-warning mb-0">Não há perfis de mecânico disponíveis para associação. Cadastre os usuários primeiro.</div>
+                            }
+                            else
+                            {
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Pesquisar O.S.</label>
+                                        <input class="form-control" @bind="filtroOsSemVinculo" @bind:event="oninput" placeholder="Número, modelo ou nome registrado" />
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-bold">O.S. antiga (@solicitacoesSemVinculo.Count sem vínculo)</label>
+                                        <select class="form-select" @bind="idSolicitacaoParaVincular">
+                                            <option value="">Selecione uma O.S...</option>
+                                            @foreach (var solicitacao in SolicitacoesSemVinculoFiltradas)
+                                            {
+                                                <option value="@solicitacao.Id">O.S. @solicitacao.OsNumero — @solicitacao.ModeloSolicitado (@solicitacao.SolicitanteNome)</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Mecânico responsável</label>
+                                        <select class="form-select" @bind="authIdMecanicoSelecionado">
+                                            <option value="">Selecione um mecânico...</option>
+                                            @foreach (var mecanico in mecanicosCadastrados)
+                                            {
+                                                <option value="@mecanico.AuthUserId">@mecanico.Nome</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-success" @onclick="VincularSolicitacaoAoMecanicoAsync" disabled="@salvandoVinculo">
+                                            @(salvandoVinculo ? "Vinculando..." : "Vincular O.S.")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
             }
 
@@ -139,17 +323,174 @@
     private bool isLoading = true;
     
     private ComponenteModel novoComponente = new();
-    private PecaModel novaPeca = new();
+    private List<PecaModel> novasPecas = new() { new PecaModel() };
     private UsuarioModel novoUsuario = new() { Perfil = "Mecanico" };
     private string senhaProvisoria = string.Empty;
     private bool cadastrandoUsuario;
+    private bool cadastrandoPecas;
+    private string filtroComponentesPeca = string.Empty;
+    private string filtroComponentesGerenciar = string.Empty;
+    private string filtroPecasGerenciar = string.Empty;
+    private string sapComponenteGerenciado = string.Empty;
+    private string? erroPecasGerenciar;
+    private bool carregandoPecasGerenciar;
+    private bool salvandoPeca;
+    private bool excluindoPeca;
+    private PecaAdminModel? pecaEmEdicao;
+    private bool carregandoVinculos;
+    private bool salvandoVinculo;
+    private string filtroOsSemVinculo = string.Empty;
+    private string idSolicitacaoParaVincular = string.Empty;
+    private string authIdMecanicoSelecionado = string.Empty;
+    private string? erroVinculoSolicitacao;
+    private string? mensagemVinculoSolicitacao;
 
     private List<SistemaModel> sistemas = new();
     private List<ComponenteModel> componentesCadastrados = new();
+    private List<PecaAdminModel> pecasDoComponenteGerenciado = new();
+    private List<UsuarioModel> mecanicosCadastrados = new();
+    private List<SolicitacaoCompletaModel> solicitacoesSemVinculo = new();
+
+    private List<SolicitacaoCompletaModel> SolicitacoesSemVinculoFiltradas
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(filtroOsSemVinculo))
+                return solicitacoesSemVinculo;
+
+            var termo = filtroOsSemVinculo.Trim();
+            return solicitacoesSemVinculo
+                .Where(solicitacao =>
+                    (solicitacao.OsNumero?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (solicitacao.ModeloSolicitado?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (solicitacao.SolicitanteNome?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+    }
+
+    private List<ComponenteModel> ComponentesGerenciarFiltrados
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(filtroComponentesGerenciar))
+                return componentesCadastrados;
+
+            var termo = filtroComponentesGerenciar.Trim();
+            return componentesCadastrados
+                .Where(componente =>
+                    string.Equals(componente.SapComp, sapComponenteGerenciado, StringComparison.OrdinalIgnoreCase)
+                    || (componente.Modelo?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (componente.SapComp?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+    }
+
+    private List<PecaAdminModel> PecasGerenciarFiltradas
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(filtroPecasGerenciar))
+                return pecasDoComponenteGerenciado;
+
+            var termo = filtroPecasGerenciar.Trim();
+            return pecasDoComponenteGerenciado
+                .Where(peca =>
+                    (peca.SapPeca?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (peca.Descricao?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+    }
+
+    private List<ComponenteModel> ComponentesFiltrados(PecaModel peca)
+    {
+        if (string.IsNullOrWhiteSpace(filtroComponentesPeca))
+            return componentesCadastrados;
+
+        var termo = filtroComponentesPeca.Trim();
+        return componentesCadastrados
+            .Where(comp =>
+                string.Equals(comp.SapComp, peca.SapComp, StringComparison.OrdinalIgnoreCase)
+                || (comp.Modelo?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (comp.SapComp?.Contains(termo, StringComparison.OrdinalIgnoreCase) ?? false))
+            .ToList();
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await CarregarDadosBase();
+        await CarregarSolicitacoesSemVinculoAsync();
+    }
+
+    private async Task CarregarSolicitacoesSemVinculoAsync()
+    {
+        carregandoVinculos = true;
+        erroVinculoSolicitacao = null;
+        try
+        {
+            var respostaMecanicos = await Supabase
+                .From<UsuarioModel>()
+                .Select("id,nome,auth_user_id,perfil")
+                .Filter("perfil", Postgrest.Constants.Operator.Equals, "Mecanico")
+                .Get();
+            mecanicosCadastrados = (respostaMecanicos.Models ?? new List<UsuarioModel>())
+                .Where(usuario => !string.IsNullOrWhiteSpace(usuario.AuthUserId))
+                .OrderBy(usuario => usuario.Nome)
+                .ToList();
+
+            var respostaSolicitacoes = await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Select("id,os_numero,modelo_solicitado,data_envio,status,solicitante_nome,solicitante_auth_id")
+                .Get();
+            solicitacoesSemVinculo = (respostaSolicitacoes.Models ?? new List<SolicitacaoCompletaModel>())
+                .Where(solicitacao => string.IsNullOrWhiteSpace(solicitacao.SolicitanteAuthId))
+                .OrderByDescending(solicitacao => solicitacao.DataEnvio)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            erroVinculoSolicitacao = $"Não foi possível carregar O.S. sem vínculo: {ex.Message}";
+        }
+        finally
+        {
+            carregandoVinculos = false;
+        }
+    }
+
+    private async Task VincularSolicitacaoAoMecanicoAsync()
+    {
+        mensagemVinculoSolicitacao = null;
+        if (!long.TryParse(idSolicitacaoParaVincular, out var solicitacaoId)
+            || string.IsNullOrWhiteSpace(authIdMecanicoSelecionado))
+        {
+            erroVinculoSolicitacao = "Selecione uma O.S. e um mecânico.";
+            return;
+        }
+
+        salvandoVinculo = true;
+        erroVinculoSolicitacao = null;
+        try
+        {
+            var resposta = await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Where(solicitacao => solicitacao.Id == solicitacaoId)
+                .Set(solicitacao => solicitacao.SolicitanteAuthId!, authIdMecanicoSelecionado!)
+                .Update();
+
+            if (resposta.Models.Count == 0)
+                throw new InvalidOperationException("A O.S. não foi vinculada. Atualize a página e tente novamente.");
+
+            solicitacoesSemVinculo.RemoveAll(solicitacao => solicitacao.Id == solicitacaoId);
+            idSolicitacaoParaVincular = string.Empty;
+            mensagemVinculoSolicitacao = "O.S. vinculada ao mecânico com sucesso.";
+        }
+        catch (Exception ex)
+        {
+            erroVinculoSolicitacao = $"Não foi possível vincular a O.S.: {ex.Message}";
+        }
+        finally
+        {
+            salvandoVinculo = false;
+        }
     }
 
     private async Task CarregarDadosBase()
@@ -174,6 +515,118 @@
         }
     }
 
+    private async Task CarregarPecasDoComponenteAsync()
+    {
+        filtroPecasGerenciar = string.Empty;
+        pecaEmEdicao = null;
+        erroPecasGerenciar = null;
+        pecasDoComponenteGerenciado.Clear();
+        if (string.IsNullOrWhiteSpace(sapComponenteGerenciado))
+            return;
+
+        carregandoPecasGerenciar = true;
+        try
+        {
+            var resposta = await Supabase
+                .From<PecaAdminModel>()
+                .Select("id,sap_comp,sap_peca,descricao,valor")
+                .Where(peca => peca.SapComp == sapComponenteGerenciado)
+                .Get();
+            pecasDoComponenteGerenciado = (resposta.Models ?? new List<PecaAdminModel>())
+                .OrderBy(peca => peca.SapPeca)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            erroPecasGerenciar = $"Não foi possível carregar as peças: {ex.Message}";
+        }
+        finally
+        {
+            carregandoPecasGerenciar = false;
+        }
+    }
+
+    private void IniciarEdicaoPeca(PecaAdminModel peca)
+    {
+        pecaEmEdicao = new PecaAdminModel
+        {
+            Id = peca.Id,
+            SapComp = peca.SapComp,
+            SapPeca = peca.SapPeca,
+            Descricao = peca.Descricao,
+            Valor = peca.Valor
+        };
+    }
+
+    private void CancelarEdicaoPeca() => pecaEmEdicao = null;
+
+    private async Task SalvarEdicaoPecaAsync()
+    {
+        if (pecaEmEdicao == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(pecaEmEdicao.SapPeca)
+            || string.IsNullOrWhiteSpace(pecaEmEdicao.Descricao)
+            || pecaEmEdicao.Valor < 0)
+        {
+            await JS.InvokeVoidAsync("alert", "Informe o código SAP, a descrição e um valor igual ou maior que zero.");
+            return;
+        }
+
+        salvandoPeca = true;
+        try
+        {
+            var resposta = await Supabase
+                .From<PecaAdminModel>()
+                .Where(peca => peca.Id == pecaEmEdicao.Id)
+                .Update(pecaEmEdicao);
+
+            if (resposta.Models.Count == 0)
+                throw new InvalidOperationException("Nenhuma peça foi atualizada. Verifique as permissões do Admin no Supabase.");
+
+            await JS.InvokeVoidAsync("alert", "Peça atualizada com sucesso!");
+            await CarregarPecasDoComponenteAsync();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao atualizar peça: {ex.Message}");
+        }
+        finally
+        {
+            salvandoPeca = false;
+        }
+    }
+
+    private async Task ExcluirPecaAsync(PecaAdminModel peca)
+    {
+        var confirmado = await JS.InvokeAsync<bool>(
+            "confirm",
+            $"Excluir a peça {peca.SapPeca} — {peca.Descricao}? Essa ação não pode ser desfeita.");
+        if (!confirmado)
+            return;
+
+        excluindoPeca = true;
+        try
+        {
+            await Supabase
+                .From<PecaAdminModel>()
+                .Where(item => item.Id == peca.Id)
+                .Delete();
+
+            if (pecaEmEdicao?.Id == peca.Id)
+                pecaEmEdicao = null;
+            pecasDoComponenteGerenciado.RemoveAll(item => item.Id == peca.Id);
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Erro ao excluir peça: {ex.Message}");
+        }
+        finally
+        {
+            excluindoPeca = false;
+        }
+    }
+
     private async Task CadastrarComponente()
     {
         if (novoComponente.SistemaId == 0 || string.IsNullOrWhiteSpace(novoComponente.SapComp) || string.IsNullOrWhiteSpace(novoComponente.Modelo))
@@ -195,24 +648,43 @@
         }
     }
 
-    private async Task CadastrarPeca()
+    private void AdicionarPeca() => novasPecas.Add(new PecaModel());
+
+    private void RemoverPeca(PecaModel peca) => novasPecas.Remove(peca);
+
+    private async Task CadastrarPecas()
     {
-        if (string.IsNullOrWhiteSpace(novaPeca.SapComp) || string.IsNullOrWhiteSpace(novaPeca.SapPeca) || string.IsNullOrWhiteSpace(novaPeca.Descricao))
+        var pecaIncompleta = novasPecas.FindIndex(peca =>
+            string.IsNullOrWhiteSpace(peca.SapComp)
+            || string.IsNullOrWhiteSpace(peca.SapPeca)
+            || string.IsNullOrWhiteSpace(peca.Descricao));
+        if (pecaIncompleta >= 0)
         {
-            await JS.InvokeVoidAsync("alert", "Preencha todos os campos obrigatórios da peça.");
+            await JS.InvokeVoidAsync("alert", $"Preencha todos os campos obrigatórios da peça {pecaIncompleta + 1}.");
             return;
         }
 
+        cadastrandoPecas = true;
         try
         {
-            await Supabase.From<PecaModel>().Insert(novaPeca);
-            await JS.InvokeVoidAsync("alert", "Peça cadastrada com sucesso!");
-            var compAtual = novaPeca.SapComp;
-            novaPeca = new PecaModel { SapComp = compAtual };
+            await Supabase.From<PecaModel>().Insert(novasPecas);
+            var quantidade = novasPecas.Count;
+            var atualizarListaGerenciada = novasPecas.Any(peca =>
+                string.Equals(peca.SapComp, sapComponenteGerenciado, StringComparison.OrdinalIgnoreCase));
+            await JS.InvokeVoidAsync("alert", quantidade == 1
+                ? "Peça cadastrada com sucesso!"
+                : $"{quantidade} peças cadastradas com sucesso!");
+            novasPecas = new() { new PecaModel() };
+            if (atualizarListaGerenciada)
+                await CarregarPecasDoComponenteAsync();
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("alert", $"Erro ao salvar peça: {ex.Message}");
+        }
+        finally
+        {
+            cadastrandoPecas = false;
         }
     }
 

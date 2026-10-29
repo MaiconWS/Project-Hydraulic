@@ -37,6 +37,18 @@
             </Authorized>
         </AuthorizeView>
 
+        <!-- MECÂNICO -->
+        <AuthorizeView Roles="Mecanico">
+            <Authorized>
+                <li>
+                    <a href="/minhas-pecas" @onclick="NotificarNavegacao">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Minhas peças</span>
+                    </a>
+                </li>
+            </Authorized>
+        </AuthorizeView>
+
         <!-- APROVISIONADOR / ADMIN -->
         <AuthorizeView Roles="Aprovisionador,Admin">
             <Authorized>

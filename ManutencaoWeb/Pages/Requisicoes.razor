@@ -350,23 +350,9 @@
                                             </td>
 
                                         </tr>
-                                    }
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         DETALHES
-                         ================================================= -->
-
-                    @if (requisicaoSelecionada != null)
+                                        @if (isSelected)
                     {
+                        <tr @onclick:stopPropagation="true"><td colspan="6">
                         <div class="mt-5 p-3 rounded"
                              style="background-color:#f8f9fa;border-left:4px solid #198754;">
 
@@ -379,7 +365,7 @@
                                     Itens da
 
                                     <strong>
-                                        O.S.: @requisicaoSelecionada.OsNumero
+                                        O.S.: @requisicaoSelecionada?.OsNumero
                                     </strong>
 
                                 </h4>
@@ -389,9 +375,9 @@
                                         Solicitante
                                     </small>
                                     <strong>
-                                        @(string.IsNullOrWhiteSpace(requisicaoSelecionada.SolicitanteNome)
+                                        @(string.IsNullOrWhiteSpace(requisicaoSelecionada?.SolicitanteNome)
                                             ? "Não informado"
-                                            : requisicaoSelecionada.SolicitanteNome)
+                                            : requisicaoSelecionada?.SolicitanteNome)
                                     </strong>
                                 </div>
 
@@ -433,7 +419,7 @@
                                         </small>
 
                                         <h6 class="mb-0 fw-bold">
-                                            @requisicaoSelecionada.ModeloSolicitado
+                                            @requisicaoSelecionada?.ModeloSolicitado
                                         </h6>
 
                                     </div>
@@ -454,7 +440,7 @@
                                             @{
                                                 var sistemaDetalhe =
                                                     ObterSistemaDoModelo(
-                                                        requisicaoSelecionada.ModeloSolicitado
+                                                        requisicaoSelecionada?.ModeloSolicitado
                                                     );
                                             }
 
@@ -592,6 +578,10 @@
                                                         <td class="ps-4 fw-bold text-secondary">
 
                                                             @item.SapPeca
+                                                            @if (item.PecaNova)
+                                                            {
+                                                                <span class="badge bg-warning text-dark ms-2">Inclusão posterior</span>
+                                                            }
 
                                                         </td>
 
@@ -758,7 +748,20 @@
                             </div>
 
                         </div>
+                        </td></tr>
                     }
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
 
                 }
 

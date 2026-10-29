@@ -1,0 +1,261 @@
+@page "/minhas-pecas"
+@attribute [Authorize(Roles = "Mecanico")]
+@using ManutencaoWeb.Models
+@inject Supabase.Client Supabase
+@inject IJSRuntime JS
+
+<PageTitle>Minhas requisições de peças - ManutencaoWeb</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="section-title mb-4">
+        <h2>Minhas requisições de peças</h2>
+        <p>Acompanhe as peças que você pediu e solicite itens adicionais para suas O.S.</p>
+    </div>
+
+    @if (carregando)
+    {
+        <div class="text-center py-5"><span class="spinner-border text-success" role="status"></span></div>
+    }
+    else if (!string.IsNullOrWhiteSpace(erro))
+    {
+        <div class="alert alert-danger">@erro</div>
+    }
+    else if (solicitacoes.Count == 0)
+    {
+        <div class="alert alert-info">Você ainda não possui O.S. com solicitação de peças.</div>
+    }
+    else
+    {
+        @foreach (var solicitacao in solicitacoes)
+        {
+            <div class="card border-0 shadow-sm mb-3" @key="solicitacao.Id">
+                <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <div class="fw-bold">O.S. @solicitacao.OsNumero</div>
+                        <div class="text-muted">@solicitacao.ModeloSolicitado</div>
+                        <small class="text-muted">Solicitada em @solicitacao.DataEnvio.ToLocalTime().ToString("dd/MM/yyyy")</small>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge rounded-pill bg-light text-dark border">@solicitacao.Status</span>
+                        <button type="button" class="btn btn-outline-success" @onclick="() => AlternarSolicitacaoAsync(solicitacao)">
+                            @(solicitacaoExpandidaId == solicitacao.Id ? "Fechar peças" : "Ver peças / solicitar")
+                        </button>
+                    </div>
+                </div>
+
+                @if (solicitacaoExpandidaId == solicitacao.Id)
+                {
+                    <div class="card-body border-top bg-light">
+                        @if (carregandoItens)
+                        {
+                            <div class="text-center py-3"><span class="spinner-border spinner-border-sm text-success me-2"></span>Carregando itens...</div>
+                        }
+                        else
+                        {
+                            var itens = itensPorSolicitacao.GetValueOrDefault(solicitacao.Id) ?? new List<SolicitacaoItemModel>();
+                            @if (itens.Count == 0)
+                            {
+                                <div class="alert alert-secondary py-2">Ainda não há peças nessa O.S.</div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-sm align-middle bg-white mb-0">
+                                        <thead class="table-light"><tr><th>SAP</th><th>Peça</th><th>Quantidade</th><th>Situação</th></tr></thead>
+                                        <tbody>
+                                            @foreach (var item in itens)
+                                            {
+                                                <tr>
+                                                    <td class="fw-semibold">@item.SapPeca</td>
+                                                    <td>
+                                                        @item.Descricao
+                                                        @if (item.PecaNova)
+                                                        {
+                                                            <span class="badge bg-warning text-dark ms-2">Incluída depois</span>
+                                                        }
+                                                    </td>
+                                                    <td>@item.Quantidade</td>
+                                                    <td>
+                                                        <span class="badge @(item.Entregue ? "bg-success" : "bg-secondary")">@(item.Entregue ? "Entregue" : "Pendente")</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                            @if (!string.Equals(solicitacao.Status, "Pendente", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <div class="alert alert-secondary mb-0">Esta O.S. não está mais aberta para inclusão de peças.</div>
+                            }
+                            else
+                            {
+                            <div class="border rounded bg-white p-3">
+                                <h6 class="fw-bold mb-1">Solicitar peça nova</h6>
+                                <p class="small text-muted">A solicitação será identificada para o aprovisionador como inclusão posterior.</p>
+                                @if (!string.IsNullOrWhiteSpace(mensagem))
+                                {
+                                    <div class="alert @(mensagemErro ? "alert-danger" : "alert-success") py-2">@mensagem</div>
+                                }
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Código SAP (se souber)</label>
+                                        <input class="form-control" @bind="codigoPecaNova" maxlength="100" placeholder="Opcional" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Descrição da peça</label>
+                                        <input class="form-control" @bind="descricaoPecaNova" maxlength="250" placeholder="Informe qual peça você precisa" />
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="form-label">Qtd.</label>
+                                        <input type="number" class="form-control" min="1" max="999" @bind="quantidadePecaNova" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-success w-100" @onclick="() => SolicitarPecaNovaAsync(solicitacao)" disabled="@enviandoPecaNova">
+                                            @(enviandoPecaNova ? "Enviando..." : "Enviar solicitação")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private bool carregando = true;
+    private bool carregandoItens;
+    private bool enviandoPecaNova;
+    private bool mensagemErro;
+    private string? erro;
+    private string? mensagem;
+    private string authUserId = string.Empty;
+    private string codigoPecaNova = string.Empty;
+    private string descricaoPecaNova = string.Empty;
+    private int quantidadePecaNova = 1;
+    private long? solicitacaoExpandidaId;
+    private List<SolicitacaoCompletaModel> solicitacoes = new();
+    private Dictionary<long, List<SolicitacaoItemModel>> itensPorSolicitacao = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        authUserId = Supabase.Auth.CurrentUser?.Id?.ToString() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(authUserId))
+        {
+            erro = "Não foi possível identificar sua conta. Saia e entre novamente.";
+            carregando = false;
+            return;
+        }
+
+        try
+        {
+            var resposta = await Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Select("id,os_numero,modelo_solicitado,data_envio,status,solicitante_nome,solicitante_auth_id")
+                .Filter("solicitante_auth_id", Postgrest.Constants.Operator.Equals, authUserId)
+                .Filter("status", Postgrest.Constants.Operator.Equals, "Pendente")
+                .Get();
+
+            solicitacoes = (resposta.Models ?? new List<SolicitacaoCompletaModel>())
+                .OrderByDescending(s => s.DataEnvio)
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            erro = $"Não foi possível carregar suas O.S.: {ex.Message}";
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private async Task AlternarSolicitacaoAsync(SolicitacaoCompletaModel solicitacao)
+    {
+        mensagem = null;
+        if (solicitacaoExpandidaId == solicitacao.Id)
+        {
+            solicitacaoExpandidaId = null;
+            return;
+        }
+
+        solicitacaoExpandidaId = solicitacao.Id;
+        if (itensPorSolicitacao.ContainsKey(solicitacao.Id))
+            return;
+
+        carregandoItens = true;
+        try
+        {
+            var resposta = await Supabase
+                .From<SolicitacaoItemModel>()
+                .Filter("solicitacao_id", Postgrest.Constants.Operator.Equals, checked((int)solicitacao.Id))
+                .Get();
+            itensPorSolicitacao[solicitacao.Id] = resposta.Models ?? new List<SolicitacaoItemModel>();
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Não foi possível carregar as peças: {ex.Message}";
+            mensagemErro = true;
+            itensPorSolicitacao[solicitacao.Id] = new List<SolicitacaoItemModel>();
+        }
+        finally
+        {
+            carregandoItens = false;
+        }
+    }
+
+    private async Task SolicitarPecaNovaAsync(SolicitacaoCompletaModel solicitacao)
+    {
+        mensagem = null;
+        if (string.IsNullOrWhiteSpace(descricaoPecaNova) || quantidadePecaNova < 1 || quantidadePecaNova > 999)
+        {
+            mensagem = "Informe a descrição e uma quantidade entre 1 e 999.";
+            mensagemErro = true;
+            return;
+        }
+
+        enviandoPecaNova = true;
+        try
+        {
+            var item = new SolicitacaoItemModel
+            {
+                SolicitacaoId = solicitacao.Id,
+                SapPeca = string.IsNullOrWhiteSpace(codigoPecaNova) ? "A CADASTRAR" : codigoPecaNova.Trim(),
+                Descricao = descricaoPecaNova.Trim(),
+                Quantidade = quantidadePecaNova,
+                Valor = 0,
+                Entregue = false,
+                PecaNova = true
+            };
+
+            var resposta = await Supabase.From<SolicitacaoItemModel>().Insert(item);
+            var itemCriado = resposta.Models.FirstOrDefault() ?? item;
+            if (!itensPorSolicitacao.TryGetValue(solicitacao.Id, out var itens))
+            {
+                itens = new List<SolicitacaoItemModel>();
+                itensPorSolicitacao[solicitacao.Id] = itens;
+            }
+            itens.Add(itemCriado);
+
+            codigoPecaNova = string.Empty;
+            descricaoPecaNova = string.Empty;
+            quantidadePecaNova = 1;
+            mensagem = "Solicitação enviada. A peça está marcada como inclusão posterior.";
+            mensagemErro = false;
+        }
+        catch (Exception ex)
+        {
+            mensagem = $"Não foi possível solicitar a peça: {ex.Message}";
+            mensagemErro = true;
+        }
+        finally
+        {
+            enviandoPecaNova = false;
+        }
+    }
+}
