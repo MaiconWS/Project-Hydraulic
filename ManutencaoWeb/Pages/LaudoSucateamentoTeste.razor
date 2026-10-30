@@ -296,7 +296,6 @@
     private string parecerTecnico = string.Empty;
     private decimal? valorComponenteNovo;
     private decimal? valorTotalReformaManual;
-    private string responsavelValidacao = string.Empty;
     private List<PecaLaudoModel> pecasLaudo = new() { new PecaLaudoModel() };
     private int quantidadeItensSolicitacao;
 
@@ -523,7 +522,6 @@
                 parecerTecnico,
                 valorComponenteNovo = valorComponenteNovo!.Value,
                 totalReforma = TotalReforma,
-                responsavelValidacao,
                 dataLaudo = DateTime.Today.ToString("dd/MM/yyyy"),
                 pecas = pecasLaudo.Select(peca => new
                 {
@@ -575,7 +573,6 @@
         if (!dataRecebimento.HasValue) return "Informe a data de recebimento.";
         if (string.IsNullOrWhiteSpace(parecerTecnico)) return "Informe o parecer técnico.";
         if (!valorComponenteNovo.HasValue || valorComponenteNovo.Value < 0) return "Informe o valor do componente novo.";
-        if (string.IsNullOrWhiteSpace(responsavelValidacao)) return "Informe quem validará o laudo antes do envio.";
         if (pecasLaudo.Count == 0) return "Adicione ao menos um item da reforma.";
         if (pecasLaudo.Any(p => string.IsNullOrWhiteSpace(p.Descricao) || string.IsNullOrWhiteSpace(p.Motivo)))
             return "Preencha a descrição e o motivo da troca de todos os itens.";
