@@ -599,7 +599,7 @@
 
     private void LimparDadosLaudo()
     {
-        osNumero = sapComponente = descricaoComponente = frota = tagSerie = parecerTecnico = responsavelValidacao = string.Empty;
+        osNumero = sapComponente = descricaoComponente = frota = tagSerie = parecerTecnico = string.Empty;
         dataRecebimento = null;
         valorComponenteNovo = null;
         valorTotalReformaManual = null;
@@ -619,7 +619,6 @@
         !string.IsNullOrWhiteSpace(parecerTecnico) ||
         valorComponenteNovo.HasValue ||
         valorTotalReformaManual.HasValue ||
-        !string.IsNullOrWhiteSpace(responsavelValidacao) ||
         pecasLaudo.Any(peca =>
             !string.IsNullOrWhiteSpace(peca.Sap) ||
             !string.IsNullOrWhiteSpace(peca.Descricao) ||
