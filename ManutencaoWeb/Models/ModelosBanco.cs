@@ -1,5 +1,6 @@
 using Postgrest.Attributes;
 using Postgrest.Models;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace ManutencaoWeb.Models
@@ -182,6 +183,50 @@ namespace ManutencaoWeb.Models
 
         [Column("peca_nova")]
         public bool PecaNova { get; set; }
+    }
+
+    [Table("solicitacoes")]
+    public class LaudoCondenacaoModel : BaseModel
+    {
+        [PrimaryKey("id")]
+        [JsonProperty("id")]
+        public long Id { get; set; }
+
+        [Column("os_numero")]
+        [JsonProperty("os_numero")]
+        public string? OsNumero { get; set; }
+
+        [Column("modelo_solicitado")]
+        [JsonProperty("modelo_solicitado")]
+        public string? ModeloSolicitado { get; set; }
+
+        [Column("data_envio")]
+        [JsonProperty("data_envio")]
+        public DateTime DataEnvio { get; set; }
+
+        [Column("status")]
+        [JsonProperty("status")]
+        public string? Status { get; set; }
+    }
+
+    [Table("solicitacao_itens")]
+    public class LaudoSolicitacaoItemModel : BaseModel
+    {
+        [Column("solicitacao_id")]
+        [JsonProperty("solicitacao_id")]
+        public long SolicitacaoId { get; set; }
+
+        [Column("sap_peca")]
+        [JsonProperty("sap_peca")]
+        public string? SapPeca { get; set; }
+
+        [Column("descricao")]
+        [JsonProperty("descricao")]
+        public string? Descricao { get; set; }
+
+        [Column("quantidade")]
+        [JsonProperty("quantidade")]
+        public int Quantidade { get; set; }
     }
 
 

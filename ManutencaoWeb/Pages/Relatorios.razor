@@ -1243,32 +1243,46 @@
         {
             isLoading = true;
 
-            // ----------------------------------------------------
-            // REQUISIÇÕES
-            // ----------------------------------------------------
+            // As quatro consultas são independentes; iniciá-las juntas evita
+            // somar o tempo de rede de cada uma. Selecionamos só os campos
+            // usados pelos indicadores, filtros e exportações deste relatório.
+            var solicitacoesTask = Supabase
+                .From<SolicitacaoCompletaModel>()
+                .Select("id,os_numero,modelo_solicitado,data_envio,status")
+                .Get();
 
-            var response =
-                await Supabase
-                    .From<SolicitacaoCompletaModel>()
-                    .Get();
+            var itensTask = Supabase
+                .From<SolicitacaoItemModel>()
+                .Select("id,solicitacao_id,sap_peca,descricao,quantidade,entregue")
+                .Get();
 
-            todasSolicitacoes =
-                response.Models
+            var sistemasTask = Supabase
+                .From<SistemaModel>()
+                .Select("id,categoria")
+                .Get();
+
+            var componentesTask = Supabase
+                .From<ComponenteModel>()
+                .Select("sap_comp,modelo,sistema_id")
+                .Get();
+
+            await Task.WhenAll(
+                solicitacoesTask,
+                itensTask,
+                sistemasTask,
+                componentesTask);
+
+            todasSolicitacoes = solicitacoesTask.Result.Models
                 ?? new List<SolicitacaoCompletaModel>();
 
-
-            // ----------------------------------------------------
-            // ITENS
-            // ----------------------------------------------------
-
-            var responseItens =
-                await Supabase
-                    .From<SolicitacaoItemModel>()
-                    .Get();
-
-            var todosOsItensBd =
-                responseItens.Models
+            var todosOsItensBd = itensTask.Result.Models
                 ?? new List<SolicitacaoItemModel>();
+
+            sistemas = sistemasTask.Result.Models
+                ?? new List<SistemaModel>();
+
+            componentesCadastrados = componentesTask.Result.Models
+                ?? new List<ComponenteModel>();
 
 
             // ----------------------------------------------------
@@ -1288,20 +1302,6 @@
                     todasSolicitacoes);
 
 
-            // ----------------------------------------------------
-            // SISTEMAS / CATEGORIAS
-            // ----------------------------------------------------
-
-            var resSistemas =
-                await Supabase
-                    .From<SistemaModel>()
-                    .Get();
-
-            sistemas =
-                resSistemas.Models
-                ?? new List<SistemaModel>();
-
-
             sistemasDisponiveis =
                 sistemas
                     .Where(s =>
@@ -1312,20 +1312,6 @@
                         StringComparer.OrdinalIgnoreCase)
                     .OrderBy(c => c)
                     .ToList();
-
-
-            // ----------------------------------------------------
-            // COMPONENTES / MODELOS
-            // ----------------------------------------------------
-
-            var resComponentes =
-                await Supabase
-                    .From<ComponenteModel>()
-                    .Get();
-
-            componentesCadastrados =
-                resComponentes.Models
-                ?? new List<ComponenteModel>();
 
 
             CalcularIndicadores();

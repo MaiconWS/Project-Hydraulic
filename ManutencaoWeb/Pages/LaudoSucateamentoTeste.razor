@@ -64,11 +64,11 @@
                             {
                                 <option value="@solicitacao.Id">O.S. @solicitacao.OsNumero — @solicitacao.ModeloSolicitado</option>
                             }
+                        </select>
                         @if (SolicitacoesCondenadasFiltradas.Count == 0 && solicitacoesCondenadas.Count > 0)
                         {
                             <small class="text-muted d-block mt-1">Nenhuma O.S. condenada corresponde à busca.</small>
                         }
-                        </select>
                     </div>
                     <div class="col-lg-3">
                         <label class="form-label fw-semibold">O.S.</label>
@@ -134,6 +134,12 @@
                 {
                     <div class="alert alert-success py-2">@pecasLaudo.Count(peca => peca.VeioDaSolicitacao) peça(s) solicitada(s) carregada(s). Complete o motivo, valores e fotos necessários ao laudo.</div>
                 }
+                @if (ValoresPorItemOpcionais)
+                {
+                    <div class="alert alert-info py-2">
+                        Esta O.S. possui @quantidadeItensSolicitacao itens. Você pode informar um valor total estimado ou preencher os valores por peça; ambos são opcionais.
+                    </div>
+                }
                 @foreach (var peca in pecasLaudo)
                 {
                     <div class="border rounded p-3 mb-3" @key="peca">
@@ -160,7 +166,7 @@
                                 <input type="number" min="1" step="1" class="form-control" @bind="peca.Quantidade" readonly="@(peca.VeioDaSolicitacao && peca.Quantidade > 0)" />
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Valor unitário (R$)</label>
+                                <label class="form-label">Valor unitário (R$)@(ValoresPorItemOpcionais ? " — opcional" : "")</label>
                                 <input type="number" min="0" step="0.01" class="form-control" @bind="peca.ValorUnitario" />
                                 @if (peca.ValorUnitario.HasValue)
                                 {
@@ -174,9 +180,10 @@
                                     <option value="Contaminação do fluido">Contaminação do fluido</option>
                                     <option value="Pressão excessiva ou picos de pressão">Pressão excessiva ou picos de pressão</option>
                                     <option value="Lubrificação ou viscosidade inadequada">Lubrificação ou viscosidade inadequada</option>
-                                    <option value="Cavitação e aeração">Cavitação e aeração</option>
-                                    <option value="Desalinhamento, montagem incorreta ou fadiga">Desalinhamento, montagem incorreta ou fadiga</option>
+                                    <option value="Cavitação,  ranhuras e aeração">Cavitação, ranhuras e aeração</option>
+                                    <option value="Desalinhamento ou fadiga">Desalinhamento ou fadiga</option>
                                     <option value="Peça de baixa qualidade">Peça de baixa qualidade</option>
+                                    <option value="Montagem incorreta">Montagem incorreta</option>
                                 </InputSelect>
                             </div>
                             <div class="col-12">
@@ -212,18 +219,23 @@
             </div>
             <div class="card-body">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-4">
+                    <div class="col-md">
                         <label class="form-label fw-semibold">Total estimado dos itens da reforma (R$)</label>
-                        <input class="form-control bg-light" value="@TotalReforma.ToString("N2")" readonly />
-                        <small class="text-muted">Calculado com os valores informados acima.</small>
+                        @if (ValoresPorItemOpcionais)
+                        {
+                            <input type="number" min="0" step="0.01" class="form-control" @bind="valorTotalReformaManual" />
+                            <small class="text-muted">Informe o total manualmente ou preencha todos os valores por peça para calcular.</small>
+                        }
+                        else
+                        {
+                            <input class="form-control bg-light" value="@(TotalReforma?.ToString("N2") ?? "")" readonly />
+                            <small class="text-muted">Calculado com os valores informados acima.</small>
+                        }
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md">
                         <label class="form-label fw-semibold">Valor do componente novo (R$)</label>
                         <input type="number" min="0" step="0.01" class="form-control" @bind="valorComponenteNovo" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Validação antes do envio</label>
-                        <input class="form-control" @bind="responsavelValidacao" maxlength="120" placeholder="Marcio ou Luan" />
+                        <small class="text-muted">Valor do componente novo.</small>
                     </div>
                 </div>
             </div>
@@ -270,8 +282,8 @@
     private string? avisoItensOs;
     private string? avisoSapComponente;
     private string solicitacaoSelecionadaId = string.Empty;
-    private string filtroSolicitacoesCondenadas = string.Empty;
     private string solicitacaoSelecionadaIdAnterior = string.Empty;
+    private string filtroSolicitacoesCondenadas = string.Empty;
     private List<SolicitacaoCompletaModel> solicitacoesCondenadas = new();
     private List<ComponenteModel> componentesCadastrados = new();
 
@@ -283,10 +295,17 @@
     private DateTime? dataRecebimento;
     private string parecerTecnico = string.Empty;
     private decimal? valorComponenteNovo;
+    private decimal? valorTotalReformaManual;
     private string responsavelValidacao = string.Empty;
     private List<PecaLaudoModel> pecasLaudo = new() { new PecaLaudoModel() };
+    private int quantidadeItensSolicitacao;
 
-    private decimal TotalReforma => pecasLaudo.Sum(TotalItem);
+    private bool ValoresPorItemOpcionais => quantidadeItensSolicitacao > 10;
+    private decimal? TotalReforma => valorTotalReformaManual ??
+        (pecasLaudo.Count > 0 && pecasLaudo.All(peca => peca.ValorUnitario.HasValue)
+            ? pecasLaudo.Sum(TotalItem)
+            : null);
+
     private List<SolicitacaoCompletaModel> SolicitacoesCondenadasFiltradas =>
         string.IsNullOrWhiteSpace(filtroSolicitacoesCondenadas)
             ? solicitacoesCondenadas
@@ -295,17 +314,21 @@
                     || (s.ModeloSolicitado?.Contains(filtroSolicitacoesCondenadas.Trim(), StringComparison.OrdinalIgnoreCase) ?? false))
                 .ToList();
 
-
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var response = await Supabase
-                .From<SolicitacaoCompletaModel>()
-                .Select("id,os_numero,modelo_solicitado,data_envio,status")
-                .Get();
-            solicitacoesCondenadas = (response.Models ?? new List<SolicitacaoCompletaModel>())
-                .Where(s => string.Equals(s.Status?.Trim(), "Condenado", StringComparison.OrdinalIgnoreCase))
+                .Rpc<List<LaudoCondenacaoModel>>("laudos_listar_condenacoes", null);
+            solicitacoesCondenadas = (response ?? new List<LaudoCondenacaoModel>())
+                .Select(s => new SolicitacaoCompletaModel
+                {
+                    Id = s.Id,
+                    OsNumero = s.OsNumero,
+                    ModeloSolicitado = s.ModeloSolicitado,
+                    DataEnvio = s.DataEnvio,
+                    Status = s.Status
+                })
                 .OrderByDescending(s => s.DataEnvio)
                 .ToList();
 
@@ -345,8 +368,8 @@
             }
         }
 
-        filtroSolicitacoesCondenadas = string.Empty;
         LimparDadosLaudo();
+        filtroSolicitacoesCondenadas = string.Empty;
         avisoItensOs = null;
         avisoSapComponente = null;
         sapComponenteFoiEncontrado = false;
@@ -354,6 +377,7 @@
         if (string.IsNullOrWhiteSpace(solicitacaoSelecionadaId))
         {
             solicitacaoSelecionadaIdAnterior = string.Empty;
+            quantidadeItensSolicitacao = 0;
             return;
         }
 
@@ -391,12 +415,12 @@
         try
         {
             var respostaItens = await Supabase
-                .From<SolicitacaoItemModel>()
-                .Select("solicitacao_id,sap_peca,descricao,quantidade")
-                .Filter("solicitacao_id", Postgrest.Constants.Operator.Equals, checked((int)solicitacao.Id))
-                .Get();
+                .Rpc<List<LaudoSolicitacaoItemModel>>(
+                    "laudos_listar_itens_condenacao",
+                    new Dictionary<string, object> { ["p_solicitacao_id"] = solicitacao.Id });
 
-            var itens = respostaItens.Models ?? new List<SolicitacaoItemModel>();
+            var itens = respostaItens ?? new List<LaudoSolicitacaoItemModel>();
+            quantidadeItensSolicitacao = itens.Count;
             if (itens.Count > 0)
             {
                 pecasLaudo = itens.Select(item => new PecaLaudoModel
@@ -417,6 +441,7 @@
         }
         catch (Exception ex)
         {
+            quantidadeItensSolicitacao = 0;
             pecasLaudo = new() { new PecaLaudoModel() };
             avisoItensOs = $"Não foi possível carregar as peças da O.S.; você pode adicioná-las manualmente. Detalhe: {ex.Message}";
             solicitacaoSelecionadaIdAnterior = solicitacaoSelecionadaId;
@@ -506,8 +531,8 @@
                     descricao = peca.Descricao,
                     quantidade = peca.Quantidade,
                     motivo = peca.Motivo,
-                    valorUnitario = peca.ValorUnitario!.Value,
-                    subtotal = TotalItem(peca),
+                    valorUnitario = peca.ValorUnitario,
+                    subtotal = peca.ValorUnitario.HasValue ? (decimal?)TotalItem(peca) : null,
                     fotos = peca.Fotos.Select(foto => new
                     {
                         nome = foto.Nome,
@@ -556,8 +581,12 @@
             return "Preencha a descrição e o motivo da troca de todos os itens.";
         if (pecasLaudo.Any(p => p.Quantidade < 1))
             return "A quantidade de cada item deve ser maior que zero.";
-        if (pecasLaudo.Any(p => !p.ValorUnitario.HasValue || p.ValorUnitario.Value < 0))
+        if (pecasLaudo.Any(p => p.ValorUnitario.HasValue && p.ValorUnitario.Value < 0))
+            return "Os valores unitários não podem ser negativos.";
+        if (!ValoresPorItemOpcionais && pecasLaudo.Any(p => !p.ValorUnitario.HasValue))
             return "Informe um valor unitário válido para cada item.";
+        if (valorTotalReformaManual.HasValue && valorTotalReformaManual.Value < 0)
+            return "O valor total da reforma não pode ser negativo.";
         return null;
     }
 
@@ -576,7 +605,9 @@
         osNumero = sapComponente = descricaoComponente = frota = tagSerie = parecerTecnico = responsavelValidacao = string.Empty;
         dataRecebimento = null;
         valorComponenteNovo = null;
+        valorTotalReformaManual = null;
         pecasLaudo = new() { new PecaLaudoModel() };
+        quantidadeItensSolicitacao = 0;
         erroValidacao = null;
         mensagem = null;
     }
@@ -590,6 +621,7 @@
         dataRecebimento.HasValue ||
         !string.IsNullOrWhiteSpace(parecerTecnico) ||
         valorComponenteNovo.HasValue ||
+        valorTotalReformaManual.HasValue ||
         !string.IsNullOrWhiteSpace(responsavelValidacao) ||
         pecasLaudo.Any(peca =>
             !string.IsNullOrWhiteSpace(peca.Sap) ||

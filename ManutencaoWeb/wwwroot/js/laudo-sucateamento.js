@@ -43,9 +43,11 @@ const criarLaudoSucateamentoPdf = function (dados) {
         pdf.setFontSize(10);
         adicionarTexto(valor);
     };
-    const moeda = (valor) => new Intl.NumberFormat("pt-BR", {
-        style: "currency", currency: "BRL"
-    }).format(Number(valor ?? 0));
+    const moeda = (valor) => valor == null
+        ? "Não informado"
+        : new Intl.NumberFormat("pt-BR", {
+            style: "currency", currency: "BRL"
+        }).format(Number(valor));
 
     pdf.setTextColor(46, 102, 75);
     pdf.setFont("helvetica", "bold");
